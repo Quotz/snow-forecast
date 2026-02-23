@@ -3,9 +3,1453 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snow Forecast — Popova Shapka</title>
+    <meta http-equiv="refresh" content="3600">
+    <title>Snow Monitor — Popova Shapka</title>
+    <meta property="og:title" content="Snow Monitor — Popova Shapka">
+    <meta property="og:description" content="Powder forecast and scoring for Popova Shapka. Updated 3x daily from 4 weather sources.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#10052;</text></svg>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg: #0b1016;
+            --bg-raised: #111922;
+            --card: #172030;
+            --card-border: #243248;
+            --text: #e4eaf0;
+            --text-dim: #7b8fa6;
+            --text-muted: #4e6074;
+            --accent: #3b9cf5;
+            --accent-dim: rgba(59, 156, 245, 0.12);
+            --epic: #4d8df7;
+            --good: #3cc068;
+            --fair: #f0c230;
+            --marginal: #7a8a9a;
+            --skip: #e5453a;
+            --warning: #f57c3b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1240px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #fff 0%, #a0c8f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 3px 12px;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+        .header-badge .dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--good);
+            display: inline-block;
+        }
+        .subtitle {
+            color: var(--text-dim);
+            font-size: 0.82rem;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 28px 0 14px;
+            color: var(--accent);
+            letter-spacing: -0.3px;
+        }
+        h3 { font-size: 1rem; font-weight: 600; margin: 16px 0 8px; color: var(--text-dim); }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 18px;
+        }
+        .card h2 { margin-top: 0; }
+
+        /* Grid layouts */
+        .grid { display: grid; gap: 10px; }
+        .grid-7 { grid-template-columns: repeat(7, 1fr); }
+
+        /* Score Cards */
+        .score-card {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 14px 10px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .score-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: 14px 14px 0 0;
+        }
+        .score-card.border-EPIC::before { background: var(--epic); }
+        .score-card.border-GOOD::before { background: var(--good); }
+        .score-card.border-FAIR::before { background: var(--fair); }
+        .score-card.border-MARGINAL::before { background: var(--marginal); }
+        .score-card.border-SKIP::before { background: var(--skip); }
+
+        .score-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+        .score-card .day-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: 0.3px;
+        }
+        .score-card .day-date {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+        .score-card .score {
+            font-size: 2.4rem;
+            font-weight: 800;
+            line-height: 1;
+            margin: 6px 0;
+        }
+        .score-card .label {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin: 6px 0;
+        }
+        .score-card .details {
+            font-size: 0.76rem;
+            color: var(--text-dim);
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+        .score-card .sky {
+            font-size: 0.72rem;
+            margin-top: 6px;
+            color: var(--text-muted);
+        }
+        .score-card .confidence-dot {
+            display: inline-block;
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+
+        .label-EPIC { background: var(--epic); color: #fff; }
+        .label-GOOD { background: var(--good); color: #fff; }
+        .label-FAIR { background: var(--fair); color: #1a1a1a; }
+        .label-MARGINAL { background: var(--marginal); color: #fff; }
+        .label-SKIP { background: var(--skip); color: #fff; }
+
+        .score-EPIC { color: var(--epic); }
+        .score-GOOD { color: var(--good); }
+        .score-FAIR { color: var(--fair); }
+        .score-MARGINAL { color: var(--marginal); }
+        .score-SKIP { color: var(--skip); }
+
+        /* Pattern Alerts */
+        .pattern {
+            background: var(--accent-dim);
+            border-left: 3px solid var(--accent);
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 0 10px 10px 0;
+            font-size: 0.88rem;
+        }
+        .pattern.storm-clear { background: rgba(77,141,247,0.12); border-left-color: var(--epic); }
+        .pattern.warning { background: rgba(245,124,59,0.1); border-left-color: var(--warning); }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+        th {
+            text-align: left;
+            padding: 10px 8px;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--card-border);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        td { padding: 9px 8px; border-bottom: 1px solid rgba(36,50,72,0.5); }
+        tr:hover td { background: rgba(59,156,245,0.04); }
+        .agree { color: var(--good); font-weight: 600; }
+        .disagree { color: var(--warning); font-weight: 600; }
+        .td-date { white-space: nowrap; font-weight: 500; }
+
+        /* Source comparison specific */
+        .src-snow { font-weight: 700; font-size: 0.88rem; }
+        .src-detail { color: var(--text-dim); font-size: 0.75rem; }
+        .consensus-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .consensus-agree { background: rgba(60,192,104,0.12); color: var(--good); }
+        .consensus-dry { background: rgba(122,138,154,0.12); color: var(--text-dim); }
+        .consensus-mixed { background: rgba(245,124,59,0.12); color: var(--warning); }
+
+        /* Current Conditions */
+        .conditions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 8px;
+        }
+        .condition-item {
+            text-align: center;
+            padding: 14px 8px;
+            background: var(--bg-raised);
+            border-radius: 10px;
+        }
+        .condition-item .value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+        .condition-item .unit { font-size: 0.75rem; color: var(--text-dim); }
+        .condition-item .name { font-size: 0.7rem; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Safety Panel */
+        .safety {
+            background: rgba(229, 69, 58, 0.06);
+            border: 1px solid rgba(229, 69, 58, 0.2);
+            border-radius: 14px;
+            padding: 18px;
+        }
+        .safety h2 { color: var(--skip); margin-top: 0; }
+
+        /* Chart */
+        .chart-container { position: relative; height: 260px; margin: 12px 0; }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .grid-7 { grid-template-columns: repeat(4, 1fr); }
+        }
+        @media (max-width: 600px) {
+            body { padding: 12px; }
+            h1 { font-size: 1.4rem; }
+            .grid-7 { grid-template-columns: repeat(3, 1fr); }
+            .score-card .score { font-size: 1.8rem; }
+            .score-card { padding: 10px 6px; }
+        }
+
+        .footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            margin-top: 36px;
+            padding: 20px;
+            border-top: 1px solid var(--card-border);
+        }
+    </style>
 </head>
 <body>
-    <p>Dashboard will be generated on next forecast run.</p>
+    <div class="header">
+        <h1>Popova Shapka</h1>
+        <span class="header-badge">
+            <span class="dot"></span>
+            4 sources active
+        </span>
+    </div>
+    <p class="subtitle">
+        Updated <span id="relative-time" data-utc="2026-02-23T09:50:16.567859Z">23/02/2026 09:50 UTC</span> &nbsp;|&nbsp;
+        open_meteo &middot; yr_no &middot; snow_forecast &middot; mountain_forecast
+    </p>
+
+    
+    
+    <div class="card">
+        <h2>Detected Patterns</h2>
+        
+        <div class="pattern warning">
+            &#9888;
+            Warning: Freezing level rising (1880 → 1900 → 2680m). Rain risk at freeride elevations.
+        </div>
+        
+        <div class="pattern ">
+            &#10052;
+            Cold snap Day 16: 5°C drop to -12°C. Great for powder preservation.
+        </div>
+        
+    </div>
+    
+
+    
+    <h2>7-Day Powder Outlook</h2>
+    <div class="grid grid-7">
+        
+        
+        
+        
+        <div class="score-card border-MARGINAL">
+            <div class="day-name">Mon<br>23/02</div>
+            <div class="score score-MARGINAL">30</div>
+            <div class="label label-MARGINAL">MARGINAL</div>
+            <div class="details">
+                0cm &middot;
+                -2&deg;C &middot;
+                14km/h
+            </div>
+            <div class="sky">
+                &#9729;
+                Overcast
+                
+                <span class="confidence-dot" style="background:var(--good)" title="All sources agree: dry"></span>
+                
+            </div>
+        </div>
+        
+        
+        
+        
+        
+        <div class="score-card border-SKIP">
+            <div class="day-name">Tue<br>24/02</div>
+            <div class="score score-SKIP">14</div>
+            <div class="label label-SKIP">SKIP</div>
+            <div class="details">
+                1cm &middot;
+                -2&deg;C &middot;
+                21km/h
+            </div>
+            <div class="sky">
+                &#9729;
+                Overcast
+                
+                <span class="confidence-dot" style="background:var(--good)" title="All sources agree: dry"></span>
+                
+            </div>
+        </div>
+        
+        
+        
+        
+        
+        <div class="score-card border-MARGINAL">
+            <div class="day-name">Wed<br>25/02</div>
+            <div class="score score-MARGINAL">30</div>
+            <div class="label label-MARGINAL">MARGINAL</div>
+            <div class="details">
+                0cm &middot;
+                -5&deg;C &middot;
+                17km/h
+            </div>
+            <div class="sky">
+                &#9728;
+                Bluebird
+                
+                <span class="confidence-dot" style="background:var(--good)" title="All sources agree: dry"></span>
+                
+            </div>
+        </div>
+        
+        
+        
+        
+        
+        <div class="score-card border-MARGINAL">
+            <div class="day-name">Thu<br>26/02</div>
+            <div class="score score-MARGINAL">30</div>
+            <div class="label label-MARGINAL">MARGINAL</div>
+            <div class="details">
+                0cm &middot;
+                -2&deg;C &middot;
+                16km/h
+            </div>
+            <div class="sky">
+                &#9728;
+                Bluebird
+                
+                <span class="confidence-dot" style="background:var(--good)" title="All sources agree: dry"></span>
+                
+            </div>
+        </div>
+        
+        
+        
+        
+        
+        <div class="score-card border-MARGINAL">
+            <div class="day-name">Fri<br>27/02</div>
+            <div class="score score-MARGINAL">30</div>
+            <div class="label label-MARGINAL">MARGINAL</div>
+            <div class="details">
+                0cm &middot;
+                0&deg;C &middot;
+                11km/h
+            </div>
+            <div class="sky">
+                &#9728;
+                Bluebird
+                
+                <span class="confidence-dot" style="background:var(--good)" title="All sources agree: dry"></span>
+                
+            </div>
+        </div>
+        
+        
+        
+        
+        
+        <div class="score-card border-MARGINAL">
+            <div class="day-name">Sat<br>28/02</div>
+            <div class="score score-MARGINAL">30</div>
+            <div class="label label-MARGINAL">MARGINAL</div>
+            <div class="details">
+                0cm &middot;
+                1&deg;C &middot;
+                10km/h
+            </div>
+            <div class="sky">
+                &#127781;
+                Mostly Overcast
+                
+                <span class="confidence-dot" style="background:var(--good)" title="All sources agree: dry"></span>
+                
+            </div>
+        </div>
+        
+        
+        
+        
+        
+        <div class="score-card border-MARGINAL">
+            <div class="day-name">Sun<br>01/03</div>
+            <div class="score score-MARGINAL">30</div>
+            <div class="label label-MARGINAL">MARGINAL</div>
+            <div class="details">
+                0cm &middot;
+                0&deg;C &middot;
+                9km/h
+            </div>
+            <div class="sky">
+                &#9925;
+                Partly Cloudy
+                
+                <span class="confidence-dot" style="background:var(--text-muted)" title="No scraper data available"></span>
+                
+            </div>
+        </div>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    </div>
+
+    
+    
+    <h2>Extended Outlook <span style="color:var(--text-muted);font-size:0.8rem;font-weight:400">&mdash; days 8&ndash;16, lower confidence</span></h2>
+    <div class="grid grid-7" style="opacity:0.6;">
+        
+        
+        
+        <div class="score-card border-MARGINAL">
+            <div class="day-name">Mon<br>02/03</div>
+            <div class="score score-MARGINAL" style="font-size:1.6rem;">30</div>
+            <div class="label label-MARGINAL">MARGINAL</div>
+            <div class="details">
+                0cm &middot;
+                -5&deg;C
+            </div>
+        </div>
+        
+        
+        
+        <div class="score-card border-MARGINAL">
+            <div class="day-name">Tue<br>03/03</div>
+            <div class="score score-MARGINAL" style="font-size:1.6rem;">30</div>
+            <div class="label label-MARGINAL">MARGINAL</div>
+            <div class="details">
+                0cm &middot;
+                -4&deg;C
+            </div>
+        </div>
+        
+        
+        
+        <div class="score-card border-MARGINAL">
+            <div class="day-name">Wed<br>04/03</div>
+            <div class="score score-MARGINAL" style="font-size:1.6rem;">30</div>
+            <div class="label label-MARGINAL">MARGINAL</div>
+            <div class="details">
+                0cm &middot;
+                -4&deg;C
+            </div>
+        </div>
+        
+        
+        
+        <div class="score-card border-MARGINAL">
+            <div class="day-name">Thu<br>05/03</div>
+            <div class="score score-MARGINAL" style="font-size:1.6rem;">30</div>
+            <div class="label label-MARGINAL">MARGINAL</div>
+            <div class="details">
+                0cm &middot;
+                -4&deg;C
+            </div>
+        </div>
+        
+        
+        
+        <div class="score-card border-MARGINAL">
+            <div class="day-name">Fri<br>06/03</div>
+            <div class="score score-MARGINAL" style="font-size:1.6rem;">27</div>
+            <div class="label label-MARGINAL">MARGINAL</div>
+            <div class="details">
+                1cm &middot;
+                -6&deg;C
+            </div>
+        </div>
+        
+        
+        
+        <div class="score-card border-MARGINAL">
+            <div class="day-name">Sat<br>07/03</div>
+            <div class="score score-MARGINAL" style="font-size:1.6rem;">30</div>
+            <div class="label label-MARGINAL">MARGINAL</div>
+            <div class="details">
+                0cm &middot;
+                -5&deg;C
+            </div>
+        </div>
+        
+        
+        
+        <div class="score-card border-MARGINAL">
+            <div class="day-name">Sun<br>08/03</div>
+            <div class="score score-MARGINAL" style="font-size:1.6rem;">27</div>
+            <div class="label label-MARGINAL">MARGINAL</div>
+            <div class="details">
+                1cm &middot;
+                -4&deg;C
+            </div>
+        </div>
+        
+        
+        
+        <div class="score-card border-MARGINAL">
+            <div class="day-name">Mon<br>09/03</div>
+            <div class="score score-MARGINAL" style="font-size:1.6rem;">30</div>
+            <div class="label label-MARGINAL">MARGINAL</div>
+            <div class="details">
+                3cm &middot;
+                -6&deg;C
+            </div>
+        </div>
+        
+        
+        
+        <div class="score-card border-MARGINAL">
+            <div class="day-name">Tue<br>10/03</div>
+            <div class="score score-MARGINAL" style="font-size:1.6rem;">30</div>
+            <div class="label label-MARGINAL">MARGINAL</div>
+            <div class="details">
+                0cm &middot;
+                -12&deg;C
+            </div>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    <div class="card">
+        <h2>Current Conditions &mdash; 2400m</h2>
+        <div class="conditions-grid">
+            <div class="condition-item">
+                <div class="value">-5.9</div>
+                <div class="unit">&deg;C</div>
+                <div class="name">Temperature</div>
+            </div>
+            <div class="condition-item">
+                <div class="value">10</div>
+                <div class="unit">km/h</div>
+                <div class="name">Wind</div>
+            </div>
+            <div class="condition-item">
+                <div class="value">78</div>
+                <div class="unit">cm</div>
+                <div class="name">Snow Depth</div>
+            </div>
+            <div class="condition-item">
+                <div class="value">1780</div>
+                <div class="unit">m</div>
+                <div class="name">Freeze Lvl</div>
+            </div>
+            <div class="condition-item">
+                <div class="value">36</div>
+                <div class="unit">%</div>
+                <div class="name">Cloud Cover</div>
+            </div>
+            <div class="condition-item">
+                <div class="value">40</div>
+                <div class="unit">%</div>
+                <div class="name">Humidity</div>
+            </div>
+        </div>
+    </div>
+    
+
+    
+    <div class="card">
+        <h2>Snowfall Forecast by Model</h2>
+        <div class="chart-container">
+            <canvas id="snowChart"></canvas>
+        </div>
+        <noscript>
+            <p style="color:var(--text-dim);font-size:0.85rem;text-align:center;padding:20px;">
+                Enable JavaScript to view the interactive snowfall chart.
+            </p>
+        </noscript>
+    </div>
+
+    
+    
+    <div class="card">
+        <h2>Source Comparison</h2>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:14px;">
+            Cross-referencing API models with curated mountain forecasts.
+            <span style="color:var(--good);">Green</span> = consensus.
+            <span style="color:var(--warning);">Orange</span> = disagreement.
+        </p>
+        <div style="overflow-x:auto;">
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Open-Meteo <span style="font-weight:400;text-transform:none;letter-spacing:0">(3 models)</span></th>
+                <th>Snow-Forecast</th>
+                <th>Mtn-Forecast</th>
+                <th>Consensus</th>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Mon 23/02</td>
+                <td>
+                    <span class="src-snow">0.0cm</span>
+                    <span class="src-detail">
+                        -2.2&deg;C &middot; 14km/h
+                    </span>
+                </td>
+                <td>
+                    
+                    <span class="src-snow">0cm</span>
+                    <span class="src-detail">
+                        1.0/1.0&deg;C &middot; 10km/h
+                    </span>
+                    
+                </td>
+                <td>
+                    
+                    <span class="src-snow">0cm</span>
+                    <span class="src-detail">
+                        2.0/2.0&deg;C &middot; 10km/h
+                    </span>
+                    
+                </td>
+                <td>
+                    
+                    <span class="consensus-badge consensus-dry">&#10004; Dry</span>
+                    
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Tue 24/02</td>
+                <td>
+                    <span class="src-snow">0.8cm</span>
+                    <span class="src-detail">
+                        -2.1&deg;C &middot; 21km/h
+                    </span>
+                </td>
+                <td>
+                    
+                    <span class="src-snow">0cm</span>
+                    <span class="src-detail">
+                        1.0/1.0&deg;C &middot; 10km/h
+                    </span>
+                    
+                </td>
+                <td>
+                    
+                    <span class="src-snow">0cm</span>
+                    <span class="src-detail">
+                        1.0/3.0&deg;C &middot; 5km/h
+                    </span>
+                    
+                </td>
+                <td>
+                    
+                    <span class="consensus-badge consensus-dry">&#10004; Dry</span>
+                    
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Wed 25/02</td>
+                <td>
+                    <span class="src-snow">0.0cm</span>
+                    <span class="src-detail">
+                        -5.4&deg;C &middot; 17km/h
+                    </span>
+                </td>
+                <td>
+                    
+                    <span class="src-snow">0cm</span>
+                    <span class="src-detail">
+                        1.0/1.0&deg;C &middot; 10km/h
+                    </span>
+                    
+                </td>
+                <td>
+                    
+                    <span class="src-snow">0cm</span>
+                    <span class="src-detail">
+                        1.0/2.0&deg;C &middot; 10km/h
+                    </span>
+                    
+                </td>
+                <td>
+                    
+                    <span class="consensus-badge consensus-dry">&#10004; Dry</span>
+                    
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Thu 26/02</td>
+                <td>
+                    <span class="src-snow">0.0cm</span>
+                    <span class="src-detail">
+                        -2.1&deg;C &middot; 16km/h
+                    </span>
+                </td>
+                <td>
+                    
+                    <span class="src-snow">0cm</span>
+                    <span class="src-detail">
+                        1.0/1.0&deg;C &middot; 20km/h
+                    </span>
+                    
+                </td>
+                <td>
+                    
+                    <span class="src-snow">0cm</span>
+                    <span class="src-detail">
+                        2.0/3.0&deg;C &middot; 15km/h
+                    </span>
+                    
+                </td>
+                <td>
+                    
+                    <span class="consensus-badge consensus-dry">&#10004; Dry</span>
+                    
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Fri 27/02</td>
+                <td>
+                    <span class="src-snow">0.0cm</span>
+                    <span class="src-detail">
+                        0.2&deg;C &middot; 11km/h
+                    </span>
+                </td>
+                <td>
+                    
+                    <span class="src-snow">0cm</span>
+                    <span class="src-detail">
+                        -2.0/1.0&deg;C &middot; 15km/h
+                    </span>
+                    
+                </td>
+                <td>
+                    
+                    <span class="src-snow">0cm</span>
+                    <span class="src-detail">
+                        -1.0/2.0&deg;C &middot; 15km/h
+                    </span>
+                    
+                </td>
+                <td>
+                    
+                    <span class="consensus-badge consensus-dry">&#10004; Dry</span>
+                    
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Sat 28/02</td>
+                <td>
+                    <span class="src-snow">0.0cm</span>
+                    <span class="src-detail">
+                        0.7&deg;C &middot; 10km/h
+                    </span>
+                </td>
+                <td>
+                    
+                    <span class="src-snow">0cm</span>
+                    <span class="src-detail">
+                        -5.0/-1.0&deg;C &middot; 20km/h
+                    </span>
+                    
+                </td>
+                <td>
+                    
+                    <span class="src-snow">0cm</span>
+                    <span class="src-detail">
+                        -4.0/0.0&deg;C &middot; 15km/h
+                    </span>
+                    
+                </td>
+                <td>
+                    
+                    <span class="consensus-badge consensus-dry">&#10004; Dry</span>
+                    
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Sun 01/03</td>
+                <td>
+                    <span class="src-snow">0.1cm</span>
+                    <span class="src-detail">
+                        0.4&deg;C &middot; 9km/h
+                    </span>
+                </td>
+                <td>
+                    
+                    <span class="src-detail">&mdash;</span>
+                    
+                </td>
+                <td>
+                    
+                    <span class="src-detail">&mdash;</span>
+                    
+                </td>
+                <td>
+                    
+                    <span class="consensus-badge consensus-dry">&#10004; Dry</span>
+                    
+                </td>
+            </tr>
+            
+        </table>
+        </div>
+    </div>
+    
+
+    
+    
+    <div class="card">
+        <h2>Model Comparison &mdash; Daily Snowfall (cm)</h2>
+        <div style="overflow-x:auto;">
+        <table>
+            <tr>
+                <th>Date</th>
+                
+                <th>ICON</th>
+                
+                <th>ECMWF</th>
+                
+                <th>GFS</th>
+                
+                <th>Agreement</th>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Mon 23/02</td>
+                
+                <td>0.0</td>
+                
+                <td>0.0</td>
+                
+                <td>0.0</td>
+                
+                <td class="agree">
+                    HIGH
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Tue 24/02</td>
+                
+                <td>1.6</td>
+                
+                <td>0.6</td>
+                
+                <td>0.1</td>
+                
+                <td class="disagree">
+                    LOW
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Wed 25/02</td>
+                
+                <td>0.0</td>
+                
+                <td>0.1</td>
+                
+                <td>0.0</td>
+                
+                <td class="agree">
+                    HIGH
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Thu 26/02</td>
+                
+                <td>0.0</td>
+                
+                <td>0.0</td>
+                
+                <td>0.0</td>
+                
+                <td class="agree">
+                    HIGH
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Fri 27/02</td>
+                
+                <td>0.0</td>
+                
+                <td>0.0</td>
+                
+                <td>0.0</td>
+                
+                <td class="agree">
+                    HIGH
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Sat 28/02</td>
+                
+                <td>0.0</td>
+                
+                <td>0.0</td>
+                
+                <td>0.0</td>
+                
+                <td class="agree">
+                    HIGH
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Sun 01/03</td>
+                
+                <td>0.0</td>
+                
+                <td>0.2</td>
+                
+                <td>0.0</td>
+                
+                <td class="agree">
+                    HIGH
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Mon 02/03</td>
+                
+                <td>0</td>
+                
+                <td>0.0</td>
+                
+                <td>0.0</td>
+                
+                <td class="agree">
+                    HIGH
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Tue 03/03</td>
+                
+                <td>0</td>
+                
+                <td>0.0</td>
+                
+                <td>0.0</td>
+                
+                <td class="agree">
+                    HIGH
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Wed 04/03</td>
+                
+                <td>0</td>
+                
+                <td>0.4</td>
+                
+                <td>0.0</td>
+                
+                <td class="agree">
+                    HIGH
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Thu 05/03</td>
+                
+                <td>0</td>
+                
+                <td>0.0</td>
+                
+                <td>0.0</td>
+                
+                <td class="agree">
+                    HIGH
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Fri 06/03</td>
+                
+                <td>0</td>
+                
+                <td>2.5</td>
+                
+                <td>0.0</td>
+                
+                <td class="disagree">
+                    LOW
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Sat 07/03</td>
+                
+                <td>0</td>
+                
+                <td>0.0</td>
+                
+                <td>0.0</td>
+                
+                <td class="agree">
+                    HIGH
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Sun 08/03</td>
+                
+                <td>0</td>
+                
+                <td>0.1</td>
+                
+                <td>2.7</td>
+                
+                <td class="disagree">
+                    LOW
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Mon 09/03</td>
+                
+                <td>0</td>
+                
+                <td>7.8</td>
+                
+                <td>0.4</td>
+                
+                <td class="disagree">
+                    LOW
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="td-date">Tue 10/03</td>
+                
+                <td>0</td>
+                
+                <td>0</td>
+                
+                <td>0.0</td>
+                
+                <td class="agree">
+                    HIGH
+                </td>
+            </tr>
+            
+        </table>
+        </div>
+    </div>
+    
+
+    
+    <div class="card">
+        <h2>Score Breakdown</h2>
+        <div style="overflow-x:auto;">
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Snow <span style="font-weight:400">/40</span></th>
+                <th>Temp <span style="font-weight:400">/15</span></th>
+                <th>Wind <span style="font-weight:400">/10</span></th>
+                <th>Freeze <span style="font-weight:400">/5</span></th>
+                <th>Timing <span style="font-weight:400">/5</span></th>
+                <th>Depth <span style="font-weight:400">/5</span></th>
+                <th>Models <span style="font-weight:400">/20</span></th>
+                <th>Sources</th>
+            </tr>
+            
+            
+            
+            
+            
+            <tr>
+                <td class="td-date">Mon 23/02</td>
+                <td><strong class="score-MARGINAL">30</strong></td>
+                <td>0</td>
+                <td>3.8</td>
+                <td>2.1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>2.5</td>
+                <td>18</td>
+                <td class="agree"
+                    title="All sources agree: dry">
+                    +5
+                    <span style="font-size:0.68rem;opacity:0.7;">HIGH</span>
+                </td>
+            </tr>
+            
+            
+            
+            
+            
+            
+            <tr>
+                <td class="td-date">Tue 24/02</td>
+                <td><strong class="score-SKIP">14</strong></td>
+                <td>1.5</td>
+                <td>2.2</td>
+                <td>0.8</td>
+                <td>0</td>
+                <td>2.0</td>
+                <td>2.0</td>
+                <td>0</td>
+                <td class="agree"
+                    title="All sources agree: dry">
+                    +5
+                    <span style="font-size:0.68rem;opacity:0.7;">HIGH</span>
+                </td>
+            </tr>
+            
+            
+            
+            
+            
+            
+            <tr>
+                <td class="td-date">Wed 25/02</td>
+                <td><strong class="score-MARGINAL">30</strong></td>
+                <td>0.1</td>
+                <td>15.0</td>
+                <td>1.5</td>
+                <td>4.0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>18</td>
+                <td class="agree"
+                    title="All sources agree: dry">
+                    +5
+                    <span style="font-size:0.68rem;opacity:0.7;">HIGH</span>
+                </td>
+            </tr>
+            
+            
+            
+            
+            
+            
+            <tr>
+                <td class="td-date">Thu 26/02</td>
+                <td><strong class="score-MARGINAL">30</strong></td>
+                <td>0</td>
+                <td>1.5</td>
+                <td>1.8</td>
+                <td>3.8</td>
+                <td>0</td>
+                <td>2.0</td>
+                <td>18</td>
+                <td class="agree"
+                    title="All sources agree: dry">
+                    +5
+                    <span style="font-size:0.68rem;opacity:0.7;">HIGH</span>
+                </td>
+            </tr>
+            
+            
+            
+            
+            
+            
+            <tr>
+                <td class="td-date">Fri 27/02</td>
+                <td><strong class="score-MARGINAL">30</strong></td>
+                <td>0</td>
+                <td>0</td>
+                <td>6.0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>2.0</td>
+                <td>18</td>
+                <td class="agree"
+                    title="All sources agree: dry">
+                    +5
+                    <span style="font-size:0.68rem;opacity:0.7;">HIGH</span>
+                </td>
+            </tr>
+            
+            
+            
+            
+            
+            
+            <tr>
+                <td class="td-date">Sat 28/02</td>
+                <td><strong class="score-MARGINAL">30</strong></td>
+                <td>0</td>
+                <td>0</td>
+                <td>9.2</td>
+                <td>4.0</td>
+                <td>0</td>
+                <td>2.0</td>
+                <td>18</td>
+                <td class="agree"
+                    title="All sources agree: dry">
+                    +5
+                    <span style="font-size:0.68rem;opacity:0.7;">HIGH</span>
+                </td>
+            </tr>
+            
+            
+            
+            
+            
+            
+            <tr>
+                <td class="td-date">Sun 01/03</td>
+                <td><strong class="score-MARGINAL">30</strong></td>
+                <td>0.1</td>
+                <td>0</td>
+                <td>9.7</td>
+                <td>5.0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>18</td>
+                <td class=""
+                    title="No scraper data available">
+                    0
+                    <span style="font-size:0.68rem;opacity:0.7;">MEDIUM</span>
+                </td>
+            </tr>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        </table>
+        </div>
+    </div>
+
+    
+    <div class="safety">
+        <h2>Safety</h2>
+        <p style="margin:8px 0;font-size:0.88rem;">
+            <strong>No formal avalanche bulletin exists for Shar Mountains.</strong>
+            Beacon, shovel, and probe are mandatory for off-piste.
+        </p>
+        
+        
+        <p style="margin:5px 0;color:var(--warning);font-size:0.85rem;">&#9888; 2026-02-23: Extreme wind gusts (51 km/h). Exposed terrain dangerous.</p>
+        
+        <p style="margin:5px 0;color:var(--warning);font-size:0.85rem;">&#9888; 2026-02-23: Freezing level above freeride zone (2320m). Rain risk at summit.</p>
+        
+        <p style="margin:5px 0;color:var(--warning);font-size:0.85rem;">&#9888; 2026-02-24: Extreme wind gusts (69 km/h). Exposed terrain dangerous.</p>
+        
+        <p style="margin:5px 0;color:var(--warning);font-size:0.85rem;">&#9888; 2026-02-24: Freezing level above freeride zone (2210m). Rain risk at summit.</p>
+        
+        <p style="margin:5px 0;color:var(--warning);font-size:0.85rem;">&#9888; 2026-02-25: Extreme wind gusts (57 km/h). Exposed terrain dangerous.</p>
+        
+        <p style="margin:5px 0;color:var(--warning);font-size:0.85rem;">&#9888; 2026-02-26: Extreme wind gusts (60 km/h). Exposed terrain dangerous.</p>
+        
+        <p style="margin:5px 0;color:var(--warning);font-size:0.85rem;">&#9888; 2026-02-27: Freezing level above freeride zone (2680m). Rain risk at summit.</p>
+        
+        
+        <p style="margin-top:10px;font-size:0.75rem;color:var(--text-muted);">
+            Nearest reference: Bulgarian Avalanche Service (Pirin/Rila) &middot; Slovenian Avalanche Service
+        </p>
+    </div>
+
+    <div class="footer">
+        Snow Monitor v2.0 &nbsp;&middot;&nbsp; open_meteo &middot; yr_no &middot; snow_forecast &middot; mountain_forecast &nbsp;&middot;&nbsp; 23/02/2026 09:50 UTC
+    </div>
+
+    
+    <script>
+    
+    const ctx = document.getElementById('snowChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ["Mon 23/02", "Tue 24/02", "Wed 25/02", "Thu 26/02", "Fri 27/02", "Sat 28/02", "Sun 01/03"],
+            datasets: [
+                
+                {
+                    label: 'ICON',
+                    data: [0.0, 1.61, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    backgroundColor: 'rgba(77,141,247,0.7)',
+                    borderRadius: 5,
+                    barPercentage: 0.75,
+                },
+                
+                {
+                    label: 'ECMWF',
+                    data: [0.0, 0.56, 0.14, 0.0, 0.0, 0.0, 0.21],
+                    backgroundColor: 'rgba(60,192,104,0.7)',
+                    borderRadius: 5,
+                    barPercentage: 0.75,
+                },
+                
+                {
+                    label: 'GFS',
+                    data: [0.0, 0.14, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    backgroundColor: 'rgba(240,194,48,0.7)',
+                    borderRadius: 5,
+                    barPercentage: 0.75,
+                },
+                
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: { color: '#7b8fa6', padding: 16, usePointStyle: true, pointStyle: 'circle' }
+                },
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#7b8fa6', font: { size: 11 } },
+                    grid: { color: 'rgba(36,50,72,0.3)' }
+                },
+                y: {
+                    ticks: { color: '#7b8fa6', callback: v => v + ' cm', font: { size: 11 } },
+                    grid: { color: 'rgba(36,50,72,0.3)' },
+                    title: { display: true, text: 'Snowfall (cm)', color: '#7b8fa6', font: { size: 12 } },
+                }
+            }
+        }
+    });
+    
+
+    // Relative time display
+    (function() {
+        var el = document.getElementById('relative-time');
+        if (!el) return;
+        var utc = el.getAttribute('data-utc');
+        if (!utc) return;
+        var generated = new Date(utc);
+        if (isNaN(generated.getTime())) return;
+        function update() {
+            var now = new Date();
+            var diff = Math.floor((now - generated) / 1000);
+            var text;
+            if (diff < 60) text = 'just now';
+            else if (diff < 3600) text = Math.floor(diff / 60) + 'm ago';
+            else if (diff < 86400) text = Math.floor(diff / 3600) + 'h ago';
+            else text = Math.floor(diff / 86400) + 'd ago';
+            el.textContent = 'Updated ' + text;
+        }
+        update();
+        setInterval(update, 60000);
+    })();
+    </script>
 </body>
 </html>
