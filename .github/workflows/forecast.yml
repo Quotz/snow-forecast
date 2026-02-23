@@ -39,7 +39,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/
+          git add docs/ .subscribers.json
           git diff --cached --quiet || git commit -m "Update forecast $(date -u +'%Y-%m-%d %H:%M UTC')"
           git pull --rebase origin main
           git push

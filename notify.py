@@ -10,6 +10,8 @@ Stays silent when nothing interesting is happening.
 Uses a state file to avoid re-alerting about the same situation.
 """
 
+from __future__ import annotations
+
 import os
 import hashlib
 import json
@@ -38,10 +40,16 @@ SKY_EMOJI = {
 STATE_FILE = Path(__file__).parent / "docs" / ".last_alert"
 
 
-def send_telegram(text: str) -> bool:
-    """Send a Telegram message using env vars. Returns True on success."""
+def send_telegram(text: str, chat_id: str = None) -> bool:
+    """Send a Telegram message. Returns True on success.
+
+    Args:
+        text: Message text (Markdown).
+        chat_id: Target chat ID. Falls back to TELEGRAM_CHAT_ID env var.
+    """
     bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
-    chat_id = os.environ.get("TELEGRAM_CHAT_ID")
+    if chat_id is None:
+        chat_id = os.environ.get("TELEGRAM_CHAT_ID")
 
     if not bot_token or not chat_id:
         logger.debug("Telegram credentials not set, skipping")
@@ -62,8 +70,22 @@ def send_telegram(text: str) -> bool:
         logger.info(f"Telegram message sent to {chat_id}")
         return True
     except Exception as e:
-        logger.error(f"Telegram send failed: {e}")
+        logger.error(f"Telegram send failed for {chat_id}: {e}")
         return False
+
+
+def send_telegram_to_all(text: str, chat_ids: list | None = None) -> bool:
+    """Send a Telegram message to all subscribers. Returns True if at least one succeeds."""
+    if not chat_ids:
+        logger.warning("No subscriber list, falling back to owner-only")
+        return send_telegram(text)
+
+    success = 0
+    for cid in chat_ids:
+        if send_telegram(text, chat_id=cid):
+            success += 1
+    logger.info(f"Sent to {success}/{len(chat_ids)} subscribers")
+    return success > 0
 
 
 def _alert_fingerprint(alert_type: str, key_dates: list, snow_total: float) -> str:
@@ -222,7 +244,7 @@ def _format_pattern_alert(patterns: list, dashboard_url: str) -> str:
 def notify_if_needed(scores: list, dates: list, patterns: list,
                      location_name: str, scoring_cfg: dict,
                      insights=None, avalanche_danger=None,
-                     forecast_diff=None):
+                     forecast_diff=None, subscriber_chat_ids=None):
     """Send a Telegram notification only if something noteworthy is coming.
 
     Priority:
@@ -233,9 +255,11 @@ def notify_if_needed(scores: list, dates: list, patterns: list,
     4. Silent — nothing interesting, don't bother the user
     """
     bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
-    chat_id = os.environ.get("TELEGRAM_CHAT_ID")
-    if not bot_token or not chat_id:
-        logger.debug("Telegram not configured, skipping notifications")
+    if not bot_token:
+        logger.debug("Telegram bot token not set, skipping notifications")
+        return
+    if not subscriber_chat_ids and not os.environ.get("TELEGRAM_CHAT_ID"):
+        logger.debug("No subscribers and no TELEGRAM_CHAT_ID, skipping")
         return
 
     dashboard_url = os.environ.get(
@@ -264,7 +288,7 @@ def notify_if_needed(scores: list, dates: list, patterns: list,
                 powder_days, dates, patterns, dashboard_url,
                 insights=insights, avalanche_danger=avalanche_danger,
             )
-            if send_telegram(text):
+            if send_telegram_to_all(text, subscriber_chat_ids):
                 _mark_sent(fp)
                 logger.info(f"Powder alert sent (fp={fp})")
         else:
@@ -281,7 +305,7 @@ def notify_if_needed(scores: list, dates: list, patterns: list,
 
         if not _was_already_sent(fp):
             text = _format_snow_watch(snow_days, total_7d, patterns, dashboard_url)
-            if send_telegram(text):
+            if send_telegram_to_all(text, subscriber_chat_ids):
                 _mark_sent(fp)
                 logger.info(f"Snow watch sent (fp={fp})")
         else:
@@ -295,7 +319,7 @@ def notify_if_needed(scores: list, dates: list, patterns: list,
 
         if not _was_already_sent(fp):
             text = _format_condition_change(forecast_diff, dashboard_url)
-            if send_telegram(text):
+            if send_telegram_to_all(text, subscriber_chat_ids):
                 _mark_sent(fp)
                 logger.info(f"Condition change alert sent (fp={fp})")
         else:
@@ -311,7 +335,7 @@ def notify_if_needed(scores: list, dates: list, patterns: list,
 
         if not _was_already_sent(fp):
             text = _format_pattern_alert(notable_patterns, dashboard_url)
-            if send_telegram(text):
+            if send_telegram_to_all(text, subscriber_chat_ids):
                 _mark_sent(fp)
                 logger.info(f"Pattern alert sent (fp={fp})")
         else:

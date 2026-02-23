@@ -34,12 +34,12 @@ from analysis import (build_chart_data, build_safety_flags, _build_source_compar
                       _format_chart_date, estimate_avalanche_danger,
                       build_multi_chart_data, build_model_spread)
 from notify import notify_if_needed
+from subscribers import process_subscriber_updates
 from validation import validate_sources
 from insights import generate_insights
 from forecast_diff import compute_forecast_diff
 from history import build_history_summary
 from verification import run_verification
-from feedback import process_reports, load_reports
 
 # Logging setup
 logging.basicConfig(
@@ -60,8 +60,7 @@ def load_config(config_path: str = None) -> dict:
 
 
 def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
-        json_only: bool = False, verify: bool = False,
-        process_feedback: bool = False):
+        json_only: bool = False, verify: bool = False):
     """Main execution flow."""
 
     # Get first location config
@@ -330,23 +329,6 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
         except Exception as e:
             logger.error(f"Verification failed: {e}")
 
-    # ===== COMMUNITY REPORTS =====
-    community_reports = None
-    if process_feedback and config.get("feedback", {}).get("enabled", False):
-        bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
-        if bot_token:
-            reports_path = os.path.join(
-                PROJECT_DIR, config.get("feedback", {}).get("reports_file", "docs/verification/reports.json")
-            )
-            try:
-                new_reports = process_reports(bot_token, reports_path)
-                if new_reports:
-                    logger.info(f"Processed {len(new_reports)} community report(s)")
-                # Load all reports for dashboard
-                community_reports = load_reports(reports_path)
-            except Exception as e:
-                logger.error(f"Report processing failed: {e}")
-
     # Load verification stats for dashboard (even if we didn't run verification this time)
     if verification_stats is None:
         stats_path = os.path.join(PROJECT_DIR, "docs", "verification", "stats.json")
@@ -390,7 +372,6 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
         },
         "verification_stats": verification_stats,
         "model_weights": model_weights_data,
-        "community_reports": community_reports,
     }
 
     # ===== OUTPUT =====
@@ -463,9 +444,17 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
 
     # ===== NOTIFY =====
     if not no_notify:
+        # Process subscriber /start and /stop commands, get active chat_ids
+        subscriber_chat_ids = None
+        try:
+            subscriber_chat_ids = process_subscriber_updates()
+        except Exception as e:
+            logger.error(f"Subscriber processing failed, falling back to owner-only: {e}")
+
         notify_if_needed(scores, dates, patterns, location["name"], scoring_cfg,
                          insights=insights, avalanche_danger=avalanche_danger,
-                         forecast_diff=forecast_diff_result)
+                         forecast_diff=forecast_diff_result,
+                         subscriber_chat_ids=subscriber_chat_ids)
 
 
 def main():
@@ -475,7 +464,6 @@ def main():
     parser.add_argument("--dashboard-only", action="store_true", help="Regenerate dashboard from latest.json")
     parser.add_argument("--json-only", action="store_true", help="Output JSON only, no dashboard")
     parser.add_argument("--verify", action="store_true", help="Run forecast verification against ERA5")
-    parser.add_argument("--process-reports", action="store_true", help="Process community reports from Telegram")
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose logging")
 
     args = parser.parse_args()
@@ -485,8 +473,7 @@ def main():
 
     config = load_config(args.config)
     run(config, no_notify=args.no_notify, dashboard_only=args.dashboard_only,
-        json_only=args.json_only, verify=args.verify,
-        process_feedback=args.process_reports)
+        json_only=args.json_only, verify=args.verify)
 
 
 if __name__ == "__main__":

@@ -128,11 +128,6 @@ verification:
   verification_window_days: 3  # Number of recent days to verify per run
   adaptive_weights: true       # Use verification data for adaptive model weighting
 
-# Community condition reports via Telegram /report command
-feedback:
-  enabled: true
-  reports_file: "docs/verification/reports.json"
-
 # Weather pattern detection
 patterns:
   storm_then_clear:

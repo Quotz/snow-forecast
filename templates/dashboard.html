@@ -783,37 +783,6 @@
     </div>
     </details>
 
-    {# ========== COMMUNITY REPORTS ========== #}
-    {% if data.community_reports and data.community_reports|length > 0 %}
-    <details class="mobile-collapse">
-        <summary style="cursor:pointer;font-weight:600;color:var(--accent);font-size:1.1rem;margin:28px 0 14px;letter-spacing:-0.3px;">Community Reports <span style="font-weight:400;font-size:0.8rem;color:var(--text-muted);">({{ data.community_reports|length }})</span></summary>
-    <div class="card">
-        <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:14px;">
-            Recent condition reports from Telegram users. Send <code>/report</code> to @MacedoniaPowderBot to contribute.
-        </p>
-        {% for report in data.community_reports[-5:]|reverse %}
-        <div style="padding:10px 14px;margin:6px 0;background:var(--bg-raised);border-radius:8px;border-left:2px solid var(--accent-dim);">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                <span style="font-size:0.75rem;color:var(--text-dim);font-weight:600;">{{ report.date | dateshort }}</span>
-                {% if report.parsed and report.parsed.quality_rating %}
-                <span style="font-size:0.72rem;">
-                    {% for star in range(report.parsed.quality_rating) %}&#9733;{% endfor %}{% for star in range(5 - report.parsed.quality_rating) %}&#9734;{% endfor %}
-                </span>
-                {% endif %}
-            </div>
-            <div style="font-size:0.85rem;">
-                {% if report.parsed %}
-                {% if report.parsed.snow_depth_cm %}{{ report.parsed.snow_depth_cm }}cm fresh{% endif %}
-                {% if report.parsed.wind_conditions %} &middot; Wind: {{ report.parsed.wind_conditions }}{% endif %}
-                {% else %}
-                {{ report.raw_text[:100] }}
-                {% endif %}
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    </details>
-    {% endif %}
 
     {# ========== SAFETY PANEL ========== #}
     <div class="safety">
