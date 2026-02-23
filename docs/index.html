@@ -39,6 +39,28 @@
             margin: 0 auto;
         }
 
+        /* Mobile Hero */
+        .mobile-hero { display: none; }
+        @media (max-width: 600px) {
+            .mobile-hero {
+                display: block;
+                text-align: center;
+                padding: 20px 0;
+                margin-bottom: 16px;
+            }
+            .mobile-hero .big-score {
+                font-size: 4rem;
+                font-weight: 900;
+            }
+            .mobile-hero .stats {
+                display: flex;
+                justify-content: center;
+                gap: 16px;
+                margin-top: 8px;
+                font-size: 0.85rem;
+            }
+        }
+
         /* Header */
         .header {
             display: flex;
@@ -69,7 +91,6 @@
         }
         .header-badge .dot {
             width: 6px; height: 6px; border-radius: 50%;
-            background: var(--good);
             display: inline-block;
         }
         .subtitle {
@@ -262,6 +283,22 @@
         /* Chart */
         .chart-container { position: relative; height: 260px; margin: 12px 0; }
 
+        /* Tab buttons */
+        .tab-btn {
+            background: var(--bg-raised);
+            border: 1px solid var(--card-border);
+            color: var(--text-dim);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
         /* Responsive */
         @media (max-width: 900px) {
             .grid-7 { grid-template-columns: repeat(4, 1fr); }
@@ -272,6 +309,7 @@
             .grid-7 { grid-template-columns: repeat(3, 1fr); }
             .score-card .score { font-size: 1.8rem; }
             .score-card { padding: 10px 6px; }
+            .mobile-collapse summary { cursor: pointer; font-weight: 600; }
         }
 
         .footer {
@@ -285,17 +323,104 @@
     </style>
 </head>
 <body>
+    
+    
+    <div class="mobile-hero">
+        <div class="big-score score-MARGINAL">
+            30
+        </div>
+        <div style="font-size:0.9rem;color:var(--text-dim);">Dry week ahead, 78cm base</div>
+        <div class="stats">
+            <span>78cm (stable)</span>
+            <span>1cm / 7d</span>
+        </div>
+    </div>
+    
+
+    
     <div class="header">
         <h1>Popova Shapka</h1>
+        
         <span class="header-badge">
-            <span class="dot"></span>
-            4 sources active
+            
+            <span class="dot" style="background:var(--good);"></span>
+            
+            <span class="dot" style="background:var(--good);"></span>
+            
+            <span class="dot" style="background:var(--good);"></span>
+            
+            <span class="dot" style="background:var(--good);"></span>
+            
+            <span class="dot" style="background:var(--good);"></span>
+            
+            5 sources
         </span>
+        
     </div>
     <p class="subtitle">
-        Updated <span id="relative-time" data-utc="2026-02-23T11:41:33.214051Z">23/02/2026 11:41 UTC</span> &nbsp;|&nbsp;
-        open_meteo &middot; yr_no &middot; snow_forecast &middot; mountain_forecast
+        Updated <span id="relative-time" data-utc="2026-02-23T13:51:03.901413Z">23/02/2026 13:51 UTC</span> &nbsp;|&nbsp;
+        open_meteo &middot; yr_no &middot; snow_forecast &middot; mountain_forecast &middot; open_meteo_ensemble
     </p>
+
+    
+    
+    <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:16px;">
+        
+        <span style="margin-right:12px;">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);"></span>
+            open_meteo: just now
+        </span>
+        
+        <span style="margin-right:12px;">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);"></span>
+            yr_no: just now
+        </span>
+        
+        <span style="margin-right:12px;">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);"></span>
+            snow_forecast: just now
+        </span>
+        
+        <span style="margin-right:12px;">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);"></span>
+            mountain_forecast: just now
+        </span>
+        
+        <span style="margin-right:12px;">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);"></span>
+            open_meteo_ensemble: just now
+        </span>
+        
+    </div>
+    
+
+    
+    
+    <div class="card" style="border-left:3px solid var(--accent);background:linear-gradient(135deg, var(--card), var(--bg-raised));">
+        <div style="font-size:1.2rem;font-weight:700;margin-bottom:8px;">Dry week ahead, 78cm base</div>
+        
+        <div style="font-size:0.9rem;margin-bottom:6px;">
+            &#127956; Best Day: <strong>Mon 23/02</strong> —
+            30 (MARGINAL)
+            <span style="color:var(--text-dim);">-2C / 14km/h</span>
+        </div>
+        
+        
+        <div style="font-size:0.85rem;color:var(--text-dim);margin:3px 0;">&bull; Avoid Mon 23/02 (51 km/h gusts)</div>
+        
+        <div style="font-size:0.85rem;color:var(--text-dim);margin:3px 0;">&bull; Avoid Tue 24/02 (65 km/h gusts)</div>
+        
+        <div style="font-size:0.85rem;color:var(--text-dim);margin:3px 0;">&bull; Avoid Wed 25/02 (57 km/h gusts)</div>
+        
+        <div style="font-size:0.85rem;color:var(--text-dim);margin:3px 0;">&bull; Avoid Thu 26/02 (60 km/h gusts)</div>
+        
+        <div style="font-size:0.85rem;color:var(--text-dim);margin:3px 0;">&bull; Watch freezing level Fri 27/02</div>
+        
+        <div style="font-size:0.82rem;color:var(--text-muted);margin-top:6px;">
+            &#128201; Snowpack: 78cm (stable) &middot; 7-day total: 1cm
+        </div>
+    </div>
+    
 
     
     
@@ -304,7 +429,12 @@
         
         <div class="pattern warning">
             &#9888;
-            Warning: Freezing level rising (1880 → 1900 → 2680m). Rain risk at freeride elevations.
+            Warning: Freezing level rising (1834 → 1968 → 2699m). Rain risk at freeride elevations.
+        </div>
+        
+        <div class="pattern ">
+            &#10052;
+            Close to cold snap Day 8: 5°C drop to -5°C (needs >5°C drop below -5°C).
         </div>
         
     </div>
@@ -327,12 +457,23 @@
                 14km/h
             </div>
             <div class="sky">
-                &#9729;
-                Overcast
+                &#127781;
+                Mostly Overcast
                 
                 <span class="confidence-dot" style="background:var(--good)" title="All sources agree: dry"></span>
                 
             </div>
+            
+            
+            
+            
+            
+            
+            
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:4px;">
+                0% chance &ge;5cm
+            </div>
+            
         </div>
         
         
@@ -341,20 +482,35 @@
         
         <div class="score-card border-SKIP">
             <div class="day-name">Tue<br>24/02</div>
-            <div class="score score-SKIP">14</div>
+            <div class="score score-SKIP">20</div>
             <div class="label label-SKIP">SKIP</div>
             <div class="details">
                 1cm &middot;
                 -2&deg;C &middot;
-                21km/h
+                30km/h
             </div>
             <div class="sky">
-                &#9729;
-                Overcast
+                &#9925;
+                Partly Cloudy
                 
-                <span class="confidence-dot" style="background:var(--good)" title="All sources agree: dry"></span>
+                <span class="confidence-dot" style="background:var(--text-muted)" title="Sources borderline (OM:1.1 vs scrapers:0.2cm)"></span>
                 
             </div>
+            
+            
+            
+            
+            <div style="margin-top:4px;font-size:0.68rem;color:var(--text-muted);">
+                0&ndash;2cm range
+            </div>
+            
+            
+            
+            
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:4px;">
+                0% chance &ge;5cm
+            </div>
+            
         </div>
         
         
@@ -368,7 +524,7 @@
             <div class="details">
                 0cm &middot;
                 -5&deg;C &middot;
-                17km/h
+                19km/h
             </div>
             <div class="sky">
                 &#9728;
@@ -377,6 +533,21 @@
                 <span class="confidence-dot" style="background:var(--good)" title="All sources agree: dry"></span>
                 
             </div>
+            
+            
+            
+            
+            <div style="margin-top:4px;font-size:0.68rem;color:var(--text-muted);">
+                0&ndash;0cm range
+            </div>
+            
+            
+            
+            
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:4px;">
+                0% chance &ge;5cm
+            </div>
+            
         </div>
         
         
@@ -390,7 +561,7 @@
             <div class="details">
                 0cm &middot;
                 -2&deg;C &middot;
-                16km/h
+                17km/h
             </div>
             <div class="sky">
                 &#9728;
@@ -399,6 +570,17 @@
                 <span class="confidence-dot" style="background:var(--good)" title="All sources agree: dry"></span>
                 
             </div>
+            
+            
+            
+            
+            
+            
+            
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:4px;">
+                0% chance &ge;5cm
+            </div>
+            
         </div>
         
         
@@ -412,7 +594,7 @@
             <div class="details">
                 0cm &middot;
                 0&deg;C &middot;
-                11km/h
+                12km/h
             </div>
             <div class="sky">
                 &#9728;
@@ -421,6 +603,17 @@
                 <span class="confidence-dot" style="background:var(--good)" title="All sources agree: dry"></span>
                 
             </div>
+            
+            
+            
+            
+            
+            
+            
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:4px;">
+                0% chance &ge;5cm
+            </div>
+            
         </div>
         
         
@@ -434,7 +627,7 @@
             <div class="details">
                 0cm &middot;
                 1&deg;C &middot;
-                10km/h
+                12km/h
             </div>
             <div class="sky">
                 &#127781;
@@ -443,6 +636,17 @@
                 <span class="confidence-dot" style="background:var(--good)" title="All sources agree: dry"></span>
                 
             </div>
+            
+            
+            
+            
+            
+            
+            
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:4px;">
+                0% chance &ge;5cm
+            </div>
+            
         </div>
         
         
@@ -456,15 +660,26 @@
             <div class="details">
                 0cm &middot;
                 0&deg;C &middot;
-                9km/h
+                12km/h
             </div>
             <div class="sky">
                 &#9925;
                 Partly Cloudy
                 
-                <span class="confidence-dot" style="background:var(--text-muted)" title="No scraper data available"></span>
+                <span class="confidence-dot" style="background:var(--good)" title="All sources agree: dry"></span>
                 
             </div>
+            
+            
+            
+            
+            <div style="margin-top:4px;font-size:0.68rem;color:var(--text-muted);">
+                0&ndash;0cm range
+            </div>
+            
+            
+            
+            
         </div>
         
         
@@ -491,11 +706,11 @@
     
     
     <h2>Extended Outlook <span style="color:var(--text-muted);font-size:0.8rem;font-weight:400">&mdash; days 8&ndash;16, lower confidence</span></h2>
-    <div class="grid grid-7" style="opacity:0.6;">
+    <div class="grid grid-7">
         
         
         
-        <div class="score-card border-MARGINAL">
+        <div class="score-card border-MARGINAL" style="border-style:dashed;background:repeating-linear-gradient(45deg,var(--card),var(--card) 10px,rgba(36,50,72,0.3) 10px,rgba(36,50,72,0.3) 12px);">
             <div class="day-name">Mon<br>02/03</div>
             <div class="score score-MARGINAL" style="font-size:1.6rem;">30</div>
             <div class="label label-MARGINAL">MARGINAL</div>
@@ -503,11 +718,12 @@
                 0cm &middot;
                 -5&deg;C
             </div>
+            <div style="font-size:0.65rem;color:var(--warning);margin-top:2px;">Low Confidence</div>
         </div>
         
         
         
-        <div class="score-card border-MARGINAL">
+        <div class="score-card border-MARGINAL" style="border-style:dashed;background:repeating-linear-gradient(45deg,var(--card),var(--card) 10px,rgba(36,50,72,0.3) 10px,rgba(36,50,72,0.3) 12px);">
             <div class="day-name">Tue<br>03/03</div>
             <div class="score score-MARGINAL" style="font-size:1.6rem;">30</div>
             <div class="label label-MARGINAL">MARGINAL</div>
@@ -515,11 +731,12 @@
                 0cm &middot;
                 -4&deg;C
             </div>
+            <div style="font-size:0.65rem;color:var(--warning);margin-top:2px;">Low Confidence</div>
         </div>
         
         
         
-        <div class="score-card border-MARGINAL">
+        <div class="score-card border-MARGINAL" style="border-style:dashed;background:repeating-linear-gradient(45deg,var(--card),var(--card) 10px,rgba(36,50,72,0.3) 10px,rgba(36,50,72,0.3) 12px);">
             <div class="day-name">Wed<br>04/03</div>
             <div class="score score-MARGINAL" style="font-size:1.6rem;">30</div>
             <div class="label label-MARGINAL">MARGINAL</div>
@@ -527,11 +744,12 @@
                 0cm &middot;
                 -4&deg;C
             </div>
+            <div style="font-size:0.65rem;color:var(--warning);margin-top:2px;">Low Confidence</div>
         </div>
         
         
         
-        <div class="score-card border-MARGINAL">
+        <div class="score-card border-MARGINAL" style="border-style:dashed;background:repeating-linear-gradient(45deg,var(--card),var(--card) 10px,rgba(36,50,72,0.3) 10px,rgba(36,50,72,0.3) 12px);">
             <div class="day-name">Thu<br>05/03</div>
             <div class="score score-MARGINAL" style="font-size:1.6rem;">30</div>
             <div class="label label-MARGINAL">MARGINAL</div>
@@ -539,23 +757,25 @@
                 0cm &middot;
                 -4&deg;C
             </div>
+            <div style="font-size:0.65rem;color:var(--warning);margin-top:2px;">Low Confidence</div>
         </div>
         
         
         
-        <div class="score-card border-MARGINAL">
+        <div class="score-card border-MARGINAL" style="border-style:dashed;background:repeating-linear-gradient(45deg,var(--card),var(--card) 10px,rgba(36,50,72,0.3) 10px,rgba(36,50,72,0.3) 12px);">
             <div class="day-name">Fri<br>06/03</div>
-            <div class="score score-MARGINAL" style="font-size:1.6rem;">27</div>
+            <div class="score score-MARGINAL" style="font-size:1.6rem;">30</div>
             <div class="label label-MARGINAL">MARGINAL</div>
             <div class="details">
-                1cm &middot;
+                0cm &middot;
                 -6&deg;C
             </div>
+            <div style="font-size:0.65rem;color:var(--warning);margin-top:2px;">Low Confidence</div>
         </div>
         
         
         
-        <div class="score-card border-MARGINAL">
+        <div class="score-card border-MARGINAL" style="border-style:dashed;background:repeating-linear-gradient(45deg,var(--card),var(--card) 10px,rgba(36,50,72,0.3) 10px,rgba(36,50,72,0.3) 12px);">
             <div class="day-name">Sat<br>07/03</div>
             <div class="score score-MARGINAL" style="font-size:1.6rem;">30</div>
             <div class="label label-MARGINAL">MARGINAL</div>
@@ -563,11 +783,12 @@
                 1cm &middot;
                 -5&deg;C
             </div>
+            <div style="font-size:0.65rem;color:var(--warning);margin-top:2px;">Low Confidence</div>
         </div>
         
         
         
-        <div class="score-card border-MARGINAL">
+        <div class="score-card border-MARGINAL" style="border-style:dashed;background:repeating-linear-gradient(45deg,var(--card),var(--card) 10px,rgba(36,50,72,0.3) 10px,rgba(36,50,72,0.3) 12px);">
             <div class="day-name">Sun<br>08/03</div>
             <div class="score score-MARGINAL" style="font-size:1.6rem;">30</div>
             <div class="label label-MARGINAL">MARGINAL</div>
@@ -575,23 +796,25 @@
                 0cm &middot;
                 -4&deg;C
             </div>
+            <div style="font-size:0.65rem;color:var(--warning);margin-top:2px;">Low Confidence</div>
         </div>
         
         
         
-        <div class="score-card border-MARGINAL">
+        <div class="score-card border-MARGINAL" style="border-style:dashed;background:repeating-linear-gradient(45deg,var(--card),var(--card) 10px,rgba(36,50,72,0.3) 10px,rgba(36,50,72,0.3) 12px);">
             <div class="day-name">Mon<br>09/03</div>
             <div class="score score-MARGINAL" style="font-size:1.6rem;">30</div>
             <div class="label label-MARGINAL">MARGINAL</div>
             <div class="details">
-                3cm &middot;
+                2cm &middot;
                 -6&deg;C
             </div>
+            <div style="font-size:0.65rem;color:var(--warning);margin-top:2px;">Low Confidence</div>
         </div>
         
         
         
-        <div class="score-card border-MARGINAL">
+        <div class="score-card border-MARGINAL" style="border-style:dashed;background:repeating-linear-gradient(45deg,var(--card),var(--card) 10px,rgba(36,50,72,0.3) 10px,rgba(36,50,72,0.3) 12px);">
             <div class="day-name">Tue<br>10/03</div>
             <div class="score score-MARGINAL" style="font-size:1.6rem;">30</div>
             <div class="label label-MARGINAL">MARGINAL</div>
@@ -599,6 +822,7 @@
                 0cm &middot;
                 -10&deg;C
             </div>
+            <div style="font-size:0.65rem;color:var(--warning);margin-top:2px;">Low Confidence</div>
         </div>
         
     </div>
@@ -659,7 +883,25 @@
     
     
     <div class="card">
-        <h2>Source Comparison</h2>
+        <h2>Detailed Charts</h2>
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+            <button class="tab-btn active" onclick="showChart('temp')">Temperature</button>
+            <button class="tab-btn" onclick="showChart('wind')">Wind</button>
+            <button class="tab-btn" onclick="showChart('freeze')">Freezing Level</button>
+            <button class="tab-btn" onclick="showChart('depth')">Snow Depth</button>
+        </div>
+        <div class="chart-container" id="chartTemp"><canvas id="tempChart"></canvas></div>
+        <div class="chart-container" id="chartWind" style="display:none;"><canvas id="windChart"></canvas></div>
+        <div class="chart-container" id="chartFreeze" style="display:none;"><canvas id="freezeChart"></canvas></div>
+        <div class="chart-container" id="chartDepth" style="display:none;"><canvas id="depthChart"></canvas></div>
+    </div>
+    
+
+    
+    
+    <details class="mobile-collapse" open>
+        <summary style="cursor:pointer;font-weight:600;color:var(--accent);font-size:1.1rem;margin:28px 0 14px;letter-spacing:-0.3px;">Source Comparison</summary>
+    <div class="card">
         <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:14px;">
             Cross-referencing API models with curated mountain forecasts.
             <span style="color:var(--good);">Green</span> = consensus.
@@ -680,7 +922,7 @@
                 <td>
                     <span class="src-snow">0.0cm</span>
                     <span class="src-detail">
-                        -2.2&deg;C &middot; 14km/h
+                        -2.3&deg;C &middot; 14km/h
                     </span>
                 </td>
                 <td>
@@ -695,7 +937,7 @@
                     
                     <span class="src-snow">0cm</span>
                     <span class="src-detail">
-                        2.0/2.0&deg;C &middot; 10km/h
+                        2.0/2.0&deg;C &middot; 5km/h
                     </span>
                     
                 </td>
@@ -709,9 +951,9 @@
             <tr>
                 <td class="td-date">Tue 24/02</td>
                 <td>
-                    <span class="src-snow">0.8cm</span>
+                    <span class="src-snow">1.1cm</span>
                     <span class="src-detail">
-                        -2.1&deg;C &middot; 21km/h
+                        -2.5&deg;C &middot; 30km/h
                     </span>
                 </td>
                 <td>
@@ -726,13 +968,13 @@
                     
                     <span class="src-snow">0cm</span>
                     <span class="src-detail">
-                        1.0/3.0&deg;C &middot; 5km/h
+                        1.0/3.0&deg;C &middot; 10km/h
                     </span>
                     
                 </td>
                 <td>
                     
-                    <span class="consensus-badge consensus-dry">&#10004; Dry</span>
+                    <span class="consensus-badge consensus-mixed">&#9888; Mixed</span>
                     
                 </td>
             </tr>
@@ -740,9 +982,9 @@
             <tr>
                 <td class="td-date">Wed 25/02</td>
                 <td>
-                    <span class="src-snow">0.0cm</span>
+                    <span class="src-snow">0.1cm</span>
                     <span class="src-detail">
-                        -5.4&deg;C &middot; 17km/h
+                        -5.4&deg;C &middot; 19km/h
                     </span>
                 </td>
                 <td>
@@ -773,7 +1015,7 @@
                 <td>
                     <span class="src-snow">0.0cm</span>
                     <span class="src-detail">
-                        -2.1&deg;C &middot; 16km/h
+                        -2.1&deg;C &middot; 17km/h
                     </span>
                 </td>
                 <td>
@@ -804,7 +1046,7 @@
                 <td>
                     <span class="src-snow">0.0cm</span>
                     <span class="src-detail">
-                        0.2&deg;C &middot; 11km/h
+                        0.2&deg;C &middot; 12km/h
                     </span>
                 </td>
                 <td>
@@ -835,7 +1077,7 @@
                 <td>
                     <span class="src-snow">0.0cm</span>
                     <span class="src-detail">
-                        0.7&deg;C &middot; 10km/h
+                        0.7&deg;C &middot; 12km/h
                     </span>
                 </td>
                 <td>
@@ -850,7 +1092,7 @@
                     
                     <span class="src-snow">0cm</span>
                     <span class="src-detail">
-                        -4.0/0.0&deg;C &middot; 15km/h
+                        -4.0/1.0&deg;C &middot; 15km/h
                     </span>
                     
                 </td>
@@ -864,9 +1106,9 @@
             <tr>
                 <td class="td-date">Sun 01/03</td>
                 <td>
-                    <span class="src-snow">0.1cm</span>
+                    <span class="src-snow">0.0cm</span>
                     <span class="src-detail">
-                        0.4&deg;C &middot; 9km/h
+                        0.4&deg;C &middot; 12km/h
                     </span>
                 </td>
                 <td>
@@ -889,12 +1131,14 @@
         </table>
         </div>
     </div>
+    </details>
     
 
     
     
+    <details class="mobile-collapse" open>
+        <summary style="cursor:pointer;font-weight:600;color:var(--accent);font-size:1.1rem;margin:28px 0 14px;letter-spacing:-0.3px;">Model Comparison &mdash; Daily Snowfall (cm)</summary>
     <div class="card">
-        <h2>Model Comparison &mdash; Daily Snowfall (cm)</h2>
         <div style="overflow-x:auto;">
         <table>
             <tr>
@@ -906,11 +1150,19 @@
                 
                 <th>GFS</th>
                 
+                <th>ARPEGE</th>
+                
+                <th>UKMO</th>
+                
                 <th>Agreement</th>
             </tr>
             
             <tr>
                 <td class="td-date">Mon 23/02</td>
+                
+                <td>0.0</td>
+                
+                <td>0.0</td>
                 
                 <td>0.0</td>
                 
@@ -932,6 +1184,10 @@
                 
                 <td>0.1</td>
                 
+                <td>2.2</td>
+                
+                <td>1.0</td>
+                
                 <td class="disagree">
                     LOW
                 </td>
@@ -942,7 +1198,11 @@
                 
                 <td>0.0</td>
                 
-                <td>0.1</td>
+                <td>0.3</td>
+                
+                <td>0.0</td>
+                
+                <td>0.4</td>
                 
                 <td>0.0</td>
                 
@@ -953,6 +1213,10 @@
             
             <tr>
                 <td class="td-date">Thu 26/02</td>
+                
+                <td>0.0</td>
+                
+                <td>0.0</td>
                 
                 <td>0.0</td>
                 
@@ -974,6 +1238,10 @@
                 
                 <td>0.0</td>
                 
+                <td>0</td>
+                
+                <td>0.0</td>
+                
                 <td class="agree">
                     HIGH
                 </td>
@@ -985,6 +1253,10 @@
                 <td>0.0</td>
                 
                 <td>0.0</td>
+                
+                <td>0.0</td>
+                
+                <td>0</td>
                 
                 <td>0.0</td>
                 
@@ -1002,6 +1274,10 @@
                 
                 <td>0.0</td>
                 
+                <td>0</td>
+                
+                <td>0.0</td>
+                
                 <td class="agree">
                     HIGH
                 </td>
@@ -1013,6 +1289,10 @@
                 <td>0</td>
                 
                 <td>0.0</td>
+                
+                <td>0.0</td>
+                
+                <td>0</td>
                 
                 <td>0.0</td>
                 
@@ -1030,6 +1310,10 @@
                 
                 <td>0.0</td>
                 
+                <td>0</td>
+                
+                <td>0.0</td>
+                
                 <td class="agree">
                     HIGH
                 </td>
@@ -1041,6 +1325,10 @@
                 <td>0</td>
                 
                 <td>0.4</td>
+                
+                <td>0.0</td>
+                
+                <td>0</td>
                 
                 <td>0.0</td>
                 
@@ -1058,6 +1346,10 @@
                 
                 <td>0.0</td>
                 
+                <td>0</td>
+                
+                <td>0.0</td>
+                
                 <td class="agree">
                     HIGH
                 </td>
@@ -1072,8 +1364,12 @@
                 
                 <td>0.0</td>
                 
-                <td class="disagree">
-                    LOW
+                <td>0</td>
+                
+                <td>0.0</td>
+                
+                <td class="agree">
+                    HIGH
                 </td>
             </tr>
             
@@ -1085,6 +1381,10 @@
                 <td>0.0</td>
                 
                 <td>3.1</td>
+                
+                <td>0</td>
+                
+                <td>0.0</td>
                 
                 <td class="disagree">
                     LOW
@@ -1100,6 +1400,10 @@
                 
                 <td>1.3</td>
                 
+                <td>0</td>
+                
+                <td>0.0</td>
+                
                 <td class="agree">
                     HIGH
                 </td>
@@ -1111,6 +1415,10 @@
                 <td>0</td>
                 
                 <td>7.8</td>
+                
+                <td>0.0</td>
+                
+                <td>0</td>
                 
                 <td>0.0</td>
                 
@@ -1128,6 +1436,10 @@
                 
                 <td>0.0</td>
                 
+                <td>0</td>
+                
+                <td>0.0</td>
+                
                 <td class="agree">
                     HIGH
                 </td>
@@ -1136,23 +1448,34 @@
         </table>
         </div>
     </div>
+    </details>
     
 
     
+    <details class="mobile-collapse" open>
+        <summary style="cursor:pointer;font-weight:600;color:var(--accent);font-size:1.1rem;margin:28px 0 14px;letter-spacing:-0.3px;">Score Breakdown</summary>
     <div class="card">
-        <h2>Score Breakdown</h2>
         <div style="overflow-x:auto;">
         <table>
             <tr>
                 <th>Date</th>
                 <th>Total</th>
-                <th>Snow <span style="font-weight:400">/40</span></th>
+                <th>Snow <span style="font-weight:400">/35</span></th>
+                
+                <th>Quality <span style="font-weight:400">/10</span></th>
+                
                 <th>Temp <span style="font-weight:400">/15</span></th>
                 <th>Wind <span style="font-weight:400">/10</span></th>
                 <th>Freeze <span style="font-weight:400">/5</span></th>
                 <th>Timing <span style="font-weight:400">/5</span></th>
                 <th>Depth <span style="font-weight:400">/5</span></th>
-                <th>Models <span style="font-weight:400">/20</span></th>
+                <th>Models <span style="font-weight:400">/15</span></th>
+                
+                <th>Loading <span style="font-weight:400">/5</span></th>
+                
+                
+                <th>Ensemble <span style="font-weight:400">&plusmn;5</span></th>
+                
                 <th>Sources</th>
             </tr>
             
@@ -1164,12 +1487,21 @@
                 <td class="td-date">Mon 23/02</td>
                 <td><strong class="score-MARGINAL">30</strong></td>
                 <td>0</td>
-                <td>3.8</td>
+                
+                <td>0</td>
+                
+                <td>4.5</td>
                 <td>2.1</td>
                 <td>0</td>
                 <td>0</td>
                 <td>2.5</td>
-                <td>18</td>
+                <td>15.0</td>
+                
+                <td>0</td>
+                
+                
+                <td>5.0</td>
+                
                 <td class="agree"
                     title="All sources agree: dry">
                     +5
@@ -1184,18 +1516,27 @@
             
             <tr>
                 <td class="td-date">Tue 24/02</td>
-                <td><strong class="score-SKIP">14</strong></td>
-                <td>1.5</td>
-                <td>2.2</td>
-                <td>0.8</td>
+                <td><strong class="score-SKIP">20</strong></td>
+                <td>2.0</td>
+                
                 <td>0</td>
+                
+                <td>7.5</td>
+                <td>0.0</td>
+                <td>2.8</td>
                 <td>2.0</td>
                 <td>2.0</td>
+                <td>3.5</td>
+                
                 <td>0</td>
-                <td class="agree"
-                    title="All sources agree: dry">
-                    +5
-                    <span style="font-size:0.68rem;opacity:0.7;">HIGH</span>
+                
+                
+                <td>0</td>
+                
+                <td class=""
+                    title="Sources borderline (OM:1.1 vs scrapers:0.2cm)">
+                    0
+                    <span style="font-size:0.68rem;opacity:0.7;">MEDIUM</span>
                 </td>
             </tr>
             
@@ -1207,13 +1548,22 @@
             <tr>
                 <td class="td-date">Wed 25/02</td>
                 <td><strong class="score-MARGINAL">30</strong></td>
-                <td>0.1</td>
+                <td>0.3</td>
+                
+                <td>0</td>
+                
                 <td>15.0</td>
-                <td>1.5</td>
-                <td>4.0</td>
+                <td>1.3</td>
+                <td>4.6</td>
                 <td>0</td>
                 <td>0</td>
-                <td>18</td>
+                <td>15.0</td>
+                
+                <td>0</td>
+                
+                
+                <td>5.0</td>
+                
                 <td class="agree"
                     title="All sources agree: dry">
                     +5
@@ -1230,12 +1580,21 @@
                 <td class="td-date">Thu 26/02</td>
                 <td><strong class="score-MARGINAL">30</strong></td>
                 <td>0</td>
+                
+                <td>0</td>
+                
                 <td>1.5</td>
-                <td>1.8</td>
-                <td>3.8</td>
+                <td>1.6</td>
+                <td>2.9</td>
                 <td>0</td>
                 <td>2.0</td>
-                <td>18</td>
+                <td>15.0</td>
+                
+                <td>0</td>
+                
+                
+                <td>5.0</td>
+                
                 <td class="agree"
                     title="All sources agree: dry">
                     +5
@@ -1252,12 +1611,21 @@
                 <td class="td-date">Fri 27/02</td>
                 <td><strong class="score-MARGINAL">30</strong></td>
                 <td>0</td>
+                
                 <td>0</td>
-                <td>6.0</td>
+                
+                <td>0</td>
+                <td>5.4</td>
                 <td>0</td>
                 <td>0</td>
                 <td>2.0</td>
-                <td>18</td>
+                <td>15.0</td>
+                
+                <td>0</td>
+                
+                
+                <td>5.0</td>
+                
                 <td class="agree"
                     title="All sources agree: dry">
                     +5
@@ -1274,12 +1642,21 @@
                 <td class="td-date">Sat 28/02</td>
                 <td><strong class="score-MARGINAL">30</strong></td>
                 <td>0</td>
+                
                 <td>0</td>
-                <td>9.2</td>
-                <td>4.0</td>
+                
+                <td>0</td>
+                <td>8.1</td>
+                <td>2.7</td>
                 <td>0</td>
                 <td>2.0</td>
-                <td>18</td>
+                <td>15.0</td>
+                
+                <td>0</td>
+                
+                
+                <td>5.0</td>
+                
                 <td class="agree"
                     title="All sources agree: dry">
                     +5
@@ -1296,16 +1673,25 @@
                 <td class="td-date">Sun 01/03</td>
                 <td><strong class="score-MARGINAL">30</strong></td>
                 <td>0.1</td>
+                
                 <td>0</td>
-                <td>9.7</td>
+                
+                <td>0</td>
+                <td>8.8</td>
                 <td>5.0</td>
                 <td>0</td>
                 <td>0</td>
-                <td>18</td>
-                <td class=""
-                    title="No scraper data available">
-                    0
-                    <span style="font-size:0.68rem;opacity:0.7;">MEDIUM</span>
+                <td>15.0</td>
+                
+                <td>0</td>
+                
+                
+                <td>0</td>
+                
+                <td class="agree"
+                    title="All sources agree: dry">
+                    +5
+                    <span style="font-size:0.68rem;opacity:0.7;">HIGH</span>
                 </td>
             </tr>
             
@@ -1331,6 +1717,7 @@
         </table>
         </div>
     </div>
+    </details>
 
     
     <div class="safety">
@@ -1343,26 +1730,80 @@
         
         <p style="margin:5px 0;color:var(--warning);font-size:0.85rem;">&#9888; 2026-02-23: Extreme wind gusts (51 km/h). Exposed terrain dangerous.</p>
         
-        <p style="margin:5px 0;color:var(--warning);font-size:0.85rem;">&#9888; 2026-02-23: Freezing level above freeride zone (2320m). Rain risk at summit.</p>
+        <p style="margin:5px 0;color:var(--warning);font-size:0.85rem;">&#9888; 2026-02-23: Freezing level above freeride zone (2246m). Rain risk at summit.</p>
         
-        <p style="margin:5px 0;color:var(--warning);font-size:0.85rem;">&#9888; 2026-02-24: Extreme wind gusts (69 km/h). Exposed terrain dangerous.</p>
-        
-        <p style="margin:5px 0;color:var(--warning);font-size:0.85rem;">&#9888; 2026-02-24: Freezing level above freeride zone (2210m). Rain risk at summit.</p>
+        <p style="margin:5px 0;color:var(--warning);font-size:0.85rem;">&#9888; 2026-02-24: Extreme wind gusts (65 km/h). Exposed terrain dangerous.</p>
         
         <p style="margin:5px 0;color:var(--warning);font-size:0.85rem;">&#9888; 2026-02-25: Extreme wind gusts (57 km/h). Exposed terrain dangerous.</p>
         
         <p style="margin:5px 0;color:var(--warning);font-size:0.85rem;">&#9888; 2026-02-26: Extreme wind gusts (60 km/h). Exposed terrain dangerous.</p>
         
-        <p style="margin:5px 0;color:var(--warning);font-size:0.85rem;">&#9888; 2026-02-27: Freezing level above freeride zone (2680m). Rain risk at summit.</p>
+        <p style="margin:5px 0;color:var(--warning);font-size:0.85rem;">&#9888; 2026-02-27: Freezing level above freeride zone (2699m). Rain risk at summit.</p>
         
         
+
+        
+        
+        <div style="margin:12px 0;">
+            <h3>Estimated Avalanche Danger</h3>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;">
+            
+            <div style="text-align:center;padding:8px;border-radius:8px;background:#4CAF50;min-width:80px;">
+                <div style="font-size:0.72rem;font-weight:600;">Mon 23/02</div>
+                <div style="font-size:1.4rem;font-weight:800;">1</div>
+                <div style="font-size:0.65rem;">LOW</div>
+            </div>
+            
+            <div style="text-align:center;padding:8px;border-radius:8px;background:#FFEB3B;min-width:80px;">
+                <div style="font-size:0.72rem;font-weight:600;">Tue 24/02</div>
+                <div style="font-size:1.4rem;font-weight:800;">2</div>
+                <div style="font-size:0.65rem;">MODERATE</div>
+            </div>
+            
+            <div style="text-align:center;padding:8px;border-radius:8px;background:#4CAF50;min-width:80px;">
+                <div style="font-size:0.72rem;font-weight:600;">Wed 25/02</div>
+                <div style="font-size:1.4rem;font-weight:800;">1</div>
+                <div style="font-size:0.65rem;">LOW</div>
+            </div>
+            
+            <div style="text-align:center;padding:8px;border-radius:8px;background:#4CAF50;min-width:80px;">
+                <div style="font-size:0.72rem;font-weight:600;">Thu 26/02</div>
+                <div style="font-size:1.4rem;font-weight:800;">1</div>
+                <div style="font-size:0.65rem;">LOW</div>
+            </div>
+            
+            <div style="text-align:center;padding:8px;border-radius:8px;background:#4CAF50;min-width:80px;">
+                <div style="font-size:0.72rem;font-weight:600;">Fri 27/02</div>
+                <div style="font-size:1.4rem;font-weight:800;">1</div>
+                <div style="font-size:0.65rem;">LOW</div>
+            </div>
+            
+            <div style="text-align:center;padding:8px;border-radius:8px;background:#4CAF50;min-width:80px;">
+                <div style="font-size:0.72rem;font-weight:600;">Sat 28/02</div>
+                <div style="font-size:1.4rem;font-weight:800;">1</div>
+                <div style="font-size:0.65rem;">LOW</div>
+            </div>
+            
+            <div style="text-align:center;padding:8px;border-radius:8px;background:#4CAF50;min-width:80px;">
+                <div style="font-size:0.72rem;font-weight:600;">Sun 01/03</div>
+                <div style="font-size:1.4rem;font-weight:800;">1</div>
+                <div style="font-size:0.65rem;">LOW</div>
+            </div>
+            
+            </div>
+            <p style="font-size:0.75rem;color:var(--warning);margin-top:8px;font-style:italic;">
+                &#9888; Automated estimate only. Always consult local avalanche bulletins before venturing off-piste.
+            </p>
+        </div>
+        
+
         <p style="margin-top:10px;font-size:0.75rem;color:var(--text-muted);">
             Nearest reference: Bulgarian Avalanche Service (Pirin/Rila) &middot; Slovenian Avalanche Service
         </p>
     </div>
 
     <div class="footer">
-        Snow Monitor v2.0 &nbsp;&middot;&nbsp; open_meteo &middot; yr_no &middot; snow_forecast &middot; mountain_forecast &nbsp;&middot;&nbsp; 23/02/2026 11:41 UTC
+        Snow Monitor v2.0 &nbsp;&middot;&nbsp; open_meteo &middot; yr_no &middot; snow_forecast &middot; mountain_forecast &middot; open_meteo_ensemble &nbsp;&middot;&nbsp; 23/02/2026 13:51 UTC
     </div>
 
     
@@ -1385,7 +1826,7 @@
                 
                 {
                     label: 'ECMWF',
-                    data: [0.0, 0.56, 0.14, 0.0, 0.0, 0.0, 0.21],
+                    data: [0.0, 0.56, 0.28, 0.0, 0.0, 0.0, 0.21],
                     backgroundColor: 'rgba(60,192,104,0.7)',
                     borderRadius: 5,
                     barPercentage: 0.75,
@@ -1395,6 +1836,22 @@
                     label: 'GFS',
                     data: [0.0, 0.14, 0.0, 0.0, 0.0, 0.0, 0.0],
                     backgroundColor: 'rgba(240,194,48,0.7)',
+                    borderRadius: 5,
+                    barPercentage: 0.75,
+                },
+                
+                {
+                    label: 'ARPEGE',
+                    data: [0.0, 2.17, 0.42, 0.0, 0, 0, 0],
+                    backgroundColor: 'rgba(187,134,252,0.7)',
+                    borderRadius: 5,
+                    barPercentage: 0.75,
+                },
+                
+                {
+                    label: 'UKMO',
+                    data: [0.0, 0.98, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    backgroundColor: 'rgba(255,138,101,0.7)',
                     borderRadius: 5,
                     barPercentage: 0.75,
                 },
@@ -1422,6 +1879,77 @@
             }
         }
     });
+    
+
+    // Detailed Charts — tab switching and lazy initialization
+    
+    var chartInstances = {};
+
+    function showChart(name) {
+        var ids = ['temp', 'wind', 'freeze', 'depth'];
+        ids.forEach(function(id) {
+            document.getElementById('chart' + id.charAt(0).toUpperCase() + id.slice(1)).style.display = (id === name) ? '' : 'none';
+        });
+        // Update tab buttons
+        document.querySelectorAll('.tab-btn').forEach(function(btn) {
+            btn.classList.remove('active');
+            if (btn.textContent.toLowerCase().indexOf(name === 'freeze' ? 'freezing' : name) >= 0) {
+                btn.classList.add('active');
+            }
+        });
+        // Lazy init chart
+        if (!chartInstances[name]) {
+            initDetailChart(name);
+        }
+    }
+
+    function initDetailChart(name) {
+        var mc = {"freezing_level_chart": {"datasets": [{"data": [2246, 1980, 1834, 1968, 2699, 1986, 1760], "label": "Freezing Level"}], "labels": ["Mon 23/02", "Tue 24/02", "Wed 25/02", "Thu 26/02", "Fri 27/02", "Sat 28/02", "Sun 01/03"], "reference_lines": [{"label": "Mid-mountain (1900m)", "value": 1900}, {"label": "Summit (2400m)", "value": 2400}]}, "snow_depth_chart": {"datasets": [{"data": [78.0, 74.0, 71.0, 70.0, 68.0, 65.0, 30.0], "label": "Snow Depth (cm)"}], "labels": ["Mon 23/02", "Tue 24/02", "Wed 25/02", "Thu 26/02", "Fri 27/02", "Sat 28/02", "Sun 01/03"]}, "temperature_chart": {"datasets": [{"data": [1.3, 0.3, -2.8, 0.8, 2.8, 3.2, 3.8], "label": "Max"}, {"data": [-5.9, -5.3, -8.0, -5.0, -2.4, -1.8, -2.9], "label": "Min"}, {"data": [-2.3, -2.5, -5.4, -2.1, 0.2, 0.7, 0.4], "label": "Avg"}], "labels": ["Mon 23/02", "Tue 24/02", "Wed 25/02", "Thu 26/02", "Fri 27/02", "Sat 28/02", "Sun 01/03"]}, "wind_chart": {"datasets": [{"data": [14.4, 29.5, 18.6, 17.1, 11.9, 11.9, 11.5], "label": "Sustained"}, {"data": [50.8, 65.2, 57.2, 60.1, 38.5, 27.7, 25.9], "label": "Gusts"}], "labels": ["Mon 23/02", "Tue 24/02", "Wed 25/02", "Thu 26/02", "Fri 27/02", "Sat 28/02", "Sun 01/03"]}};
+        var keyMap = {temp: 'temperature_chart', wind: 'wind_chart', freeze: 'freezing_level_chart', depth: 'snow_depth_chart'};
+        var chartConfig = mc[keyMap[name]];
+        if (!chartConfig) return;
+
+        var canvasId = {temp: 'tempChart', wind: 'windChart', freeze: 'freezeChart', depth: 'depthChart'}[name];
+        var canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+
+        var datasets = [];
+        for (var i = 0; i < chartConfig.datasets.length; i++) {
+            var ds = chartConfig.datasets[i];
+            datasets.push({
+                label: ds.label,
+                data: ds.data,
+                borderColor: ds.color,
+                backgroundColor: ds.fill ? ds.color.replace('0.7', '0.1') : 'transparent',
+                fill: ds.fill || false,
+                tension: 0.3,
+                pointRadius: 3,
+            });
+        }
+
+        chartInstances[name] = new Chart(canvas.getContext('2d'), {
+            type: 'line',
+            data: { labels: chartConfig.labels, datasets: datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#7b8fa6', padding: 16, usePointStyle: true } }
+                },
+                scales: {
+                    x: { ticks: { color: '#7b8fa6', font: { size: 11 } }, grid: { color: 'rgba(36,50,72,0.3)' } },
+                    y: {
+                        ticks: { color: '#7b8fa6', font: { size: 11 }, callback: function(v) { return v + (chartConfig.unit || ''); } },
+                        grid: { color: 'rgba(36,50,72,0.3)' },
+                        title: { display: true, text: chartConfig.y_label || '', color: '#7b8fa6', font: { size: 12 } }
+                    }
+                }
+            }
+        });
+    }
+
+    // Initialize the first (visible) chart
+    initDetailChart('temp');
     
 
     // Relative time display
