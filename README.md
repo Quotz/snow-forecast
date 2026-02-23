@@ -4,7 +4,7 @@ Automated powder forecast system for Popova Shapka ski resort (North Macedonia).
 
 ## Live Dashboard
 
-**[View the forecast →](https://YOUR_USERNAME.github.io/snow-forecast/)**
+**[View the forecast →](https://quotz.github.io/snow-forecast/)**
 
 ## Setup
 
