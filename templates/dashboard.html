@@ -6,7 +6,7 @@
     <meta http-equiv="refresh" content="3600">
     <title>Snow Monitor — {{ data.location }}</title>
     <meta property="og:title" content="Snow Monitor — {{ data.location }}">
-    <meta property="og:description" content="Powder forecast and scoring for {{ data.location }}. Updated 3x daily from 4 weather sources.">
+    <meta property="og:description" content="Powder forecast and scoring for {{ data.location }}. {{ data.models|length }} forecast models, updated 3x daily.">
     <meta property="og:type" content="website">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#10052;</text></svg>">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -602,6 +602,92 @@
     </details>
     {% endif %}
 
+    {# ========== MODEL ACCURACY (VERIFICATION) ========== #}
+    {% if data.verification_stats and data.verification_stats.per_model %}
+    <details class="mobile-collapse">
+        <summary style="cursor:pointer;font-weight:600;color:var(--accent);font-size:1.1rem;margin:28px 0 14px;letter-spacing:-0.3px;">Model Accuracy</summary>
+    <div class="card">
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:14px;">
+            Forecast vs ERA5 reanalysis. Updated after {{ data.verification_stats.n_verifications }} verification run{{ 's' if data.verification_stats.n_verifications != 1 else '' }}.
+            Lower MAE = more accurate. Bias shows systematic over/under-prediction.
+        </p>
+        <div style="overflow-x:auto;">
+        <table>
+            <tr>
+                <th>Model</th>
+                <th>Snow MAE</th>
+                <th>Snow Bias</th>
+                <th>Samples</th>
+                {% if data.model_weights and data.model_weights.weights %}
+                <th>Weight</th>
+                {% endif %}
+            </tr>
+            {% for model_name, metrics in data.verification_stats.per_model.items() %}
+            {% if metrics.snowfall %}
+            <tr>
+                <td style="font-weight:600;">{{ AI_NAME_MAP.get(model_name, model_name | replace('_seamless','') | replace('_ifs025','') | upper) }}</td>
+                <td>{{ metrics.snowfall.mae | round(1) }}cm</td>
+                <td style="color:{{ 'var(--warning)' if metrics.snowfall.bias|abs > 3 else 'var(--text-dim)' }};">
+                    {{ '+' if metrics.snowfall.bias > 0 else '' }}{{ metrics.snowfall.bias | round(1) }}cm
+                </td>
+                <td style="color:var(--text-muted);">{{ metrics.snowfall.n_samples }}</td>
+                {% if data.model_weights and data.model_weights.weights %}
+                <td>
+                    {% set w = data.model_weights.weights.get(model_name) %}
+                    {% if w is not none %}
+                    <span style="font-weight:600;">{{ (w * 100) | round(0) | int }}%</span>
+                    {% else %}
+                    <span style="color:var(--text-muted);">&mdash;</span>
+                    {% endif %}
+                </td>
+                {% endif %}
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </table>
+        </div>
+
+        {% if data.verification_stats.powder_accuracy and data.verification_stats.powder_accuracy.n_days %}
+        {% set pa = data.verification_stats.powder_accuracy %}
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--card-border);">
+            <h3>Powder Day Detection</h3>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;">
+                <div style="text-align:center;padding:10px 16px;background:var(--bg-raised);border-radius:8px;">
+                    <div style="font-size:1.4rem;font-weight:800;color:var(--good);">{{ (pa.hit_rate * 100) | round(0) | int }}%</div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);">Hit Rate</div>
+                </div>
+                <div style="text-align:center;padding:10px 16px;background:var(--bg-raised);border-radius:8px;">
+                    <div style="font-size:1.4rem;font-weight:800;color:{{ 'var(--warning)' if pa.false_alarm_rate > 0.2 else 'var(--text)' }};">{{ (pa.false_alarm_rate * 100) | round(0) | int }}%</div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);">False Alarm</div>
+                </div>
+                <div style="text-align:center;padding:10px 16px;background:var(--bg-raised);border-radius:8px;">
+                    <div style="font-size:1.4rem;font-weight:800;color:{{ 'var(--skip)' if pa.miss_rate > 0.3 else 'var(--text)' }};">{{ (pa.miss_rate * 100) | round(0) | int }}%</div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);">Miss Rate</div>
+                </div>
+                <div style="text-align:center;padding:10px 16px;background:var(--bg-raised);border-radius:8px;">
+                    <div style="font-size:1.4rem;font-weight:800;color:var(--text-dim);">{{ pa.n_days }}</div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);">Days Verified</div>
+                </div>
+            </div>
+            <p style="font-size:0.72rem;color:var(--text-muted);margin-top:8px;">
+                Hit = score &ge;60 matched real powder. False alarm = score &ge;60 but no powder. Miss = real powder but score &lt;60.
+            </p>
+        </div>
+        {% endif %}
+
+        {% if data.model_weights and data.model_weights.weights %}
+        <div style="margin-top:14px;font-size:0.78rem;color:var(--text-muted);">
+            Weighting: <strong style="color:var(--accent);">Adaptive</strong> &mdash; weights derived from recent accuracy (EWMA)
+        </div>
+        {% else %}
+        <div style="margin-top:14px;font-size:0.78rem;color:var(--text-muted);">
+            Weighting: Equal &mdash; enable verification to activate adaptive weights
+        </div>
+        {% endif %}
+    </div>
+    </details>
+    {% endif %}
+
     {# ========== MODEL COMPARISON TABLE ========== #}
     {% if data.model_comparison %}
     <details class="mobile-collapse" open>
@@ -612,7 +698,7 @@
             <tr>
                 <th>Date</th>
                 {% for model in data.models %}
-                <th>{{ model | replace('_seamless','') | replace('_ifs025','') | upper }}</th>
+                <th>{{ AI_NAME_MAP.get(model, model | replace('_seamless','') | replace('_ifs025','') | upper) }}</th>
                 {% endfor %}
                 <th>Agreement</th>
             </tr>
@@ -697,6 +783,38 @@
     </div>
     </details>
 
+    {# ========== COMMUNITY REPORTS ========== #}
+    {% if data.community_reports and data.community_reports|length > 0 %}
+    <details class="mobile-collapse">
+        <summary style="cursor:pointer;font-weight:600;color:var(--accent);font-size:1.1rem;margin:28px 0 14px;letter-spacing:-0.3px;">Community Reports <span style="font-weight:400;font-size:0.8rem;color:var(--text-muted);">({{ data.community_reports|length }})</span></summary>
+    <div class="card">
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:14px;">
+            Recent condition reports from Telegram users. Send <code>/report</code> to @MacedoniaPowderBot to contribute.
+        </p>
+        {% for report in data.community_reports[-5:]|reverse %}
+        <div style="padding:10px 14px;margin:6px 0;background:var(--bg-raised);border-radius:8px;border-left:2px solid var(--accent-dim);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                <span style="font-size:0.75rem;color:var(--text-dim);font-weight:600;">{{ report.date | dateshort }}</span>
+                {% if report.parsed and report.parsed.quality_rating %}
+                <span style="font-size:0.72rem;">
+                    {% for star in range(report.parsed.quality_rating) %}&#9733;{% endfor %}{% for star in range(5 - report.parsed.quality_rating) %}&#9734;{% endfor %}
+                </span>
+                {% endif %}
+            </div>
+            <div style="font-size:0.85rem;">
+                {% if report.parsed %}
+                {% if report.parsed.snow_depth_cm %}{{ report.parsed.snow_depth_cm }}cm fresh{% endif %}
+                {% if report.parsed.wind_conditions %} &middot; Wind: {{ report.parsed.wind_conditions }}{% endif %}
+                {% else %}
+                {{ report.raw_text[:100] }}
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    </details>
+    {% endif %}
+
     {# ========== SAFETY PANEL ========== #}
     <div class="safety">
         <h2>Safety</h2>
@@ -735,7 +853,10 @@
     </div>
 
     <div class="footer">
-        Snow Monitor v2.0 &nbsp;&middot;&nbsp; {{ data.sources | join(' &middot; ') }} &nbsp;&middot;&nbsp; {{ generated_at }}
+        Snow Monitor v3.0 &nbsp;&middot;&nbsp;
+        {{ data.models|length }} models{% if data.ai_models %} ({{ data.models|length - data.ai_models|length }} physics + {{ data.ai_models|length }} AI){% endif %}
+        &nbsp;&middot;&nbsp; {{ data.sources | join(' &middot; ') }} &nbsp;&middot;&nbsp; {{ generated_at }}
+        {% if data.model_weights and data.model_weights.weights %} &nbsp;&middot;&nbsp; Adaptive Weighting{% endif %}
     </div>
 
     {# ========== CHART SCRIPTS ========== #}

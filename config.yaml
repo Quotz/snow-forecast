@@ -15,13 +15,18 @@ locations:
       primary: "north"          # Main freeride terrain faces north/NE
       primary_degrees: 0        # North = 0°
 
-# Weather models to query via Open-Meteo
+# Weather models to query via Open-Meteo /v1/forecast
 models:
-  - icon_seamless       # ICON-EU ~6.5km — best Balkan resolution
-  - ecmwf_ifs025        # ECMWF IFS ~9km — gold standard medium-range
-  - gfs_seamless        # GFS ~13km — extended range
-  - arpege_seamless     # Arpege ~10km — Meteo-France
-  - ukmo_seamless       # UKMO ~10km — UK Met Office
+  - icon_seamless              # ICON-EU ~6.5km — best Balkan resolution
+  - ecmwf_ifs025               # ECMWF IFS ~9km — gold standard medium-range
+  - gfs_seamless               # GFS ~13km — extended range
+  - arpege_seamless            # Arpege ~10km — Meteo-France
+  - ukmo_seamless              # UKMO ~10km — UK Met Office
+
+# AI weather models (also fetched via /v1/forecast in one request)
+ai_models:
+  - ecmwf_aifs025_single       # ECMWF AIFS ~25km — ML model rivaling IFS
+  - gfs_graphcast025           # GFS GraphCast ~25km — Google DeepMind ML model
 
 # Forecast parameters
 forecast:
@@ -112,6 +117,21 @@ scrapers:
     levels: ["mid", "top"]     # bot=1670m, mid=2035m, top=2400m
   mountain_forecast:
     location_key: "popova_shapka"   # 1825m
+  meteoblue:
+    enabled: false             # Paid service — set true + METEOBLUE_API_KEY to enable
+    api_key_env: "METEOBLUE_API_KEY"
+
+# Forecast verification — compares predictions against ERA5 reanalysis
+verification:
+  enabled: true
+  era5_lag_days: 5             # ERA5 reanalysis availability lag
+  verification_window_days: 3  # Number of recent days to verify per run
+  adaptive_weights: true       # Use verification data for adaptive model weighting
+
+# Community condition reports via Telegram /report command
+feedback:
+  enabled: true
+  reports_file: "docs/verification/reports.json"
 
 # Weather pattern detection
 patterns:

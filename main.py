@@ -23,8 +23,9 @@ sys.path.insert(0, str(PROJECT_DIR))
 
 from collectors import (OpenMeteoCollector, YrNoCollector,
                         SnowForecastCollector, MountainForecastCollector,
-                        OpenMeteoEnsembleCollector)
-from scoring import calculate_powder_score, smooth_scores
+                        OpenMeteoEnsembleCollector, MeteoblueCollector)
+from scoring import (calculate_powder_score, smooth_scores,
+                     load_model_weights, update_model_weights)
 from patterns import detect_all_patterns
 from report import generate_dashboard, save_latest_json, save_history
 from data_extract import (extract_daily_data_from_open_meteo, build_model_comparison,
@@ -37,6 +38,8 @@ from validation import validate_sources
 from insights import generate_insights
 from forecast_diff import compute_forecast_diff
 from history import build_history_summary
+from verification import run_verification
+from feedback import process_reports, load_reports
 
 # Logging setup
 logging.basicConfig(
@@ -57,7 +60,8 @@ def load_config(config_path: str = None) -> dict:
 
 
 def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
-        json_only: bool = False):
+        json_only: bool = False, verify: bool = False,
+        process_feedback: bool = False):
     """Main execution flow."""
 
     # Get first location config
@@ -71,6 +75,8 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
         "elevations": loc_cfg["elevations"],
     }
     models = config.get("models", ["icon_seamless", "ecmwf_ifs025", "gfs_seamless"])
+    ai_models = config.get("ai_models", [])
+    all_models = models + ai_models  # Combined for agreement scoring
     scoring_cfg = config.get("scoring", {})
     sky_cfg = config.get("sky", {})
     data_cfg = config.get("data", {})
@@ -96,7 +102,7 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
     logger.info(f"Starting data collection for {location['name']}")
 
     collectors_list = [
-        OpenMeteoCollector(config),
+        OpenMeteoCollector(config),  # Fetches all models including AI in one request
         YrNoCollector(config),
     ]
 
@@ -104,6 +110,11 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
     if config.get("scrapers", {}).get("enabled", False):
         collectors_list.append(SnowForecastCollector(config))
         collectors_list.append(MountainForecastCollector(config))
+
+    # Add Meteoblue if enabled and API key available
+    mb_cfg = config.get("scrapers", {}).get("meteoblue", {})
+    if mb_cfg.get("enabled", False) and os.environ.get("METEOBLUE_API_KEY"):
+        collectors_list.append(MeteoblueCollector(config))
 
     results = {}
     for collector in collectors_list:
@@ -125,6 +136,7 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
     yr_data = results.get("yr_no", {})
     sf_data = results.get("snow_forecast", {})
     mf_data = results.get("mountain_forecast", {})
+    mb_data = results.get("meteoblue", {})
 
     if om_data.get("error") and not om_data.get("elevations"):
         logger.error("Open-Meteo failed and is our primary source. Aborting.")
@@ -132,9 +144,12 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
 
     # ===== EXTRACT DATA =====
     logger.info("Extracting daily data")
-    daily_data = extract_daily_data_from_open_meteo(om_data, summit_elev, models)
+    # All models (physics + AI) are fetched together by OpenMeteoCollector
+    daily_data = extract_daily_data_from_open_meteo(om_data, summit_elev, all_models)
+    for day in daily_data:
+        day.setdefault("model_names", list(all_models))
 
-    # Extract Yr.no daily data (now activated!)
+    # Extract Yr.no daily data
     yr_daily_data = []
     yr_by_date = {}
     if yr_data and not yr_data.get("error"):
@@ -152,6 +167,10 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
     if mf_data and not mf_data.get("error"):
         for d in mf_data.get("daily", []):
             mf_by_date[d["date"]] = d
+    mb_by_date = {}
+    if mb_data and not mb_data.get("error"):
+        for d in mb_data.get("daily", []):
+            mb_by_date[d["date"]] = d
 
     # ===== VALIDATE =====
     logger.info("Running cross-source validation")
@@ -160,12 +179,22 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
         for flag in validation_result["flags"]:
             logger.warning(f"Validation: {flag['type']} on {flag['date']}: {flag['detail']}")
 
+    # ===== LOAD ADAPTIVE WEIGHTS =====
+    weights_path = os.path.join(PROJECT_DIR, "docs", "verification", "model_weights.json")
+    adaptive_weights = None
+    if config.get("verification", {}).get("adaptive_weights", False):
+        adaptive_weights = load_model_weights(weights_path)
+        if adaptive_weights:
+            logger.info(f"Loaded adaptive model weights: {adaptive_weights.get('weights', {})}")
+        else:
+            logger.info("No adaptive weights found, using equal weighting")
+
     # ===== SCORE =====
     logger.info("Calculating powder scores")
 
     scores = []
     for day in daily_data:
-        # Collect scraper + Yr.no snowfall values for this date
+        # Collect scraper + Yr.no + Meteoblue snowfall values for this date
         scraper_snow = []
         sf_day = sf_by_date.get(day["date"])
         if sf_day and sf_day.get("snow_total_cm") is not None:
@@ -176,6 +205,9 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
         yr_day = yr_by_date.get(day["date"])
         if yr_day and yr_day.get("snowfall_24h_cm") is not None:
             scraper_snow.append(yr_day["snowfall_24h_cm"])
+        mb_day = mb_by_date.get(day["date"])
+        if mb_day and mb_day.get("snow_total_cm") is not None:
+            scraper_snow.append(mb_day["snow_total_cm"])
 
         # Build ensemble day data if available
         ensemble_day = None
@@ -192,7 +224,8 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
         score = calculate_powder_score(day, scoring_cfg, sky_cfg,
                                         scraper_snow_values=scraper_snow or None,
                                         ensemble_day_data=ensemble_day,
-                                        location_cfg=loc_cfg)
+                                        location_cfg=loc_cfg,
+                                        adaptive_weights=adaptive_weights)
         score["date"] = day["date"]
         scores.append(score)
 
@@ -208,8 +241,11 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
 
     # ===== BUILD REPORT DATA =====
     dates = [s["date"] for s in scores]
-    model_comparison = build_model_comparison(om_data, summit_elev, models)
-    chart_data = build_chart_data(model_comparison, models)
+
+    # Build model comparison — all models (physics + AI) in one request
+    model_comparison = build_model_comparison(om_data, summit_elev, all_models)
+
+    chart_data = build_chart_data(model_comparison, all_models)
     safety_flags = build_safety_flags(scores)
 
     # Current conditions (first hour of first model at summit)
@@ -279,6 +315,51 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
     except Exception:
         pass
 
+    # ===== VERIFICATION =====
+    verification_stats = None
+    if verify and config.get("verification", {}).get("enabled", True):
+        logger.info("Running forecast verification")
+        try:
+            verification_result = run_verification(config, os.path.join(PROJECT_DIR, "docs"))
+            if verification_result:
+                verification_stats = verification_result.get("cumulative_stats")
+                # Update adaptive model weights from verification data
+                if config.get("verification", {}).get("adaptive_weights", False) and verification_stats:
+                    update_model_weights(verification_stats, weights_path)
+                    logger.info("Adaptive model weights updated from verification")
+        except Exception as e:
+            logger.error(f"Verification failed: {e}")
+
+    # ===== COMMUNITY REPORTS =====
+    community_reports = None
+    if process_feedback and config.get("feedback", {}).get("enabled", False):
+        bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
+        if bot_token:
+            reports_path = os.path.join(
+                PROJECT_DIR, config.get("feedback", {}).get("reports_file", "docs/verification/reports.json")
+            )
+            try:
+                new_reports = process_reports(bot_token, reports_path)
+                if new_reports:
+                    logger.info(f"Processed {len(new_reports)} community report(s)")
+                # Load all reports for dashboard
+                community_reports = load_reports(reports_path)
+            except Exception as e:
+                logger.error(f"Report processing failed: {e}")
+
+    # Load verification stats for dashboard (even if we didn't run verification this time)
+    if verification_stats is None:
+        stats_path = os.path.join(PROJECT_DIR, "docs", "verification", "stats.json")
+        if os.path.exists(stats_path):
+            try:
+                with open(stats_path) as f:
+                    verification_stats = json.load(f)
+            except (json.JSONDecodeError, OSError):
+                pass
+
+    # Load model weights for dashboard transparency
+    model_weights_data = load_model_weights(weights_path)
+
     report_data = {
         "location": location["name"],
         "generated_at": datetime.utcnow().isoformat() + "Z",
@@ -288,7 +369,8 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
         "patterns": patterns,
         "model_comparison": model_comparison,
         "chart_data": chart_data,
-        "models": models,
+        "models": all_models,
+        "ai_models": ai_models,
         "current": current,
         "safety_flags": safety_flags,
         "source_comparison": source_comparison,
@@ -306,6 +388,9 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
             "freezing_level": 5, "timing": 5, "depth": 5, "models": 15,
             "loading": 5, "ensemble": 5,
         },
+        "verification_stats": verification_stats,
+        "model_weights": model_weights_data,
+        "community_reports": community_reports,
     }
 
     # ===== OUTPUT =====
@@ -359,6 +444,19 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
             con = row.get("consensus", "\u2014")
             print(f"  {row['date']:>12s}  {om:>10s}  {sf:>10s}  {mf:>10s}  {con:>10s}")
 
+    print(f"\n  Models: {len(all_models)} ({len(models)} physics + {len(ai_models)} AI)")
+    if adaptive_weights:
+        w = adaptive_weights.get("weights", {})
+        print(f"  Weighting: Adaptive — {', '.join(f'{k}: {v:.0%}' for k, v in sorted(w.items(), key=lambda x: -x[1])[:3])}...")
+    else:
+        print(f"  Weighting: Equal")
+
+    if verification_stats:
+        n_ver = verification_stats.get("n_verifications", 0)
+        snow_mae = verification_stats.get("overall", {}).get("snowfall", {}).get("mae")
+        mae_str = f", snow MAE: {snow_mae:.1f}cm" if snow_mae else ""
+        print(f"  Verification: {n_ver} runs{mae_str}")
+
     print(f"\n  Sources: {', '.join(report_data['sources'])}")
     print(f"  Dashboard: {os.path.abspath(os.path.join(PROJECT_DIR, data_cfg.get('dashboard_file', 'docs/index.html')))}")
     print()
@@ -376,6 +474,8 @@ def main():
     parser.add_argument("--no-notify", action="store_true", help="Skip notifications")
     parser.add_argument("--dashboard-only", action="store_true", help="Regenerate dashboard from latest.json")
     parser.add_argument("--json-only", action="store_true", help="Output JSON only, no dashboard")
+    parser.add_argument("--verify", action="store_true", help="Run forecast verification against ERA5")
+    parser.add_argument("--process-reports", action="store_true", help="Process community reports from Telegram")
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose logging")
 
     args = parser.parse_args()
@@ -385,7 +485,8 @@ def main():
 
     config = load_config(args.config)
     run(config, no_notify=args.no_notify, dashboard_only=args.dashboard_only,
-        json_only=args.json_only)
+        json_only=args.json_only, verify=args.verify,
+        process_feedback=args.process_reports)
 
 
 if __name__ == "__main__":

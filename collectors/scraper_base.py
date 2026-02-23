@@ -7,11 +7,8 @@ Both sites use near-identical table structures with `data-row` attributes:
 """
 
 import re
-import logging
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
-
-logger = logging.getLogger(__name__)
 
 
 def parse_forecast_table(html: str) -> dict:

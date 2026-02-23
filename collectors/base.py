@@ -4,8 +4,6 @@ import logging
 from abc import ABC, abstractmethod
 from datetime import datetime
 
-logger = logging.getLogger(__name__)
-
 
 class BaseCollector(ABC):
     """Abstract base class for all weather data collectors."""

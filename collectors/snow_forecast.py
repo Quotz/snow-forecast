@@ -4,14 +4,11 @@ Fetches 6-day forecasts at multiple elevations (bot/mid/top).
 Popova Sapka elevations: 1670m (bot), 2035m (mid), 2400m (top).
 """
 
-import logging
 import requests
 from datetime import datetime
 
 from .base import BaseCollector
 from .scraper_base import parse_forecast_table
-
-logger = logging.getLogger(__name__)
 
 # Snow-Forecast.com resort slug and elevation mapping
 RESORT_CONFIGS = {

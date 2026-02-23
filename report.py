@@ -46,6 +46,12 @@ def generate_dashboard(report_data: dict, template_dir: str, output_path: str):
     env.globals["LABEL_COLORS"] = LABEL_COLORS
     env.globals["SKY_LABELS"] = SKY_LABELS
     env.globals["AVALANCHE_COLORS"] = AVALANCHE_COLORS
+    env.globals["AI_NAME_MAP"] = {
+        "ecmwf_aifs025": "AIFS",
+        "ecmwf_aifs025_single": "AIFS",
+        "graphcast025": "GraphCast",
+        "gfs_graphcast025": "GraphCast",
+    }
     env.globals["now"] = datetime.utcnow
 
     # Custom date filters: "2026-02-19" → "Wed 19/02/2026"

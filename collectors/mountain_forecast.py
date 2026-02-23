@@ -5,14 +5,11 @@ Popova Shapka available at 1825m.
 Bonus: provides cloud base height data not available from other sources.
 """
 
-import logging
 import requests
 from datetime import datetime
 
 from .base import BaseCollector
 from .scraper_base import parse_forecast_table
-
-logger = logging.getLogger(__name__)
 
 # Mountain-Forecast.com location mapping
 LOCATION_CONFIGS = {

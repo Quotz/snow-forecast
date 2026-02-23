@@ -18,17 +18,28 @@ def _format_chart_date(iso_date: str) -> str:
 def build_chart_data(model_comparison: list, models: list) -> dict:
     """Build Chart.js-compatible data structure."""
     colors = [
-        "rgba(77,141,247,0.7)",
-        "rgba(60,192,104,0.7)",
-        "rgba(240,194,48,0.7)",
-        "rgba(187,134,252,0.7)",
-        "rgba(255,138,101,0.7)",
+        "rgba(77,141,247,0.7)",    # ICON - blue
+        "rgba(60,192,104,0.7)",    # ECMWF - green
+        "rgba(240,194,48,0.7)",    # GFS - yellow
+        "rgba(187,134,252,0.7)",   # ARPEGE - purple
+        "rgba(255,138,101,0.7)",   # UKMO - orange
+        "rgba(0,188,212,0.7)",     # AIFS - cyan
+        "rgba(233,30,99,0.7)",     # GraphCast - pink
     ]
+
+    # AI model name formatting
+    AI_NAME_MAP = {
+        "ecmwf_aifs025": "AIFS",
+        "ecmwf_aifs025_single": "AIFS",
+        "graphcast025": "GraphCast",
+        "gfs_graphcast025": "GraphCast",
+    }
+
     labels = [_format_chart_date(row["date"]) for row in model_comparison[:7]]
 
     datasets = []
     for j, model in enumerate(models):
-        name = model.replace("_seamless", "").replace("_ifs025", "").upper()
+        name = AI_NAME_MAP.get(model, model.replace("_seamless", "").replace("_ifs025", "").upper())
         data = [row["snowfall_values"][j] if j < len(row["snowfall_values"]) else 0 for row in model_comparison[:7]]
         datasets.append({
             "label": name,

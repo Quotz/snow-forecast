@@ -51,11 +51,15 @@ BASE_URL = "https://api.open-meteo.com/v1/forecast"
 
 
 class OpenMeteoCollector(BaseCollector):
-    """Fetches multi-model forecast data from Open-Meteo."""
+    """Fetches multi-model forecast data from Open-Meteo (physics + AI models in a single request)."""
 
     def __init__(self, config: dict):
         super().__init__("open_meteo", config)
         self.models = config.get("models", ["icon_seamless", "ecmwf_ifs025", "gfs_seamless"])
+        # Include AI models (AIFS, GraphCast) — same /v1/forecast endpoint
+        ai_models = config.get("ai_models", [])
+        if ai_models:
+            self.models = self.models + ai_models
         self.forecast_days = config.get("forecast", {}).get("days", 16)
 
     def _fetch_elevation(self, lat: float, lon: float, elevation: int,

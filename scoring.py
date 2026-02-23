@@ -2,13 +2,179 @@
 
 Calculates a composite score (0-100) for each forecast day based on
 snow conditions, temperature, wind, sky conditions, and model agreement.
+
+Supports adaptive model weighting: when verification data exists
+(docs/verification/model_weights.json), model weights are derived from
+recent accuracy instead of being equal. Falls back to equal weights
+when no verification data is available.
 """
 
+import json
 import math
+import os
 import logging
 from typing import Optional
 
 logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Adaptive model weighting helpers
+# ---------------------------------------------------------------------------
+
+def load_model_weights(weights_path: str) -> dict:
+    """Load adaptive model weights from verification data.
+
+    Returns dict with keys: weights, bias_corrections, ewma_mae.
+    Returns None if file doesn't exist or is invalid.
+    """
+    if not os.path.exists(weights_path):
+        return None
+    try:
+        with open(weights_path) as f:
+            data = json.load(f)
+        if "weights" not in data:
+            return None
+        return data
+    except (json.JSONDecodeError, OSError) as e:
+        logger.warning(f"Could not load model weights: {e}")
+        return None
+
+
+def apply_bias_correction(model_values: list, model_names: list,
+                          bias_corrections: dict) -> list:
+    """Apply learned bias corrections to model snowfall values.
+
+    Args:
+        model_values: List of snowfall values from each model.
+        model_names: List of model names (same order as values).
+        bias_corrections: Dict of {model_name: {"snowfall": bias_value, ...}}.
+
+    Returns:
+        Corrected values list. Original values for models without corrections.
+    """
+    if not bias_corrections or not model_names:
+        return model_values
+
+    corrected = []
+    for i, val in enumerate(model_values):
+        if val is None:
+            corrected.append(val)
+            continue
+        model = model_names[i] if i < len(model_names) else None
+        if model and model in bias_corrections:
+            bias = bias_corrections[model].get("snowfall", 0)
+            corrected.append(max(0, val - bias))
+        else:
+            corrected.append(val)
+    return corrected
+
+
+def update_model_weights(verification_stats: dict, weights_path: str,
+                         alpha: float = 0.1, min_weight: float = 0.1) -> dict:
+    """Update adaptive model weights from verification statistics.
+
+    Uses EWMA (Exponentially Weighted Moving Average) of each model's MAE:
+        ewma_mae(t) = alpha * |forecast - observed| + (1-alpha) * ewma_mae(t-1)
+
+    Converts to weights: weight_i = (1/mae_i) / sum(1/mae_j) with min_weight floor.
+
+    Args:
+        verification_stats: Dict from verification.py with per_model metrics.
+        weights_path: Path to save updated weights JSON.
+        alpha: EWMA smoothing factor (0.1 = slow adaptation).
+        min_weight: Minimum weight per model (0.1 = 10% floor).
+
+    Returns:
+        Updated weights dict.
+    """
+    from datetime import datetime
+
+    per_model = verification_stats.get("per_model", {})
+    if not per_model:
+        logger.info("No per-model verification data, skipping weight update")
+        return None
+
+    # Load existing weights for EWMA continuity
+    existing = load_model_weights(weights_path)
+    prev_ewma = existing.get("ewma_mae", {}) if existing else {}
+
+    ewma_mae = {}
+    bias_corrections = {}
+
+    for model, metrics in per_model.items():
+        snow_metrics = metrics.get("snowfall", {})
+        temp_metrics = metrics.get("temperature", {})
+
+        # EWMA for snowfall MAE
+        current_mae = snow_metrics.get("mae")
+        if current_mae is not None:
+            prev = prev_ewma.get(model, {}).get("snowfall", current_mae)
+            ewma_mae.setdefault(model, {})["snowfall"] = alpha * current_mae + (1 - alpha) * prev
+        elif model in prev_ewma:
+            ewma_mae.setdefault(model, {})["snowfall"] = prev_ewma[model].get("snowfall")
+
+        # EWMA for temperature MAE
+        current_temp_mae = temp_metrics.get("mae")
+        if current_temp_mae is not None:
+            prev = prev_ewma.get(model, {}).get("temperature", current_temp_mae)
+            ewma_mae.setdefault(model, {})["temperature"] = alpha * current_temp_mae + (1 - alpha) * prev
+        elif model in prev_ewma:
+            ewma_mae.setdefault(model, {})["temperature"] = prev_ewma[model].get("temperature")
+
+        # Bias corrections
+        snow_bias = snow_metrics.get("bias")
+        temp_bias = temp_metrics.get("bias")
+        if snow_bias is not None or temp_bias is not None:
+            bias_corrections[model] = {}
+            if snow_bias is not None:
+                bias_corrections[model]["snowfall"] = snow_bias
+            if temp_bias is not None:
+                bias_corrections[model]["temperature"] = temp_bias
+
+    # Convert MAE to weights: weight_i = (1/mae_i) / sum(1/mae_j)
+    inv_mae = {}
+    for model, maes in ewma_mae.items():
+        snow_mae = maes.get("snowfall")
+        if snow_mae is not None and snow_mae > 0:
+            inv_mae[model] = 1.0 / snow_mae
+        elif snow_mae == 0:
+            inv_mae[model] = 10.0  # Perfect score, high weight
+
+    if not inv_mae:
+        logger.info("No valid MAE data for weight calculation")
+        return None
+
+    total_inv = sum(inv_mae.values())
+    raw_weights = {m: v / total_inv for m, v in inv_mae.items()}
+
+    # Apply minimum weight floor and renormalize
+    n_models = len(raw_weights)
+    if n_models > 0:
+        # Ensure no model gets less than min_weight
+        weights = {}
+        for m, w in raw_weights.items():
+            weights[m] = max(w, min_weight)
+        # Renormalize
+        total_w = sum(weights.values())
+        weights = {m: w / total_w for m, w in weights.items()}
+    else:
+        weights = raw_weights
+
+    result = {
+        "updated_at": datetime.utcnow().isoformat() + "Z",
+        "weights": {m: round(w, 4) for m, w in weights.items()},
+        "bias_corrections": bias_corrections,
+        "ewma_mae": ewma_mae,
+    }
+
+    # Save
+    os.makedirs(os.path.dirname(weights_path), exist_ok=True)
+    with open(weights_path, "w") as f:
+        json.dump(result, f, indent=2)
+    logger.info(f"Model weights updated: {result['weights']}")
+
+    return result
 
 
 def _safe(val, default=0):
@@ -199,27 +365,57 @@ def score_snow_depth_trend(current_depth: float, depths_3day: list) -> float:
         return 0  # Significant melt
 
 
-def score_model_agreement(snowfall_values: list) -> float:
+def score_model_agreement(snowfall_values: list, model_weights: dict = None,
+                          model_names: list = None) -> float:
     """Score based on how well models agree (0-15 points).
 
     Hybrid approach:
     - Direction agreement (5 pts): fraction agreeing on snow vs no-snow
     - Pairwise closeness (5 pts): fraction of pairs within 30% of each other
     - Range tightness (5 pts): 1 - ((max-min)/mean), scaled
+
+    When model_weights is provided, uses weighted calculations instead of
+    equal weighting (adaptive mode from verification data).
     """
     valid = [v for v in snowfall_values if v is not None and v >= 0]
 
     if len(valid) < 2:
         return 7.5  # Only one model, middle confidence
 
+    # Build weight list aligned with valid values
+    weights = None
+    if model_weights and model_names:
+        weights = []
+        valid_idx = 0
+        for i, v in enumerate(snowfall_values):
+            if v is not None and v >= 0:
+                name = model_names[i] if i < len(model_names) else None
+                w = model_weights.get(name, 1.0 / len(valid)) if name else 1.0 / len(valid)
+                weights.append(w)
+        # Normalize weights for valid models
+        if weights:
+            total_w = sum(weights)
+            if total_w > 0:
+                weights = [w / total_w for w in weights]
+
     snow_threshold = 1.0  # cm
-    mean = sum(valid) / len(valid)
+
+    # Weighted mean
+    if weights:
+        mean = sum(v * w for v, w in zip(valid, weights))
+    else:
+        mean = sum(valid) / len(valid)
 
     # --- Direction agreement (5 pts) ---
-    snow_count = sum(1 for v in valid if v >= snow_threshold)
-    no_snow_count = len(valid) - snow_count
-    majority = max(snow_count, no_snow_count)
-    direction_frac = majority / len(valid)
+    if weights:
+        snow_weight = sum(w for v, w in zip(valid, weights) if v >= snow_threshold)
+        no_snow_weight = sum(w for v, w in zip(valid, weights) if v < snow_threshold)
+        direction_frac = max(snow_weight, no_snow_weight)
+    else:
+        snow_count = sum(1 for v in valid if v >= snow_threshold)
+        no_snow_count = len(valid) - snow_count
+        majority = max(snow_count, no_snow_count)
+        direction_frac = majority / len(valid)
     direction_pts = direction_frac * 5.0
 
     # --- Pairwise closeness (5 pts) ---
@@ -230,7 +426,6 @@ def score_model_agreement(snowfall_values: list) -> float:
             n_pairs += 1
             pair_max = max(valid[i], valid[j])
             if pair_max < 0.5:
-                # Both near zero -- consider them close
                 close_pairs += 1
             else:
                 diff_ratio = abs(valid[i] - valid[j]) / pair_max
@@ -244,7 +439,6 @@ def score_model_agreement(snowfall_values: list) -> float:
     if mean > 0.5:
         tightness = max(0, 1.0 - (val_range / mean))
     else:
-        # All near zero -- tight by definition
         tightness = 1.0 if val_range < 1.0 else 0.0
     tightness_pts = tightness * 5.0
 
@@ -495,18 +689,26 @@ def score_sky_conditions(cloud_cover: float, cloud_cover_low: float,
     }
 
 
-def score_source_confidence(om_snow: float, scraper_snow_values: list) -> dict:
+def score_source_confidence(om_snow: float, scraper_snow_values: list,
+                            source_weights: dict = None) -> dict:
     """Score cross-source confidence and compute blended snowfall estimate.
 
     Compares Open-Meteo's snowfall prediction against scraper sources
     (Snow-Forecast.com, Mountain-Forecast.com) to adjust confidence.
+
+    Args:
+        om_snow: Open-Meteo average snowfall prediction (cm).
+        scraper_snow_values: List of scraper snowfall values.
+        source_weights: Optional dict with learned source weights, e.g.
+            {"open_meteo": 0.65, "scrapers": 0.35}. Falls back to
+            60/40 split when not provided.
 
     Logic:
         - If all sources agree on snow -> boost confidence (up to +8 pts)
         - If all sources agree on no snow -> boost confidence (up to +5 pts)
         - If Open-Meteo predicts snow but scrapers don't -> dampen (-3 pts)
         - If scrapers predict snow but Open-Meteo doesn't -> slight boost (+2 pts)
-        - Blended snowfall is weighted: 60% Open-Meteo, 20% each scraper
+        - Blended snowfall is weighted: 60% Open-Meteo, 20% each scraper (or learned weights)
 
     Returns:
         {
@@ -535,9 +737,20 @@ def score_source_confidence(om_snow: float, scraper_snow_values: list) -> dict:
 
     scraper_avg = sum(valid_scraper) / len(valid_scraper)
 
-    # Weighted blend: Open-Meteo 60%, scrapers split remaining 40%
-    scraper_weight = 0.4 / len(valid_scraper)
-    blended = om_snow * 0.6 + sum(v * scraper_weight for v in valid_scraper)
+    # Use learned source weights if available, else default 60/40
+    om_weight = 0.6
+    scraper_total_weight = 0.4
+    if source_weights:
+        om_weight = source_weights.get("open_meteo", 0.6)
+        scraper_total_weight = source_weights.get("scrapers", 0.4)
+        # Renormalize
+        total = om_weight + scraper_total_weight
+        if total > 0:
+            om_weight /= total
+            scraper_total_weight /= total
+
+    scraper_weight = scraper_total_weight / len(valid_scraper)
+    blended = om_snow * om_weight + sum(v * scraper_weight for v in valid_scraper)
 
     om_has_snow = om_snow >= 2
     scrapers_have_snow = scraper_avg >= 2
@@ -592,7 +805,8 @@ def score_source_confidence(om_snow: float, scraper_snow_values: list) -> dict:
 def calculate_powder_score(day_data: dict, scoring_cfg: dict, sky_cfg: dict,
                            scraper_snow_values: list = None,
                            ensemble_day_data: dict = None,
-                           location_cfg: dict = None) -> dict:
+                           location_cfg: dict = None,
+                           adaptive_weights: dict = None) -> dict:
     """Calculate the full powder score for a single day.
 
     Args:
@@ -607,6 +821,7 @@ def calculate_powder_score(day_data: dict, scoring_cfg: dict, sky_cfg: dict,
             - snow_depth_m: float (current)
             - snow_depths_3day: list (last 3 days)
             - model_snowfall_values: list (snowfall from each model)
+            - model_names: list (model names, same order as values)
             - cloud_cover: float (%)
             - cloud_cover_low: float (%)
             - sunshine_hours: float
@@ -622,6 +837,9 @@ def calculate_powder_score(day_data: dict, scoring_cfg: dict, sky_cfg: dict,
         scraper_snow_values: Optional list of scraper snowfall values
         ensemble_day_data: Optional dict with percentiles (p10, p25, p50, p75, p90)
         location_cfg: Optional dict with location info including aspects.primary_degrees
+        adaptive_weights: Optional dict from load_model_weights() with keys:
+            weights, bias_corrections, ewma_mae. When provided, enables
+            adaptive scoring (weighted model agreement, bias-corrected values).
 
     Returns:
         Dict with total score, breakdown, classification, and metadata.
@@ -632,6 +850,20 @@ def calculate_powder_score(day_data: dict, scoring_cfg: dict, sky_cfg: dict,
     gust = _safe(day_data.get("wind_gust_kmh"), 20)
     freeze = _safe(day_data.get("freezing_level_m"), 1500)
     depth = _safe(day_data.get("snow_depth_m"), 0)
+
+    # Extract adaptive weighting components
+    model_weight_map = None
+    bias_corrections = None
+    source_weights = None
+    if adaptive_weights:
+        model_weight_map = adaptive_weights.get("weights")
+        bias_corrections = adaptive_weights.get("bias_corrections")
+
+    # Apply bias correction to model snowfall values if available
+    model_snowfall = day_data.get("model_snowfall_values", [])
+    model_names = day_data.get("model_names", [])
+    if bias_corrections and model_names:
+        model_snowfall = apply_bias_correction(model_snowfall, model_names, bias_corrections)
 
     # Calculate component scores
     snow_pts = score_snow_quantity(snow_24h, scoring_cfg.get("snow", {}))
@@ -647,19 +879,23 @@ def calculate_powder_score(day_data: dict, scoring_cfg: dict, sky_cfg: dict,
         day_data.get("snow_depths_3day", []),
     )
     agreement_pts = score_model_agreement(
-        day_data.get("model_snowfall_values", [])
+        model_snowfall,
+        model_weights=model_weight_map,
+        model_names=model_names,
     )
 
-    # New: snow quality scoring
+    # Snow quality scoring
     quality_pts = score_snow_quality(day_data, scoring_cfg.get("snow_quality", {}))
 
-    # New: wind loading bonus
+    # Wind loading bonus
     loading_pts = score_wind_loading(
         day_data, scoring_cfg.get("wind_loading", {}), location_cfg
     )
 
-    # Cross-source confidence adjustment
-    source_conf = score_source_confidence(snow_24h, scraper_snow_values or [])
+    # Cross-source confidence adjustment (with optional learned source weights)
+    source_conf = score_source_confidence(
+        snow_24h, scraper_snow_values or [], source_weights=source_weights
+    )
 
     # New: ensemble confidence
     ensemble_pts = score_ensemble_confidence(ensemble_day_data, day_data) if ensemble_day_data else 0
@@ -803,7 +1039,8 @@ def smooth_scores(scores: list) -> list:
         if original_total < 20 and snow_cm < 3:
             continue
 
-        # Compute neighbor average
+        # Compute neighbor average — read from ORIGINAL scores (not smoothed)
+        # so each day is adjusted independently (Jacobi-style smoothing)
         neighbors = []
         if i > 0:
             neighbors.append(scores[i - 1]["total"])

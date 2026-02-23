@@ -58,7 +58,7 @@ def extract_daily_data_from_open_meteo(om_data: dict, elevation: int,
         # Use best available snowfall (average of models, or plain key)
         if model_snowfall_values:
             avg_snow = sum(model_snowfall_values) / len(model_snowfall_values)
-        elif "snowfall_sum" in daily:
+        elif "snowfall_sum" in daily and i < len(daily.get("snowfall_sum", [])):
             avg_snow = _safe(daily["snowfall_sum"][i], 0)
         else:
             avg_snow = 0
@@ -92,9 +92,9 @@ def extract_daily_data_from_open_meteo(om_data: dict, elevation: int,
             if gkey in daily and i < len(daily[gkey]):
                 val = daily[gkey][i]
                 gust_max = max(gust_max or 0, _safe(val, 0))
-        if wind_max is None and "wind_speed_10m_max" in daily:
+        if wind_max is None and "wind_speed_10m_max" in daily and i < len(daily.get("wind_speed_10m_max", [])):
             wind_max = _safe(daily["wind_speed_10m_max"][i], 10)
-        if gust_max is None and "wind_gusts_10m_max" in daily:
+        if gust_max is None and "wind_gusts_10m_max" in daily and i < len(daily.get("wind_gusts_10m_max", [])):
             gust_max = _safe(daily["wind_gusts_10m_max"][i], 20)
 
         # Freezing level, cloud cover, etc. from hourly data (skiing-hours average 08-16)
