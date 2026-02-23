@@ -39,6 +39,28 @@
             margin: 0 auto;
         }
 
+        /* Mobile Hero */
+        .mobile-hero { display: none; }
+        @media (max-width: 600px) {
+            .mobile-hero {
+                display: block;
+                text-align: center;
+                padding: 20px 0;
+                margin-bottom: 16px;
+            }
+            .mobile-hero .big-score {
+                font-size: 4rem;
+                font-weight: 900;
+            }
+            .mobile-hero .stats {
+                display: flex;
+                justify-content: center;
+                gap: 16px;
+                margin-top: 8px;
+                font-size: 0.85rem;
+            }
+        }
+
         /* Header */
         .header {
             display: flex;
@@ -69,7 +91,6 @@
         }
         .header-badge .dot {
             width: 6px; height: 6px; border-radius: 50%;
-            background: var(--good);
             display: inline-block;
         }
         .subtitle {
@@ -262,6 +283,22 @@
         /* Chart */
         .chart-container { position: relative; height: 260px; margin: 12px 0; }
 
+        /* Tab buttons */
+        .tab-btn {
+            background: var(--bg-raised);
+            border: 1px solid var(--card-border);
+            color: var(--text-dim);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
         /* Responsive */
         @media (max-width: 900px) {
             .grid-7 { grid-template-columns: repeat(4, 1fr); }
@@ -272,6 +309,7 @@
             .grid-7 { grid-template-columns: repeat(3, 1fr); }
             .score-card .score { font-size: 1.8rem; }
             .score-card { padding: 10px 6px; }
+            .mobile-collapse summary { cursor: pointer; font-weight: 600; }
         }
 
         .footer {
@@ -285,17 +323,73 @@
     </style>
 </head>
 <body>
+    {# ========== MOBILE HERO ========== #}
+    {% if data.insights %}
+    <div class="mobile-hero">
+        <div class="big-score score-{{ data.insights.best_day.label if data.insights.best_day else 'SKIP' }}">
+            {{ data.insights.best_day.score if data.insights.best_day else '—' }}
+        </div>
+        <div style="font-size:0.9rem;color:var(--text-dim);">{{ data.insights.headline }}</div>
+        <div class="stats">
+            <span>{{ data.insights.snowpack_status }}</span>
+            <span>{{ data.insights.seven_day_snow_total|round(0)|int }}cm / 7d</span>
+        </div>
+    </div>
+    {% endif %}
+
+    {# ========== HEADER ========== #}
     <div class="header">
         <h1>{{ data.location }}</h1>
+        {% if data.source_health %}
         <span class="header-badge">
-            <span class="dot"></span>
+            {% for src in data.source_health %}
+            <span class="dot" style="background:{{ 'var(--good)' if src.status == 'ok' else 'var(--skip)' }};"></span>
+            {% endfor %}
+            {{ data.source_health|length }} sources
+        </span>
+        {% else %}
+        <span class="header-badge">
+            <span class="dot" style="background:var(--good);"></span>
             {{ data.sources | length }} sources active
         </span>
+        {% endif %}
     </div>
     <p class="subtitle">
         Updated <span id="relative-time" data-utc="{{ data.generated_at }}">{{ generated_at }}</span> &nbsp;|&nbsp;
         {{ data.sources | join(' &middot; ') }}
     </p>
+
+    {# ========== PER-SOURCE FRESHNESS ========== #}
+    {% if data.source_health %}
+    <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:16px;">
+        {% for src in data.source_health %}
+        <span style="margin-right:12px;">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:{{ 'var(--good)' if src.status == 'ok' else 'var(--skip)' }};"></span>
+            {{ src.name }}: {{ src.age }}
+        </span>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {# ========== INSIGHTS PANEL ========== #}
+    {% if data.insights %}
+    <div class="card" style="border-left:3px solid var(--accent);background:linear-gradient(135deg, var(--card), var(--bg-raised));">
+        <div style="font-size:1.2rem;font-weight:700;margin-bottom:8px;">{{ data.insights.headline }}</div>
+        {% if data.insights.best_day %}
+        <div style="font-size:0.9rem;margin-bottom:6px;">
+            &#127956; Best Day: <strong>{{ data.insights.best_day.date|dateshort }}</strong> —
+            {{ data.insights.best_day.score }} ({{ data.insights.best_day.label }})
+            <span style="color:var(--text-dim);">{{ data.insights.best_day.reason }}</span>
+        </div>
+        {% endif %}
+        {% for item in data.insights.action_items %}
+        <div style="font-size:0.85rem;color:var(--text-dim);margin:3px 0;">&bull; {{ item }}</div>
+        {% endfor %}
+        <div style="font-size:0.82rem;color:var(--text-muted);margin-top:6px;">
+            &#128201; Snowpack: {{ data.insights.snowpack_status }} &middot; 7-day total: {{ data.insights.seven_day_snow_total|round(0)|int }}cm
+        </div>
+    </div>
+    {% endif %}
 
     {# ========== PATTERNS / ALERTS ========== #}
     {% if data.patterns %}
@@ -303,7 +397,7 @@
         <h2>Detected Patterns</h2>
         {% for p in data.patterns %}
         <div class="pattern {% if p.type == 'storm_then_clear' %}storm-clear{% elif p.type == 'warming_trend' %}warning{% endif %}">
-            {% if p.type == 'storm_then_clear' %}&#9889;{% elif p.type == 'multi_day_storm' %}&#127784;{% elif p.type == 'warming_trend' %}&#9888;{% elif p.type == 'cold_snap' %}&#10052;{% endif %}
+            {% if p.type == 'storm_then_clear' %}&#9889;{% elif p.type == 'multi_day_storm' %}&#127784;{% elif p.type == 'warming_trend' %}&#9888;{% elif p.type == 'cold_snap' %}&#10052;{% elif p.type == 'upslope_event' %}&#127956;{% elif p.type == 'wind_slab_risk' %}&#9888;{% elif p.type == 'melt_freeze_crust' %}&#129482;{% elif p.type == 'legendary_setup' %}&#127942;{% elif p.type == 'near_miss_warm' or p.type == 'near_miss_wind' or p.type == 'near_miss_low_snow' %}&#128064;{% endif %}
             {{ p.message }}
         </div>
         {% endfor %}
@@ -333,6 +427,21 @@
                 <span class="confidence-dot" style="background:{{ 'var(--good)' if s.source_confidence.confidence == 'HIGH' else 'var(--warning)' if s.source_confidence.confidence == 'LOW' else 'var(--text-muted)' }}" title="{{ s.source_confidence.detail }}"></span>
                 {% endif %}
             </div>
+            {# Model spread indicator #}
+            {% if data.model_spread and i < data.model_spread|length %}
+            {% set sp = data.model_spread[i] %}
+            {% if sp.spread_cm is defined and sp.spread_cm > 0 %}
+            <div style="margin-top:4px;font-size:0.68rem;color:var(--text-muted);">
+                {{ sp.min_cm|round(0)|int }}&ndash;{{ sp.max_cm|round(0)|int }}cm range
+            </div>
+            {% endif %}
+            {% endif %}
+            {# Ensemble probability #}
+            {% if data.ensemble and data.ensemble.daily and data.ensemble.daily.snowfall and data.ensemble.daily.snowfall.prob_5cm and i < data.ensemble.daily.snowfall.prob_5cm|length and data.ensemble.daily.snowfall.prob_5cm[i] is not none %}
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:4px;">
+                {{ (data.ensemble.daily.snowfall.prob_5cm[i] * 100)|round(0)|int }}% chance &ge;5cm
+            </div>
+            {% endif %}
         </div>
         {% endif %}
         {% endfor %}
@@ -341,11 +450,11 @@
     {# ========== EXTENDED OUTLOOK (8-16 DAYS) ========== #}
     {% if data.scores | length > 7 %}
     <h2>Extended Outlook <span style="color:var(--text-muted);font-size:0.8rem;font-weight:400">&mdash; days 8&ndash;16, lower confidence</span></h2>
-    <div class="grid grid-7" style="opacity:0.6;">
+    <div class="grid grid-7">
         {% for i in range(7, data.scores | length) %}
         {% set s = data.scores[i] %}
         {% set date = data.dates[i] if i < data.dates | length else '' %}
-        <div class="score-card border-{{ s.label }}">
+        <div class="score-card border-{{ s.label }}" style="border-style:dashed;background:repeating-linear-gradient(45deg,var(--card),var(--card) 10px,rgba(36,50,72,0.3) 10px,rgba(36,50,72,0.3) 12px);">
             <div class="day-name">{{ date | datecard | safe }}</div>
             <div class="score score-{{ s.label }}" style="font-size:1.6rem;">{{ s.total | round(0) | int }}</div>
             <div class="label label-{{ s.label }}">{{ s.label }}</div>
@@ -353,6 +462,7 @@
                 {{ s.conditions.snowfall_24h_cm | round(0) | int }}cm &middot;
                 {{ s.conditions.temperature_c | round(0) | int }}&deg;C
             </div>
+            <div style="font-size:0.65rem;color:var(--warning);margin-top:2px;">Low Confidence</div>
         </div>
         {% endfor %}
     </div>
@@ -410,10 +520,28 @@
         </noscript>
     </div>
 
+    {# ========== DETAILED CHARTS (TABBED) ========== #}
+    {% if data.multi_charts %}
+    <div class="card">
+        <h2>Detailed Charts</h2>
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+            <button class="tab-btn active" onclick="showChart('temp')">Temperature</button>
+            <button class="tab-btn" onclick="showChart('wind')">Wind</button>
+            <button class="tab-btn" onclick="showChart('freeze')">Freezing Level</button>
+            <button class="tab-btn" onclick="showChart('depth')">Snow Depth</button>
+        </div>
+        <div class="chart-container" id="chartTemp"><canvas id="tempChart"></canvas></div>
+        <div class="chart-container" id="chartWind" style="display:none;"><canvas id="windChart"></canvas></div>
+        <div class="chart-container" id="chartFreeze" style="display:none;"><canvas id="freezeChart"></canvas></div>
+        <div class="chart-container" id="chartDepth" style="display:none;"><canvas id="depthChart"></canvas></div>
+    </div>
+    {% endif %}
+
     {# ========== SOURCE COMPARISON ========== #}
     {% if data.source_comparison %}
+    <details class="mobile-collapse" open>
+        <summary style="cursor:pointer;font-weight:600;color:var(--accent);font-size:1.1rem;margin:28px 0 14px;letter-spacing:-0.3px;">Source Comparison</summary>
     <div class="card">
-        <h2>Source Comparison</h2>
         <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:14px;">
             Cross-referencing API models with curated mountain forecasts.
             <span style="color:var(--good);">Green</span> = consensus.
@@ -471,12 +599,14 @@
         </table>
         </div>
     </div>
+    </details>
     {% endif %}
 
     {# ========== MODEL COMPARISON TABLE ========== #}
     {% if data.model_comparison %}
+    <details class="mobile-collapse" open>
+        <summary style="cursor:pointer;font-weight:600;color:var(--accent);font-size:1.1rem;margin:28px 0 14px;letter-spacing:-0.3px;">Model Comparison &mdash; Daily Snowfall (cm)</summary>
     <div class="card">
-        <h2>Model Comparison &mdash; Daily Snowfall (cm)</h2>
         <div style="overflow-x:auto;">
         <table>
             <tr>
@@ -500,23 +630,34 @@
         </table>
         </div>
     </div>
+    </details>
     {% endif %}
 
     {# ========== SCORE BREAKDOWN TABLE ========== #}
+    <details class="mobile-collapse" open>
+        <summary style="cursor:pointer;font-weight:600;color:var(--accent);font-size:1.1rem;margin:28px 0 14px;letter-spacing:-0.3px;">Score Breakdown</summary>
     <div class="card">
-        <h2>Score Breakdown</h2>
         <div style="overflow-x:auto;">
         <table>
             <tr>
                 <th>Date</th>
                 <th>Total</th>
-                <th>Snow <span style="font-weight:400">/40</span></th>
+                <th>Snow <span style="font-weight:400">/{{ data.score_weights.snow if data.score_weights is defined and data.score_weights else 40 }}</span></th>
+                {% if data.score_weights is defined and data.score_weights and data.score_weights.quality is defined %}
+                <th>Quality <span style="font-weight:400">/{{ data.score_weights.quality }}</span></th>
+                {% endif %}
                 <th>Temp <span style="font-weight:400">/15</span></th>
                 <th>Wind <span style="font-weight:400">/10</span></th>
                 <th>Freeze <span style="font-weight:400">/5</span></th>
                 <th>Timing <span style="font-weight:400">/5</span></th>
                 <th>Depth <span style="font-weight:400">/5</span></th>
-                <th>Models <span style="font-weight:400">/20</span></th>
+                <th>Models <span style="font-weight:400">/{{ data.score_weights.models if data.score_weights is defined and data.score_weights else 20 }}</span></th>
+                {% if data.score_weights is defined and data.score_weights and data.score_weights.loading is defined %}
+                <th>Loading <span style="font-weight:400">/{{ data.score_weights.loading }}</span></th>
+                {% endif %}
+                {% if data.score_weights is defined and data.score_weights and data.score_weights.ensemble is defined %}
+                <th>Ensemble <span style="font-weight:400">&plusmn;{{ data.score_weights.ensemble }}</span></th>
+                {% endif %}
                 <th>Sources</th>
             </tr>
             {% for i in range(data.scores | length) %}
@@ -528,12 +669,21 @@
                 <td class="td-date">{{ date | dateshort }}</td>
                 <td><strong class="score-{{ s.label }}">{{ s.total | round(0) | int }}</strong></td>
                 <td>{{ b.snow_quantity | round(1) }}</td>
+                {% if data.score_weights is defined and data.score_weights and data.score_weights.quality is defined %}
+                <td>{{ b.snow_quality | round(1) if b.snow_quality is defined else '—' }}</td>
+                {% endif %}
                 <td>{{ b.temperature | round(1) }}</td>
                 <td>{{ b.wind | round(1) }}</td>
                 <td>{{ b.freezing_level | round(1) }}</td>
                 <td>{{ b.storm_timing | round(1) }}</td>
                 <td>{{ b.snow_depth_trend | round(1) }}</td>
                 <td>{{ b.model_agreement | round(1) }}</td>
+                {% if data.score_weights is defined and data.score_weights and data.score_weights.loading is defined %}
+                <td>{{ b.wind_loading | round(1) if b.wind_loading is defined else '—' }}</td>
+                {% endif %}
+                {% if data.score_weights is defined and data.score_weights and data.score_weights.ensemble is defined %}
+                <td>{{ b.ensemble_confidence | round(1) if b.ensemble_confidence is defined else '—' }}</td>
+                {% endif %}
                 <td class="{{ 'agree' if s.source_confidence.confidence == 'HIGH' else 'disagree' if s.source_confidence.confidence == 'LOW' else '' }}"
                     title="{{ s.source_confidence.detail }}">
                     {% if b.source_confidence > 0 %}+{% endif %}{{ b.source_confidence | round(0) | int }}
@@ -545,6 +695,7 @@
         </table>
         </div>
     </div>
+    </details>
 
     {# ========== SAFETY PANEL ========== #}
     <div class="safety">
@@ -558,6 +709,26 @@
         <p style="margin:5px 0;color:var(--warning);font-size:0.85rem;">&#9888; {{ flag }}</p>
         {% endfor %}
         {% endif %}
+
+        {# Avalanche danger display #}
+        {% if data.avalanche_danger %}
+        <div style="margin:12px 0;">
+            <h3>Estimated Avalanche Danger</h3>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;">
+            {% for ad in data.avalanche_danger[:7] %}
+            <div style="text-align:center;padding:8px;border-radius:8px;background:{{ AVALANCHE_COLORS[ad.level].bg if ad.level in AVALANCHE_COLORS else 'var(--card)' }};min-width:80px;">
+                <div style="font-size:0.72rem;font-weight:600;">{{ ad.date|dateshort }}</div>
+                <div style="font-size:1.4rem;font-weight:800;">{{ ad.level }}</div>
+                <div style="font-size:0.65rem;">{{ ad.level_name }}</div>
+            </div>
+            {% endfor %}
+            </div>
+            <p style="font-size:0.75rem;color:var(--warning);margin-top:8px;font-style:italic;">
+                &#9888; Automated estimate only. Always consult local avalanche bulletins before venturing off-piste.
+            </p>
+        </div>
+        {% endif %}
+
         <p style="margin-top:10px;font-size:0.75rem;color:var(--text-muted);">
             Nearest reference: Bulgarian Avalanche Service (Pirin/Rila) &middot; Slovenian Avalanche Service
         </p>
@@ -567,7 +738,7 @@
         Snow Monitor v2.0 &nbsp;&middot;&nbsp; {{ data.sources | join(' &middot; ') }} &nbsp;&middot;&nbsp; {{ generated_at }}
     </div>
 
-    {# ========== CHART SCRIPT ========== #}
+    {# ========== CHART SCRIPTS ========== #}
     <script>
     {% if data.chart_data %}
     const ctx = document.getElementById('snowChart').getContext('2d');
@@ -608,6 +779,77 @@
             }
         }
     });
+    {% endif %}
+
+    // Detailed Charts — tab switching and lazy initialization
+    {% if data.multi_charts %}
+    var chartInstances = {};
+
+    function showChart(name) {
+        var ids = ['temp', 'wind', 'freeze', 'depth'];
+        ids.forEach(function(id) {
+            document.getElementById('chart' + id.charAt(0).toUpperCase() + id.slice(1)).style.display = (id === name) ? '' : 'none';
+        });
+        // Update tab buttons
+        document.querySelectorAll('.tab-btn').forEach(function(btn) {
+            btn.classList.remove('active');
+            if (btn.textContent.toLowerCase().indexOf(name === 'freeze' ? 'freezing' : name) >= 0) {
+                btn.classList.add('active');
+            }
+        });
+        // Lazy init chart
+        if (!chartInstances[name]) {
+            initDetailChart(name);
+        }
+    }
+
+    function initDetailChart(name) {
+        var mc = {{ data.multi_charts | tojson }};
+        var keyMap = {temp: 'temperature_chart', wind: 'wind_chart', freeze: 'freezing_level_chart', depth: 'snow_depth_chart'};
+        var chartConfig = mc[keyMap[name]];
+        if (!chartConfig) return;
+
+        var canvasId = {temp: 'tempChart', wind: 'windChart', freeze: 'freezeChart', depth: 'depthChart'}[name];
+        var canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+
+        var datasets = [];
+        for (var i = 0; i < chartConfig.datasets.length; i++) {
+            var ds = chartConfig.datasets[i];
+            datasets.push({
+                label: ds.label,
+                data: ds.data,
+                borderColor: ds.color,
+                backgroundColor: ds.fill ? ds.color.replace('0.7', '0.1') : 'transparent',
+                fill: ds.fill || false,
+                tension: 0.3,
+                pointRadius: 3,
+            });
+        }
+
+        chartInstances[name] = new Chart(canvas.getContext('2d'), {
+            type: 'line',
+            data: { labels: chartConfig.labels, datasets: datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#7b8fa6', padding: 16, usePointStyle: true } }
+                },
+                scales: {
+                    x: { ticks: { color: '#7b8fa6', font: { size: 11 } }, grid: { color: 'rgba(36,50,72,0.3)' } },
+                    y: {
+                        ticks: { color: '#7b8fa6', font: { size: 11 }, callback: function(v) { return v + (chartConfig.unit || ''); } },
+                        grid: { color: 'rgba(36,50,72,0.3)' },
+                        title: { display: true, text: chartConfig.y_label || '', color: '#7b8fa6', font: { size: 12 } }
+                    }
+                }
+            }
+        });
+    }
+
+    // Initialize the first (visible) chart
+    initDetailChart('temp');
     {% endif %}
 
     // Relative time display

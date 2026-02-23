@@ -1,5 +1,7 @@
-"""Analysis utilities — chart data, safety flags, source comparison."""
+"""Analysis utilities — chart data, safety flags, source comparison,
+avalanche danger estimation, multi-chart data builder, model spread."""
 
+import math
 from datetime import datetime
 
 
@@ -15,7 +17,13 @@ def _format_chart_date(iso_date: str) -> str:
 
 def build_chart_data(model_comparison: list, models: list) -> dict:
     """Build Chart.js-compatible data structure."""
-    colors = ["rgba(77,141,247,0.7)", "rgba(60,192,104,0.7)", "rgba(240,194,48,0.7)"]
+    colors = [
+        "rgba(77,141,247,0.7)",
+        "rgba(60,192,104,0.7)",
+        "rgba(240,194,48,0.7)",
+        "rgba(187,134,252,0.7)",
+        "rgba(255,138,101,0.7)",
+    ]
     labels = [_format_chart_date(row["date"]) for row in model_comparison[:7]]
 
     datasets = []
@@ -121,3 +129,241 @@ def _build_source_comparison(scores: list, sf_data: dict, mf_data: dict) -> list
         comparison.append(row)
 
     return comparison
+
+
+def estimate_avalanche_danger(scores: list) -> list:
+    """Estimate avalanche danger per day using European 1-5 scale.
+
+    This is an automated heuristic estimate. Always consult local avalanche bulletins.
+    """
+    DISCLAIMER = "Automated estimate only. Always consult local avalanche bulletins."
+    results = []
+
+    for i, day in enumerate(scores[:7]):
+        cond = day.get("conditions", {})
+        date = day.get("date", f"Day {i+1}")
+
+        snow_24h = cond.get("snowfall_24h_cm", 0) or 0
+        wind = cond.get("wind_speed_kmh", 0) or 0
+        freezing_level = cond.get("freezing_level_m", 0) or 0
+        snow_depth = cond.get("snow_depth_m", 0) or 0
+        rain_mm = cond.get("rain_mm", 0) or 0
+
+        # --- New snow 24h score (linear interpolation) ---
+        if snow_24h <= 0:
+            new_snow_24h_pts = 0
+        elif snow_24h >= 30:
+            new_snow_24h_pts = 30
+        else:
+            # Linear: 5cm=5, 10=10, 15=15, 20=20, 30=30
+            new_snow_24h_pts = snow_24h
+
+        # --- New snow 72h score ---
+        snow_72h = snow_24h
+        for j in range(1, 3):
+            if i - j >= 0:
+                snow_72h += (scores[i - j].get("conditions", {}).get("snowfall_24h_cm", 0) or 0)
+
+        if snow_72h > 50:
+            new_snow_72h_pts = 15
+        elif snow_72h > 30:
+            new_snow_72h_pts = 10
+        elif snow_72h > 15:
+            new_snow_72h_pts = 5
+        else:
+            new_snow_72h_pts = 0
+
+        # --- Wind transport score ---
+        # Recent snow for wind transport check (48h)
+        recent_snow_48h = snow_24h
+        if i - 1 >= 0:
+            recent_snow_48h += (scores[i - 1].get("conditions", {}).get("snowfall_24h_cm", 0) or 0)
+
+        wind_transport_pts = 0
+        if wind > 35:
+            wind_transport_pts = 15  # Strong wind even without snow
+        if wind > 25 and recent_snow_48h > 5:
+            wind_transport_pts = 20  # Wind + snow = significant transport
+
+        # --- Rapid warming score ---
+        rapid_warming_pts = 0
+        if i > 0:
+            prev_fl = scores[i - 1].get("conditions", {}).get("freezing_level_m", 0) or 0
+            if prev_fl > 0 and freezing_level > 0:
+                fl_rise = freezing_level - prev_fl
+                if fl_rise > 500:
+                    rapid_warming_pts = 15
+
+        # --- Rain on snow score ---
+        rain_on_snow_pts = 0
+        if rain_mm > 0 and snow_depth > 0.1:
+            rain_on_snow_pts = 20
+            if rain_mm > 5:
+                rain_on_snow_pts += 15
+
+        # Total and level mapping
+        total = (new_snow_24h_pts + new_snow_72h_pts + wind_transport_pts +
+                 rapid_warming_pts + rain_on_snow_pts)
+
+        if total >= 81:
+            level, level_name = 5, "EXTREME"
+        elif total >= 61:
+            level, level_name = 4, "HIGH"
+        elif total >= 41:
+            level, level_name = 3, "CONSIDERABLE"
+        elif total >= 21:
+            level, level_name = 2, "MODERATE"
+        else:
+            level, level_name = 1, "LOW"
+
+        results.append({
+            "date": date,
+            "level": level,
+            "level_name": level_name,
+            "total_score": round(total),
+            "factors": {
+                "new_snow_24h": round(new_snow_24h_pts),
+                "new_snow_72h": round(new_snow_72h_pts),
+                "wind_transport": round(wind_transport_pts),
+                "rapid_warming": round(rapid_warming_pts),
+                "rain_on_snow": round(rain_on_snow_pts),
+            },
+            "disclaimer": DISCLAIMER,
+        })
+
+    return results
+
+
+def build_multi_chart_data(scores: list, models: list = None) -> dict:
+    """Build Chart.js-compatible data for temperature, wind, freezing level, and snow depth charts.
+
+    Returns dict with keys: temperature_chart, wind_chart, freezing_level_chart, snow_depth_chart.
+    """
+    days = scores[:7]
+    labels = [_format_chart_date(d.get("date", "")) for d in days]
+
+    # Temperature chart
+    temp_avg = []
+    temp_max = []
+    temp_min = []
+    for d in days:
+        cond = d.get("conditions", {})
+        t = cond.get("temperature_c")
+        t_min = cond.get("temperature_min_c")
+        t_max = cond.get("temperature_max_c")
+
+        temp_avg.append(round(t, 1) if t is not None else None)
+        # Approximate min/max if not provided
+        if t_max is not None:
+            temp_max.append(round(t_max, 1))
+        elif t is not None:
+            temp_max.append(round(t + 3, 1))
+        else:
+            temp_max.append(None)
+
+        if t_min is not None:
+            temp_min.append(round(t_min, 1))
+        elif t is not None:
+            temp_min.append(round(t - 3, 1))
+        else:
+            temp_min.append(None)
+
+    temperature_chart = {
+        "labels": labels,
+        "datasets": [
+            {"label": "Max", "data": temp_max},
+            {"label": "Min", "data": temp_min},
+            {"label": "Avg", "data": temp_avg},
+        ],
+    }
+
+    # Wind chart
+    wind_sustained = []
+    wind_gusts = []
+    for d in days:
+        cond = d.get("conditions", {})
+        ws = cond.get("wind_speed_kmh")
+        wg = cond.get("wind_gust_kmh")
+        wind_sustained.append(round(ws, 1) if ws is not None else None)
+        wind_gusts.append(round(wg, 1) if wg is not None else None)
+
+    wind_chart = {
+        "labels": labels,
+        "datasets": [
+            {"label": "Sustained", "data": wind_sustained},
+            {"label": "Gusts", "data": wind_gusts},
+        ],
+    }
+
+    # Freezing level chart
+    fl_data = []
+    for d in days:
+        fl = d.get("conditions", {}).get("freezing_level_m")
+        fl_data.append(round(fl) if fl is not None else None)
+
+    freezing_level_chart = {
+        "labels": labels,
+        "datasets": [
+            {"label": "Freezing Level", "data": fl_data},
+        ],
+        "reference_lines": [
+            {"value": 1900, "label": "Mid-mountain (1900m)"},
+            {"value": 2400, "label": "Summit (2400m)"},
+        ],
+    }
+
+    # Snow depth chart (meters -> cm)
+    depth_data = []
+    for d in days:
+        sd = d.get("conditions", {}).get("snow_depth_m")
+        if sd is not None:
+            depth_data.append(round(sd * 100, 1))
+        else:
+            depth_data.append(None)
+
+    snow_depth_chart = {
+        "labels": labels,
+        "datasets": [
+            {"label": "Snow Depth (cm)", "data": depth_data},
+        ],
+    }
+
+    return {
+        "temperature_chart": temperature_chart,
+        "wind_chart": wind_chart,
+        "freezing_level_chart": freezing_level_chart,
+        "snow_depth_chart": snow_depth_chart,
+    }
+
+
+def build_model_spread(model_comparison: list) -> list:
+    """Compute min/max snowfall spread across models for each day.
+
+    Returns list of dicts with date, min_cm, max_cm, spread_cm.
+    """
+    results = []
+
+    for row in model_comparison[:7]:
+        date = row.get("date", "")
+        values = row.get("snowfall_values", [])
+        # Filter out None/missing values
+        valid = [v for v in values if v is not None]
+
+        if valid:
+            min_v = min(valid)
+            max_v = max(valid)
+            results.append({
+                "date": date,
+                "min_cm": round(min_v, 1),
+                "max_cm": round(max_v, 1),
+                "spread_cm": round(max_v - min_v, 1),
+            })
+        else:
+            results.append({
+                "date": date,
+                "min_cm": 0,
+                "max_cm": 0,
+                "spread_cm": 0,
+            })
+
+    return results

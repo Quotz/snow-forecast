@@ -47,6 +47,8 @@ class YrNoCollector(BaseCollector):
             "pressure": [],          # hPa
             "precipitation_1h": [],  # mm (next 1 hour)
             "precipitation_6h": [],  # mm (next 6 hours)
+            "symbol_code_1h": [],
+            "symbol_code_6h": [],
         }
 
         for ts in timeseries:
@@ -76,6 +78,16 @@ class YrNoCollector(BaseCollector):
 
             hourly["precipitation_1h"].append(precip_1h)
             hourly["precipitation_6h"].append(precip_6h)
+
+            # Symbol codes for snowfall inference
+            symbol_1h = None
+            symbol_6h = None
+            if "next_1_hours" in ts["data"]:
+                symbol_1h = ts["data"]["next_1_hours"].get("summary", {}).get("symbol_code")
+            if "next_6_hours" in ts["data"]:
+                symbol_6h = ts["data"]["next_6_hours"].get("summary", {}).get("symbol_code")
+            hourly["symbol_code_1h"].append(symbol_1h)
+            hourly["symbol_code_6h"].append(symbol_6h)
 
         return {
             "altitude": altitude,

@@ -25,6 +25,14 @@ SKY_LABELS = {
     "OVERCAST": "Overcast",
 }
 
+AVALANCHE_COLORS = {
+    1: {"bg": "#4CAF50", "name": "LOW"},
+    2: {"bg": "#FFEB3B", "name": "MODERATE"},
+    3: {"bg": "#FF9800", "name": "CONSIDERABLE"},
+    4: {"bg": "#F44336", "name": "HIGH"},
+    5: {"bg": "#212121", "name": "EXTREME"},
+}
+
 
 def generate_dashboard(report_data: dict, template_dir: str, output_path: str):
     """Generate the HTML dashboard from forecast data.
@@ -37,6 +45,7 @@ def generate_dashboard(report_data: dict, template_dir: str, output_path: str):
     env = Environment(loader=FileSystemLoader(template_dir))
     env.globals["LABEL_COLORS"] = LABEL_COLORS
     env.globals["SKY_LABELS"] = SKY_LABELS
+    env.globals["AVALANCHE_COLORS"] = AVALANCHE_COLORS
     env.globals["now"] = datetime.utcnow
 
     # Custom date filters: "2026-02-19" → "Wed 19/02/2026"

@@ -20,6 +20,8 @@ models:
   - icon_seamless       # ICON-EU ~6.5km — best Balkan resolution
   - ecmwf_ifs025        # ECMWF IFS ~9km — gold standard medium-range
   - gfs_seamless        # GFS ~13km — extended range
+  - arpege_seamless     # Arpege ~10km — Meteo-France
+  - ukmo_seamless       # UKMO ~10km — UK Met Office
 
 # Forecast parameters
 forecast:
@@ -58,6 +60,29 @@ scoring:
     ideal_below_m: 1800 # Full score if below this
     danger_above_m: 2200 # Rain risk at freeride elevations
 
+  # Soft gate (replaces hard 5cm cutoff)
+  gate_floor_cm: 3
+  gate_ceiling_cm: 7
+
+  snow_quality:
+    slr_champagne: 15      # SLR above this = champagne powder
+    slr_good: 12
+    slr_ok: 8
+    dpd_very_dry: 12       # dew point depression thresholds
+    dpd_dry: 6
+    dpd_saturated: 3
+    humidity_dry: 50
+    humidity_wet: 90
+    temp_cold_bonus: -8
+    temp_warm_limit: -2
+
+  wind_loading:
+    ideal_speed_min_kmh: 15
+    ideal_speed_max_kmh: 35
+    scour_speed_kmh: 40
+    lee_angle_full: 30      # degrees off lee for full loading
+    min_snow_cm: 2          # minimum fresh snow for transport
+
   # Alert thresholds
   alerts:
     min_score: 60              # Minimum powder score to trigger alert
@@ -87,6 +112,25 @@ scrapers:
     levels: ["mid", "top"]     # bot=1670m, mid=2035m, top=2400m
   mountain_forecast:
     location_key: "popova_shapka"   # 1825m
+
+# Weather pattern detection
+patterns:
+  storm_then_clear:
+    min_snow_cm: 10
+    min_storm_cloud_pct: 70
+    max_clear_cloud_pct: 40
+    max_clear_wind_kmh: 20
+    max_clear_temp_c: -2
+    near_miss_relax_pct: 25
+  multi_day_storm:
+    min_daily_cm: 3
+    min_consecutive_days: 3
+  warming_trend:
+    min_consecutive_days: 3
+    danger_freezing_level_m: 2000
+  cold_snap:
+    min_temp_drop_c: 5
+    max_final_temp_c: -5
 
 # Data storage — outputs to docs/ for GitHub Pages
 data:
