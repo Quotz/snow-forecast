@@ -1,0 +1,95 @@
+# Snow Monitor Configuration
+# ===========================
+
+locations:
+  popova_shapka:
+    name: "Popova Shapka"
+    country: "North Macedonia"
+    lat: 42.0
+    lon: 20.87
+    timezone: "Europe/Belgrade"
+    elevations:
+      mid: 1900      # Mid-mountain — general resort skiing
+      summit: 2400    # Summit / freeride zone
+    aspects:
+      primary: "north"          # Main freeride terrain faces north/NE
+      primary_degrees: 0        # North = 0°
+
+# Weather models to query via Open-Meteo
+models:
+  - icon_seamless       # ICON-EU ~6.5km — best Balkan resolution
+  - ecmwf_ifs025        # ECMWF IFS ~9km — gold standard medium-range
+  - gfs_seamless        # GFS ~13km — extended range
+
+# Forecast parameters
+forecast:
+  days: 16              # Maximum forecast range
+  update_times:         # Cron schedule (for reference)
+    - "06:00"
+    - "12:00"
+    - "18:00"
+
+# Powder scoring thresholds
+scoring:
+  # Gate check — below this, max score is 30 regardless of other factors
+  min_snow_gate_cm: 5
+
+  # Snow quantity scoring (0-40 points)
+  snow:
+    good_cm: 10         # Start of "good" range
+    great_cm: 20        # Start of "great" range
+    epic_cm: 30         # Diminishing returns above this
+
+  # Temperature scoring (0-15 points)
+  temperature:
+    ideal_min: -8       # Lower end of ideal range (°C)
+    ideal_max: -3       # Upper end of ideal range (°C)
+    warm_penalty: -2    # Above this = wet snow, score drops
+    cold_penalty: -20   # Below this = too cold, slight penalty
+
+  # Wind scoring (0-10 points)
+  wind:
+    ideal_max_kmh: 10   # Full score below this
+    poor_kmh: 25        # Zero score above this
+    gust_danger_kmh: 50 # Flagged as dangerous
+
+  # Freezing level (0-5 points)
+  freezing_level:
+    ideal_below_m: 1800 # Full score if below this
+    danger_above_m: 2200 # Rain risk at freeride elevations
+
+  # Alert thresholds
+  alerts:
+    min_score: 60              # Minimum powder score to trigger alert
+    min_accumulation_48h_cm: 30 # 48h accumulation trigger
+    storm_watch_days_ahead: 10  # How far ahead to watch for building storms
+    storm_watch_min_score: 40   # Minimum score to flag in extended outlook
+
+# Sky / experience scoring
+sky:
+  bluebird_max_cloud: 20       # % — below this = bluebird
+  low_cloud_warning: 60        # % — flat light warning above this
+  good_visibility_m: 30000     # 30km+ = excellent
+
+# Notifications — Telegram only, credentials via environment variables:
+#   TELEGRAM_BOT_TOKEN  — get from @BotFather
+#   TELEGRAM_CHAT_ID    — your chat/group ID
+notifications:
+  telegram:
+    enabled: true
+
+# Web scrapers (supplementary sources)
+scrapers:
+  enabled: true
+  timeout: 15                  # HTTP request timeout (seconds)
+  snow_forecast:
+    resort_key: "popova_shapka"
+    levels: ["mid", "top"]     # bot=1670m, mid=2035m, top=2400m
+  mountain_forecast:
+    location_key: "popova_shapka"   # 1825m
+
+# Data storage — outputs to docs/ for GitHub Pages
+data:
+  history_dir: "docs/history"
+  latest_file: "docs/latest.json"
+  dashboard_file: "docs/index.html"
