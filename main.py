@@ -27,7 +27,7 @@ from patterns import detect_all_patterns
 from report import generate_dashboard, save_latest_json, save_history
 from data_extract import extract_daily_data_from_open_meteo, build_model_comparison, _safe
 from analysis import build_chart_data, build_safety_flags, _build_source_comparison, _format_chart_date
-from notify import format_powder_alert, format_daily_briefing, notify_if_needed
+from notify import notify_if_needed
 
 # Logging setup
 logging.basicConfig(

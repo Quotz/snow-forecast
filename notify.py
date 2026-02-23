@@ -1,14 +1,25 @@
-"""Notification system — Telegram alerts via environment variables."""
+"""Notification system — Telegram alerts only when something is worth watching.
+
+Sends notifications only when upcoming conditions are noteworthy:
+- Powder Alert: high scores (GOOD/EPIC days) in the next 7 days
+- Snow Watch: significant snowfall building but not yet powder-grade
+- Pattern Alert: bluebird setups, multi-day storms, etc.
+
+Stays silent when nothing interesting is happening.
+Uses a state file to avoid re-alerting about the same situation.
+"""
 
 import os
+import hashlib
+import json
 import logging
 import requests
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-# Score label to emoji mapping
 LABEL_EMOJI = {
-    "EPIC": "\u2744\ufe0f\u2744\ufe0f\u2744\ufe0f",  # snowflakes
+    "EPIC": "\u2744\ufe0f\u2744\ufe0f\u2744\ufe0f",
     "GOOD": "\u2744\ufe0f\u2744\ufe0f",
     "FAIR": "\u2744\ufe0f",
     "MARGINAL": "\u2601\ufe0f",
@@ -23,17 +34,18 @@ SKY_EMOJI = {
     "OVERCAST": "\u2601\ufe0f",
 }
 
+STATE_FILE = Path(__file__).parent / "docs" / ".last_alert"
 
-def send_telegram_alert(title: str, body: str) -> bool:
-    """Send a Telegram message using TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID env vars."""
+
+def send_telegram(text: str) -> bool:
+    """Send a Telegram message using env vars. Returns True on success."""
     bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
     chat_id = os.environ.get("TELEGRAM_CHAT_ID")
 
     if not bot_token or not chat_id:
-        logger.debug("Telegram credentials not set in environment, skipping")
+        logger.debug("Telegram credentials not set, skipping")
         return False
 
-    text = f"*{title}*\n\n{body}"
     try:
         resp = requests.post(
             f"https://api.telegram.org/bot{bot_token}/sendMessage",
@@ -53,92 +65,182 @@ def send_telegram_alert(title: str, body: str) -> bool:
         return False
 
 
-def format_powder_alert(scores: list, dates: list, patterns: list) -> tuple:
-    """Format a powder alert message. Returns (title, body)."""
+def _alert_fingerprint(alert_type: str, key_dates: list, snow_total: float) -> str:
+    """Generate a fingerprint for an alert situation.
 
-    # Find best days
-    alerts = []
-    for i, score in enumerate(scores):
-        if score["total"] >= 60:
-            date = dates[i] if i < len(dates) else f"Day {i+1}"
-            emoji = LABEL_EMOJI.get(score["label"], "")
-            sky_emoji = SKY_EMOJI.get(score["sky"]["classification"], "")
-            cond = score["conditions"]
-
-            alerts.append(
-                f"{emoji} *{date}* — Score: {score['total']:.0f} ({score['label']})\n"
-                f"  Snow: {cond['snowfall_24h_cm']:.0f}cm | "
-                f"Temp: {cond['temperature_c']:.0f}\u00b0C | "
-                f"Wind: {cond['wind_speed_kmh']:.0f}km/h\n"
-                f"  Sky: {sky_emoji} {score['sky']['classification'].replace('_', ' ').title()}"
-            )
-
-    if not alerts:
-        return None, None
-
-    title = "Powder Alert \u2014 Popova Shapka"
-    body_parts = alerts[:5]  # Max 5 days in one alert
-
-    # Add pattern insights
-    for p in patterns:
-        if p["type"] == "storm_then_clear":
-            body_parts.append(f"\n\u26a1 {p['message']}")
-        elif p["type"] == "multi_day_storm":
-            body_parts.append(f"\n\ud83c\udf28\ufe0f {p['message']}")
-
-    body = "\n\n".join(body_parts)
-    return title, body
+    Changes when the situation meaningfully changes (new days involved,
+    significantly different snow totals), stays the same for minor updates.
+    """
+    # Bucket snow to nearest 5cm so small fluctuations don't re-trigger
+    snow_bucket = round(snow_total / 5) * 5
+    raw = f"{alert_type}:{','.join(sorted(key_dates))}:{snow_bucket}"
+    return hashlib.md5(raw.encode()).hexdigest()[:12]
 
 
-def format_daily_briefing(scores: list, dates: list, patterns: list,
-                          location_name: str) -> tuple:
-    """Format a daily morning briefing. Returns (title, body)."""
+def _was_already_sent(fingerprint: str) -> bool:
+    """Check if this alert fingerprint was already sent."""
+    try:
+        if STATE_FILE.exists():
+            stored = STATE_FILE.read_text().strip()
+            return fingerprint in stored.split("\n")
+    except Exception:
+        pass
+    return False
 
-    title = f"Snow Briefing \u2014 {location_name}"
 
-    lines = ["*7-Day Outlook*\n"]
-    for i in range(min(7, len(scores))):
-        s = scores[i]
-        date = dates[i] if i < len(dates) else f"Day {i+1}"
+def _mark_sent(fingerprint: str):
+    """Record that this alert was sent. Keeps last 10 fingerprints."""
+    try:
+        existing = []
+        if STATE_FILE.exists():
+            existing = STATE_FILE.read_text().strip().split("\n")
+            existing = [f for f in existing if f]
+        existing.append(fingerprint)
+        # Keep only the last 10 to allow re-alerting after situation changes
+        STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        STATE_FILE.write_text("\n".join(existing[-10:]) + "\n")
+    except Exception as e:
+        logger.warning(f"Could not write alert state: {e}")
+
+
+def _format_powder_alert(powder_days: list, dates: list, patterns: list,
+                         dashboard_url: str) -> str:
+    """Format a powder alert — high-score days incoming."""
+    lines = ["\u2744\ufe0f *Powder Alert \u2014 Popova Shapka*\n"]
+
+    for s in powder_days[:3]:
+        date = s.get("date", "?")
         emoji = LABEL_EMOJI.get(s["label"], "")
-        sky_emoji = SKY_EMOJI.get(s["sky"]["classification"], "")
         cond = s["conditions"]
+        sky_class = s["sky"]["classification"].replace("_", " ").title()
         lines.append(
-            f"{emoji} *{date}*: {s['total']:.0f}pts "
-            f"| {cond['snowfall_24h_cm']:.0f}cm "
-            f"| {cond['temperature_c']:.0f}\u00b0C "
-            f"| {cond['wind_speed_kmh']:.0f}km/h "
-            f"{sky_emoji}"
+            f"{emoji} *{date}* \u2014 {s['total']:.0f}pts ({s['label']})\n"
+            f"    {cond['snowfall_24h_cm']:.0f}cm | "
+            f"{cond['temperature_c']:.0f}\u00b0C | "
+            f"{cond['wind_speed_kmh']:.0f}km/h | {sky_class}"
         )
 
-    # Patterns summary
-    if patterns:
-        lines.append("\n*Patterns Detected:*")
-        for p in patterns[:3]:
-            lines.append(f"  \u2022 {p['message']}")
+    # Add relevant patterns
+    for p in patterns:
+        if p["type"] == "storm_then_clear":
+            lines.append(f"\n\u26a1 {p['message']}")
+        elif p["type"] == "multi_day_storm":
+            lines.append(f"\n\ud83c\udf28\ufe0f {p['message']}")
 
-    body = "\n".join(lines)
-    return title, body
+    lines.append(f"\n[Dashboard]({dashboard_url})")
+    return "\n".join(lines)
+
+
+def _format_snow_watch(snow_days: list, total_7d: float, patterns: list,
+                       dashboard_url: str) -> str:
+    """Format a snow watch — snow on the radar, worth monitoring."""
+    lines = ["\ud83d\udca8 *Snow Watch \u2014 Popova Shapka*\n"]
+    lines.append(f"~{total_7d:.0f}cm in the next 7 days\n")
+
+    for s in snow_days[:4]:
+        date = s.get("date", "?")
+        cond = s["conditions"]
+        lines.append(f"\u2022 *{date}*: {cond['snowfall_24h_cm']:.0f}cm forecast")
+
+    for p in patterns:
+        if p["type"] == "multi_day_storm":
+            lines.append(f"\n\ud83c\udf28\ufe0f {p['message']}")
+        elif p["type"] == "storm_then_clear":
+            lines.append(f"\n\u26a1 {p['message']}")
+
+    lines.append(f"\n[Monitor on dashboard]({dashboard_url})")
+    return "\n".join(lines)
+
+
+def _format_pattern_alert(patterns: list, dashboard_url: str) -> str:
+    """Format a pattern-only alert — noteworthy setup detected."""
+    type_emoji = {
+        "storm_then_clear": "\u26a1",
+        "multi_day_storm": "\ud83c\udf28\ufe0f",
+        "cold_snap": "\u2744\ufe0f",
+        "warming_trend": "\u26a0\ufe0f",
+    }
+
+    lines = ["\ud83d\udccc *Conditions Update \u2014 Popova Shapka*\n"]
+    for p in patterns:
+        emoji = type_emoji.get(p["type"], "\u2022")
+        lines.append(f"{emoji} {p['message']}")
+
+    lines.append(f"\n[Dashboard]({dashboard_url})")
+    return "\n".join(lines)
 
 
 def notify_if_needed(scores: list, dates: list, patterns: list,
                      location_name: str, scoring_cfg: dict):
-    """Check thresholds and send Telegram notification if warranted."""
+    """Send a Telegram notification only if something noteworthy is coming.
+
+    Priority:
+    1. Powder Alert — any day scores >= 60 (GOOD/EPIC)
+    2. Snow Watch — significant snow (>5cm days) but below powder threshold
+    3. Pattern Alert — bluebird setup, multi-day storm, etc. with no snow alert
+    4. Silent — nothing interesting, don't bother the user
+    """
     bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
     chat_id = os.environ.get("TELEGRAM_CHAT_ID")
-
     if not bot_token or not chat_id:
         logger.debug("Telegram not configured, skipping notifications")
         return
 
-    alert_min = scoring_cfg.get("alerts", {}).get("min_score", 60)
-    alert_days = [s for s in scores[:7] if s["total"] >= alert_min]
+    dashboard_url = os.environ.get(
+        "DASHBOARD_URL", "https://quotz.github.io/snow-forecast/"
+    )
 
-    if alert_days:
-        title, body = format_powder_alert(scores, dates, patterns)
-        if title:
-            send_telegram_alert(title, body)
-    else:
-        # Send daily briefing instead
-        title, body = format_daily_briefing(scores, dates, patterns, location_name)
-        send_telegram_alert(title, body)
+    alert_min = scoring_cfg.get("alerts", {}).get("min_score", 60)
+    week = scores[:7]
+
+    # 1. Powder Alert — high-score days
+    powder_days = [s for s in week if s["total"] >= alert_min]
+    if powder_days:
+        key_dates = [s["date"] for s in powder_days]
+        total_snow = sum(s["conditions"]["snowfall_24h_cm"] for s in powder_days)
+        fp = _alert_fingerprint("powder", key_dates, total_snow)
+
+        if not _was_already_sent(fp):
+            text = _format_powder_alert(powder_days, dates, patterns, dashboard_url)
+            if send_telegram(text):
+                _mark_sent(fp)
+                logger.info(f"Powder alert sent (fp={fp})")
+        else:
+            logger.info(f"Powder alert already sent (fp={fp}), skipping")
+        return
+
+    # 2. Snow Watch — notable snowfall building
+    snow_days = [s for s in week if s["conditions"]["snowfall_24h_cm"] >= 5]
+    total_7d = sum(s["conditions"]["snowfall_24h_cm"] for s in week)
+
+    if snow_days and total_7d >= 10:
+        key_dates = [s["date"] for s in snow_days]
+        fp = _alert_fingerprint("snow_watch", key_dates, total_7d)
+
+        if not _was_already_sent(fp):
+            text = _format_snow_watch(snow_days, total_7d, patterns, dashboard_url)
+            if send_telegram(text):
+                _mark_sent(fp)
+                logger.info(f"Snow watch sent (fp={fp})")
+        else:
+            logger.info(f"Snow watch already sent (fp={fp}), skipping")
+        return
+
+    # 3. Pattern Alert — noteworthy pattern with no snow alert
+    notable_patterns = [p for p in patterns if p["type"] in
+                        ("storm_then_clear", "multi_day_storm")]
+    if notable_patterns:
+        key = "|".join(p["type"] for p in notable_patterns)
+        fp = _alert_fingerprint("pattern", [key], 0)
+
+        if not _was_already_sent(fp):
+            text = _format_pattern_alert(notable_patterns, dashboard_url)
+            if send_telegram(text):
+                _mark_sent(fp)
+                logger.info(f"Pattern alert sent (fp={fp})")
+        else:
+            logger.info(f"Pattern alert already sent (fp={fp}), skipping")
+        return
+
+    # 4. Nothing noteworthy — stay silent
+    logger.info("No noteworthy conditions, skipping notification")
