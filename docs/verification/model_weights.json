@@ -1,0 +1,44 @@
+{
+  "updated_at": "2026-02-27T05:54:49.254420Z",
+  "weights": {
+    "icon_seamless": 0.0949,
+    "ecmwf_ifs025": 0.3472,
+    "gfs_seamless": 0.1157,
+    "arpege_seamless": 0.0949,
+    "ukmo_seamless": 0.3472
+  },
+  "bias_corrections": {
+    "icon_seamless": {
+      "snowfall": 0.84
+    },
+    "ecmwf_ifs025": {
+      "snowfall": -0.21
+    },
+    "gfs_seamless": {
+      "snowfall": -0.63
+    },
+    "arpege_seamless": {
+      "snowfall": 1.4
+    },
+    "ukmo_seamless": {
+      "snowfall": 0.21
+    }
+  },
+  "ewma_mae": {
+    "icon_seamless": {
+      "snowfall": 0.84
+    },
+    "ecmwf_ifs025": {
+      "snowfall": 0.21
+    },
+    "gfs_seamless": {
+      "snowfall": 0.6300000000000001
+    },
+    "arpege_seamless": {
+      "snowfall": 1.4
+    },
+    "ukmo_seamless": {
+      "snowfall": 0.21
+    }
+  }
+}
