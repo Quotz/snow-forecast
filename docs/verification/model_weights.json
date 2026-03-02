@@ -1,48 +1,48 @@
 {
-  "updated_at": "2026-03-02T05:54:58.605693Z",
+  "updated_at": "2026-03-02T11:34:00.728718Z",
   "weights": {
-    "icon_seamless": 0.0953,
-    "ecmwf_ifs025": 0.3247,
-    "gfs_seamless": 0.1212,
-    "arpege_seamless": 0.0953,
-    "ukmo_seamless": 0.3634
+    "icon_seamless": 0.0954,
+    "ecmwf_ifs025": 0.3203,
+    "gfs_seamless": 0.1222,
+    "arpege_seamless": 0.0954,
+    "ukmo_seamless": 0.3666
   },
   "bias_corrections": {
     "icon_seamless": {
-      "snowfall": 0.5448
+      "snowfall": 0.4903
     },
     "ecmwf_ifs025": {
-      "snowfall": -0.0793
+      "snowfall": -0.0621
     },
     "gfs_seamless": {
-      "snowfall": -0.4086
+      "snowfall": -0.3677
     },
     "arpege_seamless": {
-      "snowfall": 0.9935
+      "snowfall": 0.9082
     },
     "ukmo_seamless": {
-      "snowfall": 0.1363
+      "snowfall": 0.1227
     }
   },
   "ewma_mae": {
     "icon_seamless": {
-      "snowfall": 0.7473124595999999,
+      "snowfall": 0.7216112136399999,
       "temperature": null
     },
     "ecmwf_ifs025": {
-      "snowfall": 0.20913318175000006,
+      "snowfall": 0.20651986357500007,
       "temperature": null
     },
     "gfs_seamless": {
-      "snowfall": 0.5604968776500001,
+      "snowfall": 0.5412171898850001,
       "temperature": null
     },
     "arpege_seamless": {
-      "snowfall": 1.2790757492000002,
+      "snowfall": 1.2419881742800003,
       "temperature": null
     },
     "ukmo_seamless": {
-      "snowfall": 0.18685514785000004,
+      "snowfall": 0.18043963306500005,
       "temperature": null
     }
   }
