@@ -1,66 +1,66 @@
 {
-  "updated_at": "2026-03-17T18:03:26.679729Z",
-  "n_verifications": 57,
+  "updated_at": "2026-03-18T06:04:43.162717Z",
+  "n_verifications": 58,
   "per_model": {
     "icon_seamless": {
       "snowfall": {
-        "bias": 0.4294,
-        "mae": 0.4294,
-        "rmse": 0.7413,
-        "n_samples": 162
+        "bias": 0.3982,
+        "mae": 0.3982,
+        "rmse": 0.6874,
+        "n_samples": 165
       }
     },
     "ecmwf_ifs025": {
       "snowfall": {
-        "bias": -0.0106,
-        "mae": 0.1687,
-        "rmse": 0.2812,
-        "n_samples": 162
+        "bias": -0.0048,
+        "mae": 0.1565,
+        "rmse": 0.2612,
+        "n_samples": 165
       }
     },
     "gfs_seamless": {
       "snowfall": {
-        "bias": 0.076,
-        "mae": 0.3301,
-        "rmse": 0.535,
-        "n_samples": 162
+        "bias": 0.1524,
+        "mae": 0.3811,
+        "rmse": 0.5965,
+        "n_samples": 165
       }
     },
     "arpege_seamless": {
       "snowfall": {
-        "bias": 0.4159,
-        "mae": 0.4159,
-        "rmse": 0.7104,
-        "n_samples": 162
+        "bias": 0.3743,
+        "mae": 0.3743,
+        "rmse": 0.6394,
+        "n_samples": 165
       }
     },
     "ukmo_seamless": {
       "snowfall": {
-        "bias": 0.0114,
-        "mae": 0.1001,
-        "rmse": 0.1726,
-        "n_samples": 162
+        "bias": 0.0103,
+        "mae": 0.0901,
+        "rmse": 0.1553,
+        "n_samples": 165
       }
     }
   },
   "overall": {
     "snowfall": {
-      "bias": 0.6566,
-      "mae": 0.6566,
-      "rmse": 0.7865,
-      "n_samples": 162
+      "bias": 0.7042,
+      "mae": 0.7042,
+      "rmse": 0.8407,
+      "n_samples": 165
     },
     "temperature": {
-      "bias": 1.6665,
-      "mae": 1.6665,
-      "rmse": 1.6865,
-      "n_samples": 162
+      "bias": 1.6532,
+      "mae": 1.6532,
+      "rmse": 1.6739,
+      "n_samples": 165
     },
     "wind": {
-      "bias": 5.5978,
-      "mae": 5.5978,
-      "rmse": 5.7625,
-      "n_samples": 162
+      "bias": 5.4347,
+      "mae": 5.4347,
+      "rmse": 5.6021,
+      "n_samples": 165
     }
   },
   "powder_accuracy": {
@@ -68,7 +68,7 @@
     "false_alarm_rate": 0.0,
     "miss_rate": 0.0,
     "correct_negative_rate": 1.0,
-    "n_days": 162
+    "n_days": 165
   },
   "last_verified_dates": [
     "2026-02-24",
@@ -89,6 +89,7 @@
     "2026-03-11",
     "2026-03-12",
     "2026-03-13",
-    "2026-03-14"
+    "2026-03-14",
+    "2026-03-15"
   ]
 }
