@@ -3,6 +3,8 @@
 import math
 import logging
 
+from snow_physics import detect_dgz, classify_bluebird, estimate_crystal_type
+
 logger = logging.getLogger(__name__)
 
 
@@ -11,12 +13,121 @@ def _safe(val, default=0):
     return val if val is not None else default
 
 
-def _skiing_hours_average(hourly_array, day_index, start_hour=8, end_hour=16):
-    """Average a hourly array over skiing hours (08:00-16:00) for a given day."""
+def _skiing_hours_average(hourly_array, day_index, start_hour=8, end_hour=17):
+    """Average a hourly array over skiing hours (08:00-16:00 inclusive) for a given day.
+
+    Note: end_hour is exclusive (Python range convention), so end_hour=17
+    means hours 8,9,10,11,12,13,14,15,16 = 9 skiing hours.
+    """
     base = day_index * 24
     values = [hourly_array[h] for h in range(base + start_hour, min(base + end_hour, len(hourly_array)))
               if hourly_array[h] is not None]
     return sum(values) / len(values) if values else None
+
+
+def _period_stats(hourly_data: dict, day_index: int, start_hour: int,
+                  end_hour: int) -> dict:
+    """Extract weather stats for a time period within a day.
+
+    Periods:
+      Overnight: 18:00 (prev day) - 06:00  (but we use 00:00-06:00 of current day)
+      Morning:   06:00 - 12:00
+      Afternoon: 12:00 - 18:00
+
+    Returns dict with snowfall_cm, temp_c, wind_kmh, gust_kmh, cloud_pct,
+    freezing_m, precip_type, rain_mm.
+    """
+    base = day_index * 24
+    lo = base + start_hour
+    hi = base + end_hour
+
+    def _slice_sum(key):
+        arr = hourly_data.get(key, [])
+        vals = [arr[h] for h in range(lo, min(hi, len(arr))) if h < len(arr) and arr[h] is not None]
+        return sum(vals) if vals else 0
+
+    def _slice_avg(key):
+        arr = hourly_data.get(key, [])
+        vals = [arr[h] for h in range(lo, min(hi, len(arr))) if h < len(arr) and arr[h] is not None]
+        return round(sum(vals) / len(vals), 1) if vals else None
+
+    def _slice_max(key):
+        arr = hourly_data.get(key, [])
+        vals = [arr[h] for h in range(lo, min(hi, len(arr))) if h < len(arr) and arr[h] is not None]
+        return round(max(vals), 1) if vals else None
+
+    def _slice_min(key):
+        arr = hourly_data.get(key, [])
+        vals = [arr[h] for h in range(lo, min(hi, len(arr))) if h < len(arr) and arr[h] is not None]
+        return round(min(vals), 1) if vals else None
+
+    # Determine dominant precipitation type from weather codes
+    wc_arr = hourly_data.get("weather_code", [])
+    snow_hrs = 0
+    rain_hrs = 0
+    for h in range(lo, min(hi, len(wc_arr))):
+        code = wc_arr[h]
+        if code is not None:
+            if code in _SNOW_CODES:
+                snow_hrs += 1
+            elif code in _RAIN_CODES:
+                rain_hrs += 1
+
+    if snow_hrs > rain_hrs and snow_hrs > 0:
+        precip_type = "snow"
+    elif rain_hrs > 0:
+        precip_type = "rain"
+    else:
+        precip_type = "none"
+
+    return {
+        "snowfall_cm": round(_slice_sum("snowfall"), 1),
+        "rain_mm": round(_slice_sum("rain"), 1),
+        "temp_avg_c": _slice_avg("temperature_2m"),
+        "temp_min_c": _slice_min("temperature_2m"),
+        "temp_max_c": _slice_max("temperature_2m"),
+        "wind_avg_kmh": _slice_avg("wind_speed_10m"),
+        "wind_max_kmh": _slice_max("wind_speed_10m"),
+        "gust_max_kmh": _slice_max("wind_gusts_10m"),
+        "cloud_pct": _slice_avg("cloud_cover"),
+        "freezing_m": _slice_avg("freezing_level_height"),
+        "visibility_m": _slice_avg("visibility"),
+        "humidity_pct": _slice_avg("relative_humidity_2m"),
+        "precip_type": precip_type,
+        "snow_hours": snow_hrs,
+        "rain_hours": rain_hrs,
+    }
+
+
+def _extract_day_periods(hourly_data: dict, day_index: int,
+                          daily_snow_total: float = None) -> list:
+    """Extract Night/Morning/Afternoon/Evening period breakdowns for a day.
+
+    Returns list of 4 period dicts with weather stats per 6-hour block.
+    If daily_snow_total is provided (multi-model ensemble average), period
+    snowfall is rescaled so the 4 periods sum to the daily total. This
+    preserves the time distribution from hourly data while respecting the
+    more accurate ensemble-averaged daily amount.
+    """
+    if not hourly_data:
+        return []
+
+    periods = [
+        {"label": "Night", "abbr": "NT", "hours": "00-06", **_period_stats(hourly_data, day_index, 0, 6)},
+        {"label": "Morning", "abbr": "AM", "hours": "06-12", **_period_stats(hourly_data, day_index, 6, 12)},
+        {"label": "Afternoon", "abbr": "PM", "hours": "12-18", **_period_stats(hourly_data, day_index, 12, 18)},
+        {"label": "Evening", "abbr": "EVE", "hours": "18-00", **_period_stats(hourly_data, day_index, 18, 24)},
+    ]
+
+    # Rescale period snowfall to match the multi-model daily total
+    if daily_snow_total is not None and daily_snow_total > 0:
+        raw_sum = sum(p.get("snowfall_cm", 0) for p in periods)
+        if raw_sum > 0:
+            scale = daily_snow_total / raw_sum
+            for p in periods:
+                p["snowfall_cm"] = round(p["snowfall_cm"] * scale, 1)
+
+    return periods
 
 
 # WMO weather codes for precipitation type classification
@@ -235,6 +346,50 @@ def extract_daily_data_from_open_meteo(om_data: dict, elevation: int,
             day_hourly_times = times[day_start:day_end]
             day_hourly_snow = snow_vals[day_start:day_end]
 
+        # --- Time-of-day period breakdown (Night/AM/PM/Evening) ---
+        periods = []
+        if first_model in elev_data.get("models", {}):
+            mh = elev_data["models"][first_model]["hourly"]
+            periods = _extract_day_periods(mh, i, daily_snow_total=avg_snow)
+
+        # --- Snow physics: DGZ, bluebird, crystal type ---
+        dgz_info = {"active": False, "quality": "unknown", "hours_in_dgz": 0}
+        bluebird_info = {"confidence": 0, "type": "none", "clearing_hour": None}
+        crystal_type = "mixed"
+        temp_700_avg = None
+
+        if first_model in elev_data.get("models", {}):
+            mh = elev_data["models"][first_model]["hourly"]
+            day_start = i * 24
+            day_end = min(day_start + 24, len(mh.get("time", [])))
+
+            # 700hPa temperature for DGZ detection
+            t700_arr = mh.get("temperature_700hPa", [])
+            t700_day = t700_arr[day_start:day_end] if t700_arr else []
+            sf_day = (mh.get("snowfall", []))[day_start:day_end] if mh.get("snowfall") else []
+
+            if t700_day:
+                dgz_info = detect_dgz(t700_day, sf_day)
+                valid_t700 = [t for t in t700_day if t is not None]
+                if valid_t700:
+                    temp_700_avg = sum(valid_t700) / len(valid_t700)
+
+            # 500hPa geopotential height for bluebird classification
+            gph_arr = mh.get("geopotential_height_500hPa", [])
+            gph_day = gph_arr[day_start:day_end] if gph_arr else []
+            cc_arr = mh.get("cloud_cover", [])
+            cc_day = cc_arr[day_start:day_end] if cc_arr else []
+            ws_arr = mh.get("wind_speed_10m", [])
+            ws_day = ws_arr[day_start:day_end] if ws_arr else []
+            sp_arr = mh.get("surface_pressure", [])
+            sp_day = sp_arr[day_start:day_end] if sp_arr else []
+
+            if gph_day or cc_day:
+                bluebird_info = classify_bluebird(gph_day, cc_day, ws_day, sp_day)
+
+            # Crystal type estimation
+            crystal_type = estimate_crystal_type(temp_700_avg, avg_temp, humidity_avg)
+
         days.append({
             "date": date,
             "snowfall_24h_cm": avg_snow,
@@ -261,6 +416,13 @@ def extract_daily_data_from_open_meteo(om_data: dict, elevation: int,
             "temperature_min_c": hourly_temp_min if hourly_temp_min is not None else (temp_min or -5),
             "temperature_max_c": hourly_temp_max if hourly_temp_max is not None else (temp_max or -5),
             "forecast_day_index": i,
+            # Time-of-day periods
+            "periods": periods,
+            # Snow physics data
+            "dgz": dgz_info,
+            "bluebird": bluebird_info,
+            "crystal_type": crystal_type,
+            "temperature_700hpa": temp_700_avg,
         })
 
     return days

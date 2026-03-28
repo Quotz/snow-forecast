@@ -15,6 +15,8 @@ import os
 import logging
 from typing import Optional
 
+from kalman import kalman_batch_correct, initialize_from_ewma
+
 logger = logging.getLogger(__name__)
 
 
@@ -175,6 +177,34 @@ def update_model_weights(verification_stats: dict, weights_path: str,
     logger.info(f"Model weights updated: {result['weights']}")
 
     return result
+
+
+def _select_lead_time_weights(lead_time_weights: dict, day_index: int) -> dict | None:
+    """Select the appropriate model weights for a given forecast lead time.
+
+    lead_time_weights is structured as:
+        {"0-2": {"model": weight, ...}, "3-5": {...}, "6-10": {...}, "11-16": {...}}
+
+    Args:
+        lead_time_weights: Dict mapping bucket labels to model weight dicts.
+        day_index: Forecast day index (0 = today).
+
+    Returns:
+        Model weight dict for the matching bucket, or None.
+    """
+    if not lead_time_weights:
+        return None
+
+    for bucket_label, weights in lead_time_weights.items():
+        try:
+            parts = bucket_label.split("-")
+            lo, hi = int(parts[0]), int(parts[1])
+            if lo <= day_index <= hi:
+                return weights
+        except (ValueError, IndexError):
+            continue
+
+    return None
 
 
 def _safe(val, default=0):
@@ -531,7 +561,18 @@ def score_snow_quality(day_data: dict, cfg: dict) -> float:
     else:
         temp_mod = 0
 
-    return round(slr_pts + dpd_pts + hum_pts + temp_mod, 2)
+    base_score = slr_pts + dpd_pts + hum_pts + temp_mod
+
+    # --- DGZ bonus (up to +3 pts, within 0-10 cap) ---
+    dgz = day_data.get("dgz", {})
+    if dgz.get("active"):
+        dgz_quality = dgz.get("quality", "")
+        if dgz_quality == "champagne":
+            base_score = min(10, base_score + 3)
+        elif dgz_quality == "good":
+            base_score = min(10, base_score + 2)
+
+    return round(base_score, 2)
 
 
 def score_wind_loading(day_data: dict, cfg: dict, location_cfg: dict = None) -> float:
@@ -855,14 +896,31 @@ def calculate_powder_score(day_data: dict, scoring_cfg: dict, sky_cfg: dict,
     model_weight_map = None
     bias_corrections = None
     source_weights = None
+    kalman_state_path = None
     if adaptive_weights:
         model_weight_map = adaptive_weights.get("weights")
         bias_corrections = adaptive_weights.get("bias_corrections")
+        kalman_state_path = adaptive_weights.get("kalman_state_path")
+        # Lead-time-dependent weights: select bucket for this day
+        lead_time_weights = adaptive_weights.get("lead_time_weights")
+        if lead_time_weights:
+            forecast_day_idx = day_data.get("forecast_day_index", 0)
+            bucket_weights = _select_lead_time_weights(
+                lead_time_weights, forecast_day_idx
+            )
+            if bucket_weights:
+                model_weight_map = bucket_weights
 
-    # Apply bias correction to model snowfall values if available
+    # Apply bias correction to model snowfall values
     model_snowfall = day_data.get("model_snowfall_values", [])
     model_names = day_data.get("model_names", [])
-    if bias_corrections and model_names:
+    if kalman_state_path and os.path.exists(kalman_state_path) and model_names:
+        # Prefer Kalman filter correction
+        model_snowfall = kalman_batch_correct(
+            model_snowfall, model_names, "snowfall", kalman_state_path
+        )
+    elif bias_corrections and model_names:
+        # Fall back to simple bias subtraction
         model_snowfall = apply_bias_correction(model_snowfall, model_names, bias_corrections)
 
     # Calculate component scores
@@ -959,11 +1017,26 @@ def calculate_powder_score(day_data: dict, scoring_cfg: dict, sky_cfg: dict,
     slr = day_data.get("slr")
     dpd = day_data.get("dew_point_depression")
 
+    # Snow physics metadata
+    dgz = day_data.get("dgz", {})
+    crystal_type = day_data.get("crystal_type", "mixed")
+    bluebird = day_data.get("bluebird", {})
+
     return {
         "total": round(total, 1),
         "label": label,
         "gate_limited": gate_limited,
         "confidence_pct": round(confidence_pct, 1),
+        "crystal_type": crystal_type,
+        "dgz": {
+            "active": dgz.get("active", False),
+            "quality": dgz.get("quality", "unknown"),
+        },
+        "bluebird": {
+            "confidence": bluebird.get("confidence", 0),
+            "type": bluebird.get("type", "none"),
+            "message": bluebird.get("message", ""),
+        },
         "breakdown": {
             "snow_quantity": round(snow_pts, 1),
             "temperature": round(temp_pts, 1),
@@ -1000,6 +1073,7 @@ def calculate_powder_score(day_data: dict, scoring_cfg: dict, sky_cfg: dict,
             "snow_hours": day_data.get("snow_hours", 0),
             "rain_hours": day_data.get("rain_hours", 0),
         },
+        "periods": day_data.get("periods", []),
     }
 
 

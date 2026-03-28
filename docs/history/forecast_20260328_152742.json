@@ -1,6 +1,6 @@
 {
   "location": "Popova Shapka",
-  "generated_at": "2026-03-28T15:28:08.967396Z",
+  "generated_at": "2026-03-28T15:27:42.209985Z",
   "sources": [
     "open_meteo",
     "yr_no",
@@ -3446,7 +3446,7 @@
   },
   "ensemble": {
     "source": "open_meteo_ensemble",
-    "fetched_at": "2026-03-28T15:28:08.216727Z",
+    "fetched_at": "2026-03-28T15:27:41.391614Z",
     "location": "Popova Shapka",
     "elevations": {
       "2400": {
@@ -3846,43 +3846,43 @@
     {
       "name": "open_meteo",
       "status": "ok",
-      "fetched_at": "2026-03-28T15:28:05.586132Z",
+      "fetched_at": "2026-03-28T15:27:38.330752Z",
       "age": "just now"
     },
     {
       "name": "yr_no",
       "status": "ok",
-      "fetched_at": "2026-03-28T15:28:06.278881Z",
+      "fetched_at": "2026-03-28T15:27:39.091061Z",
       "age": "just now"
     },
     {
       "name": "snow_forecast",
       "status": "ok",
-      "fetched_at": "2026-03-28T15:28:06.702655Z",
+      "fetched_at": "2026-03-28T15:27:39.511998Z",
       "age": "just now"
     },
     {
       "name": "mountain_forecast",
       "status": "ok",
-      "fetched_at": "2026-03-28T15:28:07.676451Z",
+      "fetched_at": "2026-03-28T15:27:40.545713Z",
       "age": "just now"
     },
     {
       "name": "open_meteo_ensemble",
       "status": "ok",
-      "fetched_at": "2026-03-28T15:28:08.216727Z",
+      "fetched_at": "2026-03-28T15:27:41.391614Z",
       "age": "just now"
     },
     {
       "name": "seasonal",
       "status": "ok",
-      "fetched_at": "2026-03-28T15:28:08.746108Z",
+      "fetched_at": "2026-03-28T15:27:41.995545Z",
       "age": "just now"
     },
     {
       "name": "rainviewer",
       "status": "ok",
-      "fetched_at": "2026-03-28T15:28:08.934161Z",
+      "fetched_at": "2026-03-28T15:27:42.189652Z",
       "age": "just now"
     }
   ],
@@ -3893,7 +3893,7 @@
         "depth_cm": 78.0
       },
       {
-        "date": "2026-03-28T15:27:42",
+        "date": "2026-03-28T15:19:17",
         "depth_cm": 63.0
       }
     ],
@@ -4328,10 +4328,6 @@
         {
           "run_date": "2026-03-28T15:19:17",
           "score": 30
-        },
-        {
-          "run_date": "2026-03-28T15:27:42",
-          "score": 30
         }
       ],
       "2026-03-29": [
@@ -4385,10 +4381,6 @@
         },
         {
           "run_date": "2026-03-28T15:19:17",
-          "score": 30
-        },
-        {
-          "run_date": "2026-03-28T15:27:42",
           "score": 30
         }
       ],
@@ -4444,10 +4436,6 @@
         {
           "run_date": "2026-03-28T15:19:17",
           "score": 30
-        },
-        {
-          "run_date": "2026-03-28T15:27:42",
-          "score": 30
         }
       ],
       "2026-03-31": [
@@ -4501,10 +4489,6 @@
         },
         {
           "run_date": "2026-03-28T15:19:17",
-          "score": 30.6
-        },
-        {
-          "run_date": "2026-03-28T15:27:42",
           "score": 30.6
         }
       ],
@@ -4560,10 +4544,6 @@
         {
           "run_date": "2026-03-28T15:19:17",
           "score": 45.6
-        },
-        {
-          "run_date": "2026-03-28T15:27:42",
-          "score": 48.1
         }
       ],
       "2026-04-02": [
@@ -4618,10 +4598,6 @@
         {
           "run_date": "2026-03-28T15:19:17",
           "score": 58.2
-        },
-        {
-          "run_date": "2026-03-28T15:27:42",
-          "score": 59.0
         }
       ],
       "2026-04-03": [
@@ -4676,10 +4652,6 @@
         {
           "run_date": "2026-03-28T15:19:17",
           "score": 23.8
-        },
-        {
-          "run_date": "2026-03-28T15:27:42",
-          "score": 23.8
         }
       ]
     }
@@ -4706,7 +4678,7 @@
   "model_weights": null,
   "seasonal_outlook": {
     "source": "seasonal",
-    "fetched_at": "2026-03-28T15:28:08.746108Z",
+    "fetched_at": "2026-03-28T15:27:41.995545Z",
     "location": "Popova Shapka",
     "weeks": [
       {
@@ -9727,7 +9699,7 @@
   "seasonal_context": "6-week outlook: wetter, warmer",
   "radar": {
     "source": "rainviewer",
-    "fetched_at": "2026-03-28T15:28:08.934161Z",
+    "fetched_at": "2026-03-28T15:27:42.189652Z",
     "location": "Popova Shapka",
     "frames": [
       {
@@ -9801,11 +9773,11 @@
   },
   "season_stats": {
     "total_powder_days": 0,
-    "total_snowfall_cm": 43.8,
-    "biggest_day_cm": 15.3,
+    "total_snowfall_cm": 48.3,
+    "biggest_day_cm": 14.4,
     "biggest_day_date": "2026-04-02",
-    "longest_dry_spell": 8,
-    "current_dry_spell": 8,
+    "longest_dry_spell": 6,
+    "current_dry_spell": 0,
     "season_days_tracked": 16
   }
 }

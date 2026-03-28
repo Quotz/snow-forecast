@@ -2,11 +2,15 @@
 
 Detects high-value skiing patterns like "storm then clear" (bluebird powder day),
 multi-day storms, warming trends, cold snaps, upslope events, wind slab risk,
-and melt-freeze crust. Supports near-miss detection and combined patterns.
+melt-freeze crust, surface hoar risk, and standalone bluebird days.
+Supports near-miss detection and combined patterns.
 """
+from __future__ import annotations
 
 import logging
 from typing import Optional
+
+from snow_physics import assess_surface_hoar_risk
 
 logger = logging.getLogger(__name__)
 
@@ -143,17 +147,39 @@ def _detect_storm_then_clear_with_thresholds(
         sky_n1 = day_n1.get("sky", {})
 
         snow_n = cond_n.get("snowfall_24h_cm", 0)
-        cloud_n = day_n.get("sky", {}).get("cloud_cover", 100)
-        cloud_n1 = sky_n1.get("cloud_cover", 100)
-        wind_n1 = cond_n1.get("wind_speed_kmh", 50)
-        temp_n1 = cond_n1.get("temperature_c", 0)
+        cloud_n = day_n.get("sky", {}).get("cloud_cover")
+        cloud_n1 = sky_n1.get("cloud_cover")
+        wind_n1 = cond_n1.get("wind_speed_kmh")
+        temp_n1 = cond_n1.get("temperature_c")
         sun_n1 = sky_n1.get("sunshine_hours", 0)
+
+        # Skip if critical data is missing — don't guess
+        if cloud_n is None or cloud_n1 is None or wind_n1 is None or temp_n1 is None:
+            continue
 
         is_storm_day = snow_n >= min_snow and cloud_n >= min_cloud_storm
         is_clear_day = cloud_n1 < max_cloud_clear and wind_n1 < max_wind_clear and temp_n1 < max_temp_clear
 
         if is_storm_day and is_clear_day:
-            quality = "PERFECT" if cloud_n1 < perfect_cloud and sun_n1 > perfect_sun else "GOOD"
+            # Enhance quality classification with bluebird classifier data
+            bluebird_data = day_n1.get("bluebird", {})
+            bluebird_conf = bluebird_data.get("confidence", 0)
+
+            if cloud_n1 < perfect_cloud and sun_n1 > perfect_sun:
+                quality = "PERFECT"
+            elif bluebird_conf >= 70:
+                quality = "PERFECT"  # Ridge-driven clearing = high confidence bluebird
+            elif bluebird_conf >= 45:
+                quality = "GOOD"
+            else:
+                quality = "GOOD"
+
+            # DGZ bonus info
+            dgz_n = day_n.get("dgz", {})
+            crystal_note = ""
+            if dgz_n.get("active") and dgz_n.get("quality") in ("champagne", "good"):
+                crystal_note = " Champagne powder likely!" if dgz_n["quality"] == "champagne" else " Light powder expected."
+
             patterns.append({
                 "type": "storm_then_clear",
                 "quality": quality,
@@ -164,8 +190,9 @@ def _detect_storm_then_clear_with_thresholds(
                 "clear_day_sunshine": sun_n1,
                 "clear_day_wind": wind_n1,
                 "clear_day_temp": temp_n1,
+                "bluebird_confidence": bluebird_conf,
                 "message": f"{'Bluebird' if quality == 'PERFECT' else 'Clearing'} powder day! "
-                           f"{snow_n:.0f}cm falls Day {i+1}, clears Day {i+2}.",
+                           f"{snow_n:.0f}cm falls Day {i+1}, clears Day {i+2}.{crystal_note}",
             })
 
     return patterns
@@ -524,6 +551,77 @@ def _detect_combined_patterns(all_patterns: list, scores: list) -> list:
     return combined
 
 
+def detect_surface_hoar_risk_pattern(scores: list, config=None) -> list:
+    """Detect surface hoar formation risk from overnight conditions.
+
+    Surface hoar is a persistent avalanche weak layer formed on clear, calm,
+    humid, cold nights. Warn when conditions are favorable.
+    """
+    patterns = []
+    cfg = config.get("patterns", {}).get("surface_hoar", {}) if config else {}
+
+    for i, day in enumerate(scores):
+        cond = day.get("conditions", {})
+        periods = day.get("periods", [])
+
+        # Use Night period data if available (surface hoar forms overnight)
+        night = next((p for p in periods if p.get("abbr") == "NT"), None)
+        if night:
+            cloud = night.get("cloud_pct", 50)
+            humidity = night.get("humidity_pct")
+            wind = night.get("wind_avg_kmh", 20)
+            temp = night.get("temp_avg_c", 0)
+        else:
+            # Fall back to daily averages
+            sky = day.get("sky", {})
+            cloud = sky.get("cloud_cover", 50)
+            humidity = cond.get("humidity_avg")
+            wind = cond.get("wind_speed_kmh", 20)
+            temp = cond.get("temperature_c", 0)
+
+        result = assess_surface_hoar_risk(cloud, humidity, wind, temp, cfg)
+
+        if result["risk"] == "high":
+            patterns.append({
+                "type": "surface_hoar_risk",
+                "day_index": i,
+                "risk": result["risk"],
+                "score": result["score"],
+                "message": f"Surface hoar risk Day {i+1}: {result['message']}",
+            })
+
+    return patterns
+
+
+def detect_bluebird_day(scores: list, config=None) -> list:
+    """Detect standalone bluebird days (not just storm-then-clear).
+
+    Uses the bluebird classifier data attached to each day's score.
+    Only flags high-confidence bluebird days that aren't already part
+    of a storm-then-clear pattern.
+    """
+    patterns = []
+
+    for i, day in enumerate(scores):
+        bluebird = day.get("bluebird", {})
+        conf = bluebird.get("confidence", 0)
+
+        if conf >= 60:
+            cond = day.get("conditions", {})
+            snow = cond.get("snowfall_24h_cm", 0)
+            # Don't flag bluebird on active storm days
+            if snow < 3:
+                patterns.append({
+                    "type": "bluebird_day",
+                    "day_index": i,
+                    "confidence": conf,
+                    "bluebird_type": bluebird.get("type", ""),
+                    "message": f"Bluebird Day {i+1}: {bluebird.get('message', 'Clear skies expected.')}",
+                })
+
+    return patterns
+
+
 def detect_all_patterns(scores: list, config=None) -> list:
     """Run all pattern detectors and return combined list."""
     all_patterns = []
@@ -534,6 +632,8 @@ def detect_all_patterns(scores: list, config=None) -> list:
     all_patterns.extend(detect_upslope_event(scores, config))
     all_patterns.extend(detect_wind_slab_risk(scores, config))
     all_patterns.extend(detect_melt_freeze_crust(scores, config))
+    all_patterns.extend(detect_surface_hoar_risk_pattern(scores, config))
+    all_patterns.extend(detect_bluebird_day(scores, config))
 
     # Combined pattern detection
     all_patterns.extend(_detect_combined_patterns(all_patterns, scores))

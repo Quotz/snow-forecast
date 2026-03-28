@@ -1,4 +1,4 @@
-"""Subscriber management — handles /start and /stop via Telegram getUpdates.
+"""Subscriber management — handles /start, /stop, and /report via Telegram getUpdates.
 
 Polls for new messages each cron run, maintains a subscriber list in
 .subscribers.json (project root, NOT docs/ to avoid leaking chat IDs).
@@ -12,6 +12,8 @@ import logging
 import requests
 from datetime import datetime, timezone
 from pathlib import Path
+
+from crowd_reports import parse_report, store_report
 
 logger = logging.getLogger(__name__)
 
@@ -117,6 +119,23 @@ def process_subscriber_updates() -> list:
                 logger.info(f"Unsubscribed: {chat_id} (@{username})")
             _send_reply(bot_token, chat_id,
                         "You've been unsubscribed. Send /start to re-subscribe.")
+
+        elif cmd == "/report":
+            # Crowd-sourced condition report
+            reports_path = str(Path(__file__).parent / "docs" / "verification" / "crowd_reports.json")
+            report_data = parse_report(text)
+            store_report(chat_id, report_data, reports_path)
+            parts = []
+            if report_data.get("depth_cm"):
+                parts.append(f"{report_data['depth_cm']}cm")
+            if report_data.get("quality"):
+                parts.append(report_data["quality"])
+            if report_data.get("sky"):
+                parts.append(report_data["sky"])
+            summary = ", ".join(parts) if parts else "noted"
+            _send_reply(bot_token, chat_id,
+                        f"Thanks for the report! Logged: {summary}\n"
+                        "Your reports help improve forecast accuracy.")
 
     _save_subscribers(data)
     chat_ids = list(data["subscribers"].keys())

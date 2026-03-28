@@ -33,6 +33,21 @@ AVALANCHE_COLORS = {
     5: {"bg": "#212121", "name": "EXTREME"},
 }
 
+VERDICT_COLORS = {
+    "YES": {"bg": "#34a853", "text": "#ffffff", "icon": "✓"},
+    "MAYBE": {"bg": "#fbbc04", "text": "#333333", "icon": "?"},
+    "WAIT": {"bg": "#6b7280", "text": "#ffffff", "icon": "—"},
+}
+
+CRYSTAL_ICONS = {
+    "powder": "❄️",
+    "light": "❅",
+    "mixed": "❆",
+    "wet": "💧",
+    "ice": "🧊",
+    "crust": "🪨",
+}
+
 
 def generate_dashboard(report_data: dict, template_dir: str, output_path: str):
     """Generate the HTML dashboard from forecast data.
@@ -52,6 +67,8 @@ def generate_dashboard(report_data: dict, template_dir: str, output_path: str):
         "graphcast025": "GraphCast",
         "gfs_graphcast025": "GraphCast",
     }
+    env.globals["VERDICT_COLORS"] = VERDICT_COLORS
+    env.globals["CRYSTAL_ICONS"] = CRYSTAL_ICONS
     env.globals["now"] = datetime.utcnow
 
     # Custom date filters: "2026-02-19" → "Wed 19/02/2026"

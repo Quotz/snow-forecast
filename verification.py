@@ -15,6 +15,10 @@ from pathlib import Path
 
 import requests
 
+from kalman import kalman_update, initialize_from_ewma
+from ensemble_stats import (compute_crps, compute_brier, store_analog,
+                             compute_model_correlations)
+
 logger = logging.getLogger(__name__)
 
 
@@ -589,6 +593,131 @@ def run_verification(config, docs_dir="docs"):
     # Powder day accuracy
     powder_acc = compute_powder_day_accuracy(forecast_scores_for_powder, era5)
 
+    # --- Kalman filter updates ---
+    kalman_cfg = config.get("scoring", {}).get("kalman", {})
+    Q = kalman_cfg.get("process_noise_q", 0.01)
+    R = kalman_cfg.get("observation_noise_r", 1.0)
+    kalman_state_path = os.path.join(docs_dir, "verification", "kalman_state.json")
+    weights_path = os.path.join(docs_dir, "verification", "model_weights.json")
+
+    # Bootstrap from EWMA if Kalman state doesn't exist yet
+    initialize_from_ewma(weights_path, kalman_state_path)
+
+    # Update Kalman filter with each verified forecast-observation pair
+    for target_date in verified_dates:
+        hist = find_historical_forecast(history_dir, target_date)
+        if hist is None:
+            continue
+        actual = era5_by_date.get(target_date, {})
+        mc_entry = hist.get("model_comparison_entry")
+        if mc_entry and actual.get("snowfall") is not None:
+            snowfall_values = mc_entry.get("snowfall_values", [])
+            hist_models = hist.get("models", [])
+            for j, m_name in enumerate(hist_models):
+                if j < len(snowfall_values) and snowfall_values[j] is not None:
+                    kalman_update(m_name, "snowfall",
+                                  snowfall_values[j], actual["snowfall"],
+                                  kalman_state_path, Q=Q, R=R)
+
+    # --- Lead-time-specific metrics ---
+    lead_time_buckets = kalman_cfg.get("lead_time_buckets",
+                                        [[0, 2], [3, 5], [6, 10], [11, 16]])
+    per_lead_per_model = {}  # {bucket_label: {model: {fc: [], obs: []}}}
+    for bucket in lead_time_buckets:
+        label = f"{bucket[0]}-{bucket[1]}"
+        per_lead_per_model[label] = {m: {"fc": [], "obs": []} for m in models}
+
+    for target_date in verified_dates:
+        hist = find_historical_forecast(history_dir, target_date)
+        if hist is None:
+            continue
+        lead_days = hist["lead_days"]
+        actual = era5_by_date.get(target_date, {})
+        mc_entry = hist.get("model_comparison_entry")
+        if not mc_entry or actual.get("snowfall") is None:
+            continue
+        snowfall_values = mc_entry.get("snowfall_values", [])
+        hist_models = hist.get("models", [])
+        # Find which bucket this lead time falls into
+        for bucket in lead_time_buckets:
+            if bucket[0] <= lead_days <= bucket[1]:
+                label = f"{bucket[0]}-{bucket[1]}"
+                for j, m_name in enumerate(hist_models):
+                    if m_name in per_lead_per_model[label] and j < len(snowfall_values):
+                        if snowfall_values[j] is not None:
+                            per_lead_per_model[label][m_name]["fc"].append(snowfall_values[j])
+                            per_lead_per_model[label][m_name]["obs"].append(actual["snowfall"])
+                break
+
+    # --- CRPS, Brier, and analog storage ---
+    analogs_path = os.path.join(docs_dir, "verification", "analogs.json")
+    crps_values = []
+    brier_values = []
+
+    for target_date in verified_dates:
+        hist = find_historical_forecast(history_dir, target_date)
+        if hist is None:
+            continue
+        actual = era5_by_date.get(target_date, {})
+        if actual.get("snowfall") is None:
+            continue
+
+        score_entry = hist["score"]
+        mc_entry = hist.get("model_comparison_entry")
+        hist_models = hist.get("models", [])
+
+        # CRPS from model ensemble
+        if mc_entry:
+            sf_values = mc_entry.get("snowfall_values", [])
+            valid_sf = [v for v in sf_values if v is not None]
+            if len(valid_sf) >= 2:
+                crps = compute_crps(valid_sf, actual["snowfall"])
+                if crps is not None:
+                    crps_values.append(crps)
+
+        # Brier score for powder day prediction
+        predicted_score = score_entry.get("total", 0)
+        # Convert score to probability (60+ = "good day predicted")
+        powder_prob = min(1.0, max(0.0, (predicted_score - 30) / 50.0))
+        actual_good = (actual["snowfall"] > 10 and
+                       (actual.get("temperature_max") or 0) < -2)
+        brier = compute_brier(powder_prob, actual_good)
+        brier_values.append(brier)
+
+        # Store analog for ML training
+        if mc_entry:
+            sf_values = mc_entry.get("snowfall_values", [])
+            valid_sf = [v for v in sf_values if v is not None]
+            if valid_sf:
+                features = {
+                    "model_predictions": sf_values,
+                    "model_names": hist_models,
+                    "mean": sum(valid_sf) / len(valid_sf),
+                    "spread": max(valid_sf) - min(valid_sf) if len(valid_sf) > 1 else 0,
+                    "lead_time": hist["lead_days"],
+                    "day_of_year": datetime.strptime(target_date, "%Y-%m-%d").timetuple().tm_yday,
+                }
+                observed = {
+                    "snowfall": actual["snowfall"],
+                    "temperature_max": actual.get("temperature_max"),
+                    "wind_max": actual.get("wind_max"),
+                }
+                store_analog(features, observed, analogs_path)
+
+    # Compute model correlations from accumulated analogs
+    correlations_path = os.path.join(docs_dir, "verification", "model_correlations.json")
+    all_hist = []
+    for target_date in verified_dates:
+        hist = find_historical_forecast(history_dir, target_date)
+        if hist:
+            all_hist.append(hist)
+    if all_hist:
+        corr_result = compute_model_correlations(all_hist)
+        if corr_result.get("matrix"):
+            os.makedirs(os.path.dirname(correlations_path), exist_ok=True)
+            with open(correlations_path, "w") as f:
+                json.dump(corr_result, f, indent=2)
+
     # Update persistent stats
     stats_path = os.path.join(docs_dir, "verification", "stats.json")
     new_metrics = {
@@ -596,6 +725,14 @@ def run_verification(config, docs_dir="docs"):
         "overall": overall_metrics,
         "powder_accuracy": powder_acc,
         "verified_dates": verified_dates,
+        "crps": {
+            "mean": round(sum(crps_values) / len(crps_values), 4) if crps_values else None,
+            "n_samples": len(crps_values),
+        },
+        "brier": {
+            "mean": round(sum(brier_values) / len(brier_values), 4) if brier_values else None,
+            "n_samples": len(brier_values),
+        },
     }
     stats = update_verification_stats(new_metrics, stats_path)
 
@@ -608,6 +745,7 @@ def run_verification(config, docs_dir="docs"):
         "overall": overall_metrics,
         "powder_accuracy": powder_acc,
         "cumulative_stats": stats,
+        "kalman_state_path": kalman_state_path,
     }
 
     logger.info("Verification complete: %d dates, overall snow MAE=%.2f cm",

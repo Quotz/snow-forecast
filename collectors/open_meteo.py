@@ -30,6 +30,12 @@ HOURLY_PARAMS = [
     "surface_pressure",
 ]
 
+# Pressure-level parameters for snow physics analysis
+PRESSURE_LEVEL_PARAMS = [
+    "temperature_700hPa",           # DGZ detection (dendritic growth zone)
+    "geopotential_height_500hPa",   # Bluebird ridge detection
+]
+
 DAILY_PARAMS = [
     "snowfall_sum",
     "snow_depth_max",
@@ -68,7 +74,8 @@ class OpenMeteoCollector(BaseCollector):
 
         # Build hourly param list with model suffixes
         # When requesting multiple models, Open-Meteo appends model name to each param
-        hourly_str = ",".join(HOURLY_PARAMS)
+        all_hourly = HOURLY_PARAMS + PRESSURE_LEVEL_PARAMS
+        hourly_str = ",".join(all_hourly)
         daily_str = ",".join(DAILY_PARAMS)
         models_str = ",".join(self.models)
 
@@ -110,16 +117,17 @@ class OpenMeteoCollector(BaseCollector):
 
         # Parse per-model hourly data
         # Open-Meteo returns keys like "snowfall_icon_seamless", "snowfall_ecmwf_ifs025"
+        all_hourly_params = HOURLY_PARAMS + PRESSURE_LEVEL_PARAMS
         for model in self.models:
             model_data = {"hourly": {"time": times}}
 
-            for param in HOURLY_PARAMS:
+            for param in all_hourly_params:
                 # Try model-specific key first, then fallback to plain key
                 model_key = f"{param}_{model}"
                 if model_key in hourly:
                     model_data["hourly"][param] = hourly[model_key]
                 elif param in hourly:
-                    # Some params (like freezing_level_height) aren't per-model
+                    # Some params (like freezing_level_height, pressure levels) aren't per-model
                     model_data["hourly"][param] = hourly[param]
 
             result["models"][model] = model_data

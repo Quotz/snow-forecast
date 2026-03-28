@@ -1,0 +1,42 @@
+services:
+  forecast-api:
+    build: .
+    container_name: snow-forecast-api
+    restart: unless-stopped
+    expose:
+      - "8000"
+    volumes:
+      - ./docs:/app/docs
+      - ./.subscribers.json:/app/.subscribers.json
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
+    networks:
+      - default
+      - pero-net
+
+  forecast-cron:
+    build: .
+    container_name: snow-forecast-cron
+    restart: unless-stopped
+    entrypoint: /bin/sh
+    command: >
+      -c 'echo "Starting forecast cron...";
+      while true; do
+        echo "[$(date)] Running forecast...";
+        python main.py --verify 2>&1;
+        echo "[$(date)] Next run in 8 hours...";
+        sleep 28800;
+      done'
+    volumes:
+      - ./docs:/app/docs
+      - ./.subscribers.json:/app/.subscribers.json
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
+    networks:
+      - default
+
+networks:
+  pero-net:
+    external: true

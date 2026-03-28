@@ -213,8 +213,8 @@ def estimate_avalanche_danger(scores: list) -> list:
                 rain_on_snow_pts += 15
 
         # Total and level mapping
-        total = (new_snow_24h_pts + new_snow_72h_pts + wind_transport_pts +
-                 rapid_warming_pts + rain_on_snow_pts)
+        total = min(100, new_snow_24h_pts + new_snow_72h_pts + wind_transport_pts +
+                    rapid_warming_pts + rain_on_snow_pts)
 
         if total >= 81:
             level, level_name = 5, "EXTREME"
@@ -378,3 +378,163 @@ def build_model_spread(model_comparison: list) -> list:
             })
 
     return results
+
+
+def build_spaghetti_data(model_comparison: list, models: list) -> dict:
+    """Build per-model snowfall traces for spaghetti plot visualization.
+
+    Each model gets its own line, showing 16-day snowfall predictions.
+    This makes model agreement/disagreement visually obvious.
+
+    Args:
+        model_comparison: List of daily rows with snowfall_values.
+        models: List of model names.
+
+    Returns:
+        Dict with 'labels' (dates) and 'traces' (list of {model, values, color}).
+    """
+    AI_NAME_MAP = {
+        "ecmwf_aifs025": "AIFS",
+        "ecmwf_aifs025_single": "AIFS",
+        "graphcast025": "GraphCast",
+        "gfs_graphcast025": "GraphCast",
+    }
+    colors = [
+        "rgba(77,141,247,0.8)",    # ICON - blue
+        "rgba(60,192,104,0.8)",    # ECMWF - green
+        "rgba(240,194,48,0.8)",    # GFS - yellow
+        "rgba(187,134,252,0.8)",   # ARPEGE - purple
+        "rgba(255,138,101,0.8)",   # UKMO - orange
+        "rgba(0,188,212,0.8)",     # AIFS - cyan
+        "rgba(233,30,99,0.8)",     # GraphCast - pink
+    ]
+
+    labels = [_format_chart_date(row["date"]) for row in model_comparison[:16]]
+
+    traces = []
+    for j, model in enumerate(models):
+        name = AI_NAME_MAP.get(model, model.replace("_seamless", "").replace("_ifs025", "").upper())
+        values = []
+        for row in model_comparison[:16]:
+            sv = row.get("snowfall_values", [])
+            values.append(sv[j] if j < len(sv) and sv[j] is not None else None)
+        traces.append({
+            "model": name,
+            "values": values,
+            "color": colors[j % len(colors)],
+        })
+
+    return {"labels": labels, "traces": traces}
+
+
+def build_probability_fan_data(ensemble_data: dict) -> dict:
+    """Build probability fan chart data from ensemble percentiles.
+
+    Shows uncertainty bands widening with lead time:
+    - p50 as solid line
+    - p25-p75 as dark band
+    - p10-p90 as light band
+
+    Args:
+        ensemble_data: Dict with daily.dates, daily.snowfall.{p10,p25,p50,p75,p90}.
+
+    Returns:
+        Dict with 'labels' (dates), 'p50', 'p25', 'p75', 'p10', 'p90' arrays.
+    """
+    if not ensemble_data or ensemble_data.get("error"):
+        return {}
+
+    daily = ensemble_data.get("daily", {})
+    dates = daily.get("dates", [])
+    snowfall = daily.get("snowfall", {})
+
+    if not dates:
+        return {}
+
+    labels = [_format_chart_date(d) for d in dates[:16]]
+
+    return {
+        "labels": labels,
+        "p10": snowfall.get("p10", [])[:16],
+        "p25": snowfall.get("p25", [])[:16],
+        "p50": snowfall.get("p50", [])[:16],
+        "p75": snowfall.get("p75", [])[:16],
+        "p90": snowfall.get("p90", [])[:16],
+    }
+
+
+def build_season_stats(history_dir: str) -> dict:
+    """Build season statistics from historical forecast files.
+
+    Scans all history files to compute: total powder days, total snowfall,
+    biggest single day, longest dry spell, current streak.
+
+    Args:
+        history_dir: Path to docs/history/ directory.
+
+    Returns:
+        Dict with season-level statistics.
+    """
+    import os
+    import json
+
+    stats = {
+        "total_powder_days": 0,
+        "total_snowfall_cm": 0,
+        "biggest_day_cm": 0,
+        "biggest_day_date": "",
+        "longest_dry_spell": 0,
+        "current_dry_spell": 0,
+        "season_days_tracked": 0,
+    }
+
+    if not os.path.isdir(history_dir):
+        return stats
+
+    # Read the most recent forecast file for each unique date
+    files = sorted([f for f in os.listdir(history_dir) if f.startswith("forecast_")])
+    if not files:
+        return stats
+
+    # Use the latest file to get the most up-to-date view
+    latest_file = files[-1]
+    try:
+        with open(os.path.join(history_dir, latest_file)) as f:
+            data = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return stats
+
+    scores = data.get("scores", [])
+    if not scores:
+        return stats
+
+    dry_spell = 0
+    max_dry = 0
+
+    for s in scores:
+        cond = s.get("conditions", {})
+        snow = cond.get("snowfall_24h_cm", 0)
+        score = s.get("total", 0)
+        date = s.get("date", "")
+
+        stats["total_snowfall_cm"] += snow
+        stats["season_days_tracked"] += 1
+
+        if score >= 60:
+            stats["total_powder_days"] += 1
+
+        if snow > stats["biggest_day_cm"]:
+            stats["biggest_day_cm"] = round(snow, 1)
+            stats["biggest_day_date"] = date
+
+        if snow < 1:
+            dry_spell += 1
+            max_dry = max(max_dry, dry_spell)
+        else:
+            dry_spell = 0
+
+    stats["longest_dry_spell"] = max_dry
+    stats["current_dry_spell"] = dry_spell
+    stats["total_snowfall_cm"] = round(stats["total_snowfall_cm"], 1)
+
+    return stats

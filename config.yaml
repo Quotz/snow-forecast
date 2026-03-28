@@ -69,6 +69,17 @@ scoring:
   gate_floor_cm: 3
   gate_ceiling_cm: 7
 
+  # Kalman filter bias correction
+  kalman:
+    process_noise_q: 0.01       # How fast bias can change between updates
+    observation_noise_r: 1.0    # How noisy individual errors are
+    initial_variance: 10.0      # Initial uncertainty for cold start
+    lead_time_buckets:          # Forecast lead-time groupings for weight tracking
+      - [0, 2]                  # Short-range (today to day 2)
+      - [3, 5]                  # Medium-range
+      - [6, 10]                 # Extended
+      - [11, 16]                # Long-range
+
   snow_quality:
     slr_champagne: 15      # SLR above this = champagne powder
     slr_good: 12
@@ -128,6 +139,19 @@ verification:
   verification_window_days: 3  # Number of recent days to verify per run
   adaptive_weights: true       # Use verification data for adaptive model weighting
 
+# Snow physics — DGZ and bluebird detection
+snow_physics:
+  dgz:
+    ideal_700hpa_min: -16       # Lower bound of dendritic growth zone (°C)
+    ideal_700hpa_max: -12       # Upper bound of dendritic growth zone (°C)
+    extended_700hpa_min: -20    # Extended "good" range lower bound
+    extended_700hpa_max: -8     # Extended "good" range upper bound
+    bonus_points: 3             # Max DGZ bonus in snow quality scoring
+  bluebird:
+    ridge_gph_threshold: 5520   # 500hPa GPH above this = ridge (meters)
+    strong_ridge_gph_threshold: 5580  # Strong ridge
+    min_confidence: 60          # Minimum bluebird confidence for pattern detection
+
 # Weather pattern detection
 patterns:
   storm_then_clear:
@@ -146,6 +170,23 @@ patterns:
   cold_snap:
     min_temp_drop_c: 5
     max_final_temp_c: -5
+  surface_hoar:
+    max_cloud_pct: 20           # Clear sky threshold for radiative cooling
+    min_humidity: 70            # Moisture needed for crystal growth
+    max_wind_kmh: 10            # Calm wind needed for undisturbed growth
+    max_temp_c: -5              # Cold enough for ice crystal formation
+
+# Webcams — known camera URLs for Popova Shapka area
+webcams:
+  - name: "SkylineWebcams"
+    url: "https://www.skylinewebcams.com/en/webcam/north-macedonia/polog/tetovo/popova-sapka.html"
+    elevation: 1780
+  - name: "Resort Camera 1"
+    url: "https://popovashapka.com.mk/en/live-camera-3/"
+    elevation: 1900
+  - name: "Snow-Forecast"
+    url: "https://www.snow-forecast.com/resorts/PopovaShapka/webcams/latest"
+    elevation: 2035
 
 # Data storage — outputs to docs/ for GitHub Pages
 data:

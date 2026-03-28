@@ -1,6 +1,6 @@
 {
   "location": "Popova Shapka",
-  "generated_at": "2026-03-28T15:28:08.967396Z",
+  "generated_at": "2026-03-28T15:11:49.107950Z",
   "sources": [
     "open_meteo",
     "yr_no",
@@ -36,7 +36,7 @@
         "model_agreement": 4.3,
         "snow_quality": 0,
         "wind_loading": 0,
-        "ensemble_confidence": 0,
+        "ensemble_confidence": -3.0,
         "source_confidence": 0
       },
       "source_confidence": {
@@ -46,10 +46,10 @@
       },
       "sky": {
         "classification": "OVERCAST",
-        "cloud_cover": 99.77777777777777,
-        "cloud_cover_low": 88.55555555555556,
+        "cloud_cover": 99.75,
+        "cloud_cover_low": 87.375,
         "sunshine_hours": 5.103008333333334,
-        "visibility_m": 20362.222222222223,
+        "visibility_m": 21352.5,
         "flat_light_warning": true,
         "good_visibility": false
       },
@@ -61,11 +61,11 @@
         "wind_speed_kmh": 10.5,
         "wind_gust_kmh": 26.3,
         "wind_direction_deg": 300.1245528546906,
-        "freezing_level_m": 1827.0,
+        "freezing_level_m": 1828.0,
         "snow_depth_m": 0.63,
         "snow_to_liquid_ratio": 0.7,
-        "dew_point_depression": 3.3,
-        "humidity_avg": 77.88888888888889,
+        "dew_point_depression": 3.5,
+        "humidity_avg": 77.125,
         "rain_mm": 0.0,
         "snow_hours": 10,
         "rain_hours": 0
@@ -115,7 +115,7 @@
           "label": "Afternoon",
           "abbr": "PM",
           "hours": "12-18",
-          "snowfall_cm": 1.1,
+          "snowfall_cm": 0.8,
           "rain_mm": 0.0,
           "temp_avg_c": -5.0,
           "temp_min_c": -5.8,
@@ -135,7 +135,7 @@
           "label": "Evening",
           "abbr": "EVE",
           "hours": "18-00",
-          "snowfall_cm": 0.8,
+          "snowfall_cm": 0.6,
           "rain_mm": 0.0,
           "temp_avg_c": -7.1,
           "temp_min_c": -7.8,
@@ -170,45 +170,45 @@
         "message": "Partial clearing possible, but conditions uncertain."
       },
       "breakdown": {
-        "snow_quantity": 4.4,
+        "snow_quantity": 4.8,
         "temperature": 15.0,
         "wind": 3.1,
-        "freezing_level": 3.6,
+        "freezing_level": 3.7,
         "storm_timing": 2.0,
         "snow_depth_trend": 2.0,
         "model_agreement": 4.3,
-        "snow_quality": 1.6,
+        "snow_quality": 1.7,
         "wind_loading": 0.0,
-        "ensemble_confidence": -3.0,
+        "ensemble_confidence": 0,
         "source_confidence": 8
       },
       "source_confidence": {
         "confidence": "HIGH",
-        "blended_snow_cm": 2.7,
+        "blended_snow_cm": 2.8,
         "detail": "All sources agree: ~3cm snow"
       },
       "sky": {
         "classification": "OVERCAST",
-        "cloud_cover": 83.0,
-        "cloud_cover_low": 69.11111111111111,
+        "cloud_cover": 82.0,
+        "cloud_cover_low": 66.875,
         "sunshine_hours": 9.44451111111111,
-        "visibility_m": 34340.0,
+        "visibility_m": 36145.0,
         "flat_light_warning": true,
         "good_visibility": true
       },
       "conditions": {
-        "snowfall_24h_cm": 2.4,
+        "snowfall_24h_cm": 2.6,
         "temperature_c": -5.4,
         "temperature_min_c": -8.6,
         "temperature_max_c": -2.2,
         "wind_speed_kmh": 16.9,
         "wind_gust_kmh": 40.3,
         "wind_direction_deg": 326.74512735705594,
-        "freezing_level_m": 1912.0,
+        "freezing_level_m": 1904.0,
         "snow_depth_m": 0.63,
         "snow_to_liquid_ratio": 0.7,
-        "dew_point_depression": 4.5,
-        "humidity_avg": 71.55555555555556,
+        "dew_point_depression": 4.7,
+        "humidity_avg": 70.625,
         "rain_mm": 0.0,
         "snow_hours": 6,
         "rain_hours": 0
@@ -258,7 +258,7 @@
           "label": "Afternoon",
           "abbr": "PM",
           "hours": "12-18",
-          "snowfall_cm": 1.2,
+          "snowfall_cm": 0.2,
           "rain_mm": 0.0,
           "temp_avg_c": -2.8,
           "temp_min_c": -3.6,
@@ -278,7 +278,7 @@
           "label": "Evening",
           "abbr": "EVE",
           "hours": "18-00",
-          "snowfall_cm": 1.2,
+          "snowfall_cm": 0.2,
           "rain_mm": 0.0,
           "temp_avg_c": -4.8,
           "temp_min_c": -5.6,
@@ -332,26 +332,26 @@
       },
       "sky": {
         "classification": "OVERCAST",
-        "cloud_cover": 82.77777777777777,
-        "cloud_cover_low": 69.77777777777777,
+        "cloud_cover": 81.125,
+        "cloud_cover_low": 68.875,
         "sunshine_hours": 10.955377777777779,
-        "visibility_m": 35871.11111111111,
+        "visibility_m": 35865.0,
         "flat_light_warning": true,
         "good_visibility": true
       },
       "conditions": {
-        "snowfall_24h_cm": 0.8,
+        "snowfall_24h_cm": 0.7,
         "temperature_c": -3.8,
         "temperature_min_c": -6.9,
         "temperature_max_c": -0.7,
         "wind_speed_kmh": 17.7,
         "wind_gust_kmh": 41.4,
         "wind_direction_deg": 280.10527468116095,
-        "freezing_level_m": 1897.0,
+        "freezing_level_m": 1899.0,
         "snow_depth_m": 0.61,
         "snow_to_liquid_ratio": null,
         "dew_point_depression": 5.0,
-        "humidity_avg": 69.22222222222223,
+        "humidity_avg": 69.25,
         "rain_mm": 0.0,
         "snow_hours": 0,
         "rain_hours": 0
@@ -456,7 +456,7 @@
         "message": ""
       },
       "breakdown": {
-        "snow_quantity": 9.9,
+        "snow_quantity": 10.0,
         "temperature": 15.0,
         "wind": 2.1,
         "freezing_level": 2.9,
@@ -471,14 +471,14 @@
       "source_confidence": {
         "confidence": "LOW",
         "blended_snow_cm": 3.5,
-        "detail": "Open-Meteo predicts 5cm but scrapers show 1cm"
+        "detail": "Open-Meteo predicts 6cm but scrapers show 1cm"
       },
       "sky": {
         "classification": "OVERCAST",
-        "cloud_cover": 99.11111111111111,
-        "cloud_cover_low": 95.11111111111111,
+        "cloud_cover": 99.0,
+        "cloud_cover_low": 94.5,
         "sunshine_hours": 4.713816666666667,
-        "visibility_m": 4633.333333333333,
+        "visibility_m": 4220.0,
         "flat_light_warning": true,
         "good_visibility": false
       },
@@ -490,11 +490,11 @@
         "wind_speed_kmh": 15.6,
         "wind_gust_kmh": 49.0,
         "wind_direction_deg": 118.63383086850018,
-        "freezing_level_m": 1967.0,
+        "freezing_level_m": 1965.0,
         "snow_depth_m": 0.58,
         "snow_to_liquid_ratio": 0.7,
-        "dew_point_depression": 0.5,
-        "humidity_avg": 96.77777777777777,
+        "dew_point_depression": 0.4,
+        "humidity_avg": 97.0,
         "rain_mm": 0.0,
         "snow_hours": 9,
         "rain_hours": 0
@@ -524,7 +524,7 @@
           "label": "Morning",
           "abbr": "AM",
           "hours": "06-12",
-          "snowfall_cm": 0.3,
+          "snowfall_cm": 0.1,
           "rain_mm": 0.0,
           "temp_avg_c": -4.4,
           "temp_min_c": -5.9,
@@ -544,7 +544,7 @@
           "label": "Afternoon",
           "abbr": "PM",
           "hours": "12-18",
-          "snowfall_cm": 2.1,
+          "snowfall_cm": 0.8,
           "rain_mm": 0.0,
           "temp_avg_c": -3.0,
           "temp_min_c": -3.4,
@@ -564,7 +564,7 @@
           "label": "Evening",
           "abbr": "EVE",
           "hours": "18-00",
-          "snowfall_cm": 3.1,
+          "snowfall_cm": 1.2,
           "rain_mm": 0.0,
           "temp_avg_c": -3.9,
           "temp_min_c": -4.1,
@@ -584,7 +584,7 @@
       "date": "2026-03-31"
     },
     {
-      "total": 48.1,
+      "total": 45.6,
       "label": "FAIR",
       "gate_limited": false,
       "confidence_pct": 85.0,
@@ -599,21 +599,21 @@
         "message": ""
       },
       "breakdown": {
-        "snow_quantity": 20.3,
+        "snow_quantity": 21.1,
         "temperature": 15.0,
         "wind": 0.0,
         "freezing_level": 2.9,
         "storm_timing": 2.0,
         "snow_depth_trend": 5.0,
-        "model_agreement": 5.0,
+        "model_agreement": 4.8,
         "snow_quality": 0.5,
         "wind_loading": 0.3,
-        "ensemble_confidence": 0,
+        "ensemble_confidence": -3.0,
         "source_confidence": -3
       },
       "source_confidence": {
         "confidence": "LOW",
-        "blended_snow_cm": 7.6,
+        "blended_snow_cm": 8.1,
         "detail": "Open-Meteo predicts 13cm but scrapers show 0cm"
       },
       "sky": {
@@ -621,23 +621,23 @@
         "cloud_cover": 100.0,
         "cloud_cover_low": 100.0,
         "sunshine_hours": 0,
-        "visibility_m": 633.3333333333334,
+        "visibility_m": 592.5,
         "flat_light_warning": true,
         "good_visibility": false
       },
       "conditions": {
-        "snowfall_24h_cm": 12.6,
+        "snowfall_24h_cm": 13.4,
         "temperature_c": -4.2,
         "temperature_min_c": -4.8,
         "temperature_max_c": -3.6,
         "wind_speed_kmh": 28.3,
         "wind_gust_kmh": 93.6,
         "wind_direction_deg": 93.62480755088085,
-        "freezing_level_m": 1967.0,
+        "freezing_level_m": 1965.0,
         "snow_depth_m": 0.83,
         "snow_to_liquid_ratio": 0.7,
-        "dew_point_depression": 0.2,
-        "humidity_avg": 98.88888888888889,
+        "dew_point_depression": 0.1,
+        "humidity_avg": 99.0,
         "rain_mm": 2.4000000000000004,
         "snow_hours": 24,
         "rain_hours": 0
@@ -647,7 +647,7 @@
           "label": "Night",
           "abbr": "NT",
           "hours": "00-06",
-          "snowfall_cm": 2.5,
+          "snowfall_cm": 4.5,
           "rain_mm": 0.4,
           "temp_avg_c": -4.5,
           "temp_min_c": -4.7,
@@ -667,7 +667,7 @@
           "label": "Morning",
           "abbr": "AM",
           "hours": "06-12",
-          "snowfall_cm": 3.4,
+          "snowfall_cm": 6.2,
           "rain_mm": 0.6,
           "temp_avg_c": -4.3,
           "temp_min_c": -4.8,
@@ -687,7 +687,7 @@
           "label": "Afternoon",
           "abbr": "PM",
           "hours": "12-18",
-          "snowfall_cm": 4.0,
+          "snowfall_cm": 7.2,
           "rain_mm": 0.7,
           "temp_avg_c": -3.7,
           "temp_min_c": -3.8,
@@ -707,7 +707,7 @@
           "label": "Evening",
           "abbr": "EVE",
           "hours": "18-00",
-          "snowfall_cm": 2.8,
+          "snowfall_cm": 5.0,
           "rain_mm": 0.7,
           "temp_avg_c": -4.2,
           "temp_min_c": -4.2,
@@ -727,7 +727,7 @@
       "date": "2026-04-01"
     },
     {
-      "total": 59.0,
+      "total": 58.2,
       "label": "FAIR",
       "gate_limited": false,
       "confidence_pct": 77.5,
@@ -742,7 +742,7 @@
         "message": "Partial clearing possible, but conditions uncertain."
       },
       "breakdown": {
-        "snow_quantity": 22.7,
+        "snow_quantity": 22.0,
         "temperature": 15.0,
         "wind": 2.0,
         "freezing_level": 5.0,
@@ -756,31 +756,31 @@
       },
       "source_confidence": {
         "confidence": "HIGH",
-        "blended_snow_cm": 24.1,
-        "detail": "Sources agree on snow, differ on amount (15 vs 37cm)"
+        "blended_snow_cm": 23.6,
+        "detail": "Sources agree on snow, differ on amount (14 vs 37cm)"
       },
       "sky": {
         "classification": "OVERCAST",
         "cloud_cover": 100.0,
-        "cloud_cover_low": 93.11111111111111,
+        "cloud_cover_low": 93.125,
         "sunshine_hours": 0,
         "visibility_m": 10000,
         "flat_light_warning": true,
         "good_visibility": false
       },
       "conditions": {
-        "snowfall_24h_cm": 15.3,
+        "snowfall_24h_cm": 14.4,
         "temperature_c": -3.4,
         "temperature_min_c": -4.1,
         "temperature_max_c": -2.8,
         "wind_speed_kmh": 14.9,
         "wind_gust_kmh": 57.2,
         "wind_direction_deg": 15.394654790017729,
-        "freezing_level_m": 1539.0,
+        "freezing_level_m": 1535.0,
         "snow_depth_m": 0.83,
         "snow_to_liquid_ratio": 0.7,
         "dew_point_depression": 0.4,
-        "humidity_avg": 97.22222222222223,
+        "humidity_avg": 97.0,
         "rain_mm": 0.7599999999999999,
         "snow_hours": 24,
         "rain_hours": 0
@@ -790,7 +790,7 @@
           "label": "Night",
           "abbr": "NT",
           "hours": "00-06",
-          "snowfall_cm": 3.1,
+          "snowfall_cm": 2.0,
           "rain_mm": 0.0,
           "temp_avg_c": -3.9,
           "temp_min_c": -4.1,
@@ -810,7 +810,7 @@
           "label": "Morning",
           "abbr": "AM",
           "hours": "06-12",
-          "snowfall_cm": 5.0,
+          "snowfall_cm": 3.3,
           "rain_mm": 0.1,
           "temp_avg_c": -3.6,
           "temp_min_c": -4.1,
@@ -830,7 +830,7 @@
           "label": "Afternoon",
           "abbr": "PM",
           "hours": "12-18",
-          "snowfall_cm": 3.7,
+          "snowfall_cm": 2.4,
           "rain_mm": 0.4,
           "temp_avg_c": -3.1,
           "temp_min_c": -3.4,
@@ -850,7 +850,7 @@
           "label": "Evening",
           "abbr": "EVE",
           "hours": "18-00",
-          "snowfall_cm": 3.5,
+          "snowfall_cm": 2.3,
           "rain_mm": 0.2,
           "temp_avg_c": -3.6,
           "temp_min_c": -3.6,
@@ -904,8 +904,8 @@
       },
       "sky": {
         "classification": "OVERCAST",
-        "cloud_cover": 98.11111111111111,
-        "cloud_cover_low": 94.44444444444444,
+        "cloud_cover": 98.375,
+        "cloud_cover_low": 94.625,
         "sunshine_hours": 5.4032277777777775,
         "visibility_m": 10000,
         "flat_light_warning": true,
@@ -919,11 +919,11 @@
         "wind_speed_kmh": 13.0,
         "wind_gust_kmh": 19.8,
         "wind_direction_deg": 28.469999997224296,
-        "freezing_level_m": 1656.0,
+        "freezing_level_m": 1649.0,
         "snow_depth_m": 0.28,
         "snow_to_liquid_ratio": 0.7,
-        "dew_point_depression": 2.0,
-        "humidity_avg": 86.55555555555556,
+        "dew_point_depression": 2.1,
+        "humidity_avg": 85.875,
         "rain_mm": 1.2,
         "snow_hours": 10,
         "rain_hours": 4
@@ -933,7 +933,7 @@
           "label": "Night",
           "abbr": "NT",
           "hours": "00-06",
-          "snowfall_cm": 1.9,
+          "snowfall_cm": 0.4,
           "rain_mm": 0.0,
           "temp_avg_c": -3.6,
           "temp_min_c": -3.7,
@@ -953,7 +953,7 @@
           "label": "Morning",
           "abbr": "AM",
           "hours": "06-12",
-          "snowfall_cm": 0.5,
+          "snowfall_cm": 0.1,
           "rain_mm": 0.4,
           "temp_avg_c": -2.1,
           "temp_min_c": -3.4,
@@ -1028,7 +1028,7 @@
         "message": ""
       },
       "breakdown": {
-        "snow_quantity": 2.4,
+        "snow_quantity": 3.5,
         "temperature": 15.0,
         "wind": 6.4,
         "freezing_level": 5.0,
@@ -1042,8 +1042,8 @@
       },
       "source_confidence": {
         "confidence": "MEDIUM",
-        "blended_snow_cm": 0.8,
-        "detail": "Sources borderline (OM:1.3 vs scrapers:0.0cm)"
+        "blended_snow_cm": 1.2,
+        "detail": "Sources borderline (OM:2.0 vs scrapers:0.0cm)"
       },
       "sky": {
         "classification": "OVERCAST",
@@ -1055,7 +1055,7 @@
         "good_visibility": false
       },
       "conditions": {
-        "snowfall_24h_cm": 1.3,
+        "snowfall_24h_cm": 2.0,
         "temperature_c": -4.8,
         "temperature_min_c": -3.2,
         "temperature_max_c": 1.5,
@@ -1171,7 +1171,7 @@
         "message": ""
       },
       "breakdown": {
-        "snow_quantity": 0.6,
+        "snow_quantity": 0.5,
         "temperature": 15.0,
         "wind": 3.7,
         "freezing_level": 5.0,
@@ -1457,7 +1457,7 @@
         "message": ""
       },
       "breakdown": {
-        "snow_quantity": 0.1,
+        "snow_quantity": 0.2,
         "temperature": 15.0,
         "wind": 5.2,
         "freezing_level": 5.0,
@@ -1471,7 +1471,7 @@
       },
       "source_confidence": {
         "confidence": "HIGH",
-        "blended_snow_cm": 0.0,
+        "blended_snow_cm": 0.1,
         "detail": "All sources agree: dry"
       },
       "sky": {
@@ -1488,7 +1488,7 @@
         "temperature_c": -5.8,
         "temperature_min_c": -8.7,
         "temperature_max_c": -3.0,
-        "wind_speed_kmh": 8.6,
+        "wind_speed_kmh": 8.3,
         "wind_gust_kmh": 42.1,
         "wind_direction_deg": null,
         "freezing_level_m": 1500,
@@ -1602,7 +1602,7 @@
       "breakdown": {
         "snow_quantity": 0,
         "temperature": 15.0,
-        "wind": 7.3,
+        "wind": 10.0,
         "freezing_level": 5.0,
         "storm_timing": 0,
         "snow_depth_trend": 2.5,
@@ -1631,7 +1631,7 @@
         "temperature_c": -5.2,
         "temperature_min_c": -8.7,
         "temperature_max_c": -1.7,
-        "wind_speed_kmh": 14.1,
+        "wind_speed_kmh": 8.6,
         "wind_gust_kmh": 24.5,
         "wind_direction_deg": null,
         "freezing_level_m": 1500,
@@ -1745,7 +1745,7 @@
       "breakdown": {
         "snow_quantity": 0.1,
         "temperature": 15.0,
-        "wind": 0.3,
+        "wind": 2.4,
         "freezing_level": 5.0,
         "storm_timing": 0,
         "snow_depth_trend": 2.5,
@@ -1757,7 +1757,7 @@
       },
       "source_confidence": {
         "confidence": "MEDIUM",
-        "blended_snow_cm": 0.08,
+        "blended_snow_cm": 0.06,
         "detail": "No scraper data available"
       },
       "sky": {
@@ -1774,7 +1774,7 @@
         "temperature_c": -4.8,
         "temperature_min_c": -7.1,
         "temperature_max_c": -2.6,
-        "wind_speed_kmh": 23.9,
+        "wind_speed_kmh": 14.8,
         "wind_gust_kmh": 47.9,
         "wind_direction_deg": null,
         "freezing_level_m": 1500,
@@ -1888,7 +1888,7 @@
       "breakdown": {
         "snow_quantity": 0.1,
         "temperature": 15.0,
-        "wind": 1.8,
+        "wind": 2.2,
         "freezing_level": 5.0,
         "storm_timing": 0,
         "snow_depth_trend": 2.5,
@@ -1917,7 +1917,7 @@
         "temperature_c": -5.4,
         "temperature_min_c": -7.5,
         "temperature_max_c": -3.3,
-        "wind_speed_kmh": 20.5,
+        "wind_speed_kmh": 19.3,
         "wind_gust_kmh": 39.6,
         "wind_direction_deg": null,
         "freezing_level_m": 1500,
@@ -2014,7 +2014,7 @@
       "date": "2026-04-10"
     },
     {
-      "total": 30,
+      "total": 30.1,
       "label": "MARGINAL",
       "gate_limited": true,
       "confidence_pct": 24.0,
@@ -2029,21 +2029,21 @@
         "message": ""
       },
       "breakdown": {
-        "snow_quantity": 0.7,
+        "snow_quantity": 5.4,
         "temperature": 15.0,
-        "wind": 4.7,
+        "wind": 5.2,
         "freezing_level": 5.0,
         "storm_timing": 0,
         "snow_depth_trend": 2.5,
-        "model_agreement": 6.7,
-        "snow_quality": 0,
+        "model_agreement": 5.0,
+        "snow_quality": 5.5,
         "wind_loading": 0,
         "ensemble_confidence": 0,
         "source_confidence": 0
       },
       "source_confidence": {
         "confidence": "MEDIUM",
-        "blended_snow_cm": 0.39,
+        "blended_snow_cm": 3.02,
         "detail": "No scraper data available"
       },
       "sky": {
@@ -2056,11 +2056,11 @@
         "good_visibility": false
       },
       "conditions": {
-        "snowfall_24h_cm": 0.4,
+        "snowfall_24h_cm": 3.0,
         "temperature_c": -3.5,
         "temperature_min_c": -7.4,
         "temperature_max_c": 0.5,
-        "wind_speed_kmh": 16.6,
+        "wind_speed_kmh": 15.8,
         "wind_gust_kmh": 30.6,
         "wind_direction_deg": null,
         "freezing_level_m": 1500,
@@ -2172,13 +2172,13 @@
         "message": ""
       },
       "breakdown": {
-        "snow_quantity": 0.7,
+        "snow_quantity": 2.8,
         "temperature": 15.0,
-        "wind": 6.5,
+        "wind": 6.3,
         "freezing_level": 5.0,
         "storm_timing": 0,
         "snow_depth_trend": 2.5,
-        "model_agreement": 7.9,
+        "model_agreement": 6.0,
         "snow_quality": 0,
         "wind_loading": 0,
         "ensemble_confidence": 0,
@@ -2186,7 +2186,7 @@
       },
       "source_confidence": {
         "confidence": "MEDIUM",
-        "blended_snow_cm": 0.41000000000000003,
+        "blended_snow_cm": 1.5799999999999998,
         "detail": "No scraper data available"
       },
       "sky": {
@@ -2199,11 +2199,11 @@
         "good_visibility": false
       },
       "conditions": {
-        "snowfall_24h_cm": 0.4,
+        "snowfall_24h_cm": 1.6,
         "temperature_c": -7.7,
         "temperature_min_c": -9.1,
         "temperature_max_c": -6.2,
-        "wind_speed_kmh": 15.3,
+        "wind_speed_kmh": 15.5,
         "wind_gust_kmh": 9.4,
         "wind_direction_deg": null,
         "freezing_level_m": 1500,
@@ -2324,7 +2324,7 @@
       "start_index": 3,
       "end_index": 5,
       "duration_days": 3,
-      "total_snow_cm": 33.4,
+      "total_snow_cm": 33.3,
       "message": "Multi-day storm: 33cm over 3 days (Day 4-6)."
     },
     {
@@ -2332,7 +2332,7 @@
       "start_index": 3,
       "end_index": 6,
       "duration_days": 4,
-      "total_snow_cm": 35.8,
+      "total_snow_cm": 35.7,
       "message": "Close to multi-day storm: 36cm over 4 days (needs 3cm/day minimum).",
       "quality": "NEAR_MISS"
     },
@@ -2341,8 +2341,19 @@
       "day_index": 4,
       "wind_speed_kmh": 28.3,
       "wind_direction_deg": 93.62480755088085,
-      "recent_snow_cm": 18.1,
-      "message": "Wind slab risk Day 5: 28 km/h wind with 18cm recent snow. Wind loading on north aspects."
+      "recent_snow_cm": 18.9,
+      "message": "Wind slab risk Day 5: 28 km/h wind with 19cm recent snow. Wind loading on north aspects."
+    },
+    {
+      "type": "warming_trend",
+      "quality": "NEAR_MISS",
+      "day_index": 7,
+      "freezing_levels": [
+        1535.0,
+        1649.0,
+        1655.0
+      ],
+      "message": "Close to warming concern: Freezing level rising to 1655m (threshold 2000m)."
     },
     {
       "type": "cold_snap",
@@ -2376,7 +2387,7 @@
         1.54,
         0.0,
         2.52,
-        12.11
+        13.65
       ],
       "agreement": "LOW"
     },
@@ -2389,7 +2400,7 @@
         1.26,
         0.0,
         0.14,
-        3.29
+        3.01
       ],
       "agreement": "LOW"
     },
@@ -2402,7 +2413,7 @@
         7.0,
         9.52,
         0.49,
-        9.03
+        9.52
       ],
       "agreement": "LOW"
     },
@@ -2415,7 +2426,7 @@
         0,
         9.59,
         4.9,
-        32.69
+        38.43
       ],
       "agreement": "LOW"
     },
@@ -2428,7 +2439,7 @@
         0,
         2.52,
         12.46,
-        59.22
+        53.2
       ],
       "agreement": "LOW"
     },
@@ -2441,7 +2452,7 @@
         0,
         0.28,
         2.03,
-        11.9
+        11.97
       ],
       "agreement": "LOW"
     },
@@ -2454,7 +2465,7 @@
         0,
         0.14,
         0.56,
-        8.33
+        12.67
       ],
       "agreement": "LOW"
     },
@@ -2467,7 +2478,7 @@
         0,
         0.0,
         0.07,
-        1.47
+        1.19
       ],
       "agreement": "HIGH"
     },
@@ -2493,7 +2504,7 @@
         0,
         0.0,
         0.0,
-        0.0
+        0.49
       ],
       "agreement": "HIGH"
     },
@@ -2519,7 +2530,7 @@
         0,
         0.0,
         0.0,
-        0.14
+        0.0
       ],
       "agreement": "HIGH"
     },
@@ -2545,9 +2556,9 @@
         0,
         0.0,
         0.0,
-        0.0
+        18.41
       ],
-      "agreement": "HIGH"
+      "agreement": "LOW"
     },
     {
       "date": "2026-04-12",
@@ -2558,9 +2569,9 @@
         0,
         0.0,
         0,
-        0.0
+        8.19
       ],
-      "agreement": "HIGH"
+      "agreement": "LOW"
     }
   ],
   "chart_data": {
@@ -2656,12 +2667,12 @@
         "label": "GraphCast",
         "data": [
           5.32,
-          12.11,
-          3.29,
-          9.03,
-          32.69,
-          59.22,
-          11.9
+          13.65,
+          3.01,
+          9.52,
+          38.43,
+          53.2,
+          11.97
         ],
         "color": "rgba(233,30,99,0.7)"
       }
@@ -2720,7 +2731,7 @@
     {
       "date": "2026-03-29",
       "open_meteo": {
-        "snow_cm": 2.4,
+        "snow_cm": 2.6,
         "temp_c": -5.4,
         "wind_kmh": 17.0
       },
@@ -2743,7 +2754,7 @@
     {
       "date": "2026-03-30",
       "open_meteo": {
-        "snow_cm": 0.8,
+        "snow_cm": 0.7,
         "temp_c": -3.8,
         "wind_kmh": 18.0
       },
@@ -2789,7 +2800,7 @@
     {
       "date": "2026-04-01",
       "open_meteo": {
-        "snow_cm": 12.6,
+        "snow_cm": 13.4,
         "temp_c": -4.2,
         "wind_kmh": 28.0
       },
@@ -2812,7 +2823,7 @@
     {
       "date": "2026-04-02",
       "open_meteo": {
-        "snow_cm": 15.3,
+        "snow_cm": 14.4,
         "temp_c": -3.4,
         "wind_kmh": 15.0
       },
@@ -2848,15 +2859,16 @@
     "headline": "41cm building over 3 days",
     "best_day": {
       "date": "2026-04-02",
-      "score": 59.0,
+      "score": 58.2,
       "label": "FAIR",
-      "reason": "15cm fresh / -3C / 15km/h"
+      "reason": "14cm fresh / -3C / 15km/h"
     },
     "action_items": [
       "Best skiing Thu 02/04",
       "Avoid Wed 01/04 (94 km/h gusts)",
       "Avoid Thu 02/04 (57 km/h gusts)",
-      "Caution: wind slab risk Wed 01/04"
+      "Caution: wind slab risk Wed 01/04",
+      "Watch freezing level Sat 04/04"
     ],
     "snowpack_status": "63cm (building)",
     "seven_day_snow_total": 41.0
@@ -2903,9 +2915,9 @@
       "date": "2026-03-29",
       "level": 1,
       "level_name": "LOW",
-      "total_score": 2,
+      "total_score": 3,
       "factors": {
-        "new_snow_24h": 2,
+        "new_snow_24h": 3,
         "new_snow_72h": 0,
         "wind_transport": 0,
         "rapid_warming": 0,
@@ -2959,9 +2971,9 @@
       "date": "2026-04-02",
       "level": 3,
       "level_name": "CONSIDERABLE",
-      "total_score": 45,
+      "total_score": 44,
       "factors": {
-        "new_snow_24h": 15,
+        "new_snow_24h": 14,
         "new_snow_72h": 10,
         "wind_transport": 0,
         "rapid_warming": 0,
@@ -3085,13 +3097,13 @@
         {
           "label": "Freezing Level",
           "data": [
-            1827,
-            1912,
-            1897,
-            1967,
-            1967,
-            1539,
-            1656
+            1828,
+            1904,
+            1899,
+            1965,
+            1965,
+            1535,
+            1649
           ]
         }
       ],
@@ -3142,14 +3154,14 @@
     {
       "date": "2026-03-29",
       "min_cm": 0.0,
-      "max_cm": 12.1,
-      "spread_cm": 12.1
+      "max_cm": 13.7,
+      "spread_cm": 13.7
     },
     {
       "date": "2026-03-30",
       "min_cm": 0.0,
-      "max_cm": 3.3,
-      "spread_cm": 3.3
+      "max_cm": 3.0,
+      "spread_cm": 3.0
     },
     {
       "date": "2026-03-31",
@@ -3160,20 +3172,20 @@
     {
       "date": "2026-04-01",
       "min_cm": 0,
-      "max_cm": 32.7,
-      "spread_cm": 32.7
+      "max_cm": 38.4,
+      "spread_cm": 38.4
     },
     {
       "date": "2026-04-02",
       "min_cm": 0,
-      "max_cm": 59.2,
-      "spread_cm": 59.2
+      "max_cm": 53.2,
+      "spread_cm": 53.2
     },
     {
       "date": "2026-04-03",
       "min_cm": 0.0,
-      "max_cm": 11.9,
-      "spread_cm": 11.9
+      "max_cm": 12.0,
+      "spread_cm": 12.0
     }
   ],
   "spaghetti_data": {
@@ -3332,21 +3344,21 @@
         "model": "GraphCast",
         "values": [
           5.32,
-          12.11,
-          3.29,
-          9.03,
-          32.69,
-          59.22,
-          11.9,
-          8.33,
-          1.47,
+          13.65,
+          3.01,
+          9.52,
+          38.43,
+          53.2,
+          11.97,
+          12.67,
+          1.19,
           0.28,
+          0.49,
           0.0,
           0.0,
-          0.14,
           0.0,
-          0.0,
-          0.0
+          18.41,
+          8.19
         ],
         "color": "rgba(233,30,99,0.8)"
       }
@@ -3363,48 +3375,48 @@
       "Fri 03/04"
     ],
     "p10": [
-      0.378,
-      0.336,
+      0.252,
+      0.14,
       0.0,
-      0.392,
-      2.5759999999999996,
       0.0,
+      1.12,
+      0.11199999999999999,
       null
     ],
     "p25": [
-      0.77,
-      0.49,
+      0.49000000000000005,
+      0.42000000000000004,
       0.0,
-      0.9450000000000001,
-      5.109999999999999,
-      0.91,
+      0.28,
+      3.43,
+      0.7000000000000001,
       null
     ],
     "p50": [
-      0.98,
-      0.9100000000000001,
+      0.9800000000000001,
+      0.56,
       0.0,
-      1.6800000000000002,
-      9.94,
-      4.0600000000000005,
+      0.56,
+      6.72,
+      2.38,
       null
     ],
     "p75": [
       1.54,
-      1.61,
-      0.10500000000000001,
-      4.515,
-      13.440000000000001,
-      8.54,
+      1.1900000000000002,
+      0.21000000000000002,
+      1.8199999999999998,
+      11.34,
+      4.9,
       null
     ],
     "p90": [
-      1.9180000000000006,
-      2.016000000000001,
-      0.840000000000001,
-      6.468000000000001,
-      17.472,
-      12.432000000000002,
+      1.736000000000001,
+      1.8200000000000003,
+      0.7280000000000004,
+      4.984000000000001,
+      14.588000000000001,
+      6.0760000000000005,
       null
     ]
   },
@@ -3413,14 +3425,14 @@
       {
         "type": "snowfall_outlier",
         "date": "2026-04-02",
-        "detail": "snow_forecast reports 57.0cm snow, others' median is 15.3cm (3.7x)",
+        "detail": "snow_forecast reports 57.0cm snow, others' median is 14.4cm (4.0x)",
         "severity": "warning",
         "source": "snow_forecast"
       },
       {
         "type": "snowfall_outlier",
         "date": "2026-04-02",
-        "detail": "mountain_forecast reports 55.0cm snow, others' median is 15.3cm (3.6x)",
+        "detail": "mountain_forecast reports 55.0cm snow, others' median is 14.4cm (3.8x)",
         "severity": "warning",
         "source": "mountain_forecast"
       }
@@ -3446,7 +3458,7 @@
   },
   "ensemble": {
     "source": "open_meteo_ensemble",
-    "fetched_at": "2026-03-28T15:28:08.216727Z",
+    "fetched_at": "2026-03-28T15:11:48.312954Z",
     "location": "Popova Shapka",
     "elevations": {
       "2400": {
@@ -3463,57 +3475,57 @@
           ],
           "snowfall": {
             "p10": [
-              0.378,
-              0.336,
+              0.252,
+              0.14,
               0.0,
-              0.392,
-              2.5759999999999996,
               0.0,
+              1.12,
+              0.11199999999999999,
               null
             ],
             "p25": [
-              0.77,
-              0.49,
+              0.49000000000000005,
+              0.42000000000000004,
               0.0,
-              0.9450000000000001,
-              5.109999999999999,
-              0.91,
+              0.28,
+              3.43,
+              0.7000000000000001,
               null
             ],
             "p50": [
-              0.98,
-              0.9100000000000001,
+              0.9800000000000001,
+              0.56,
               0.0,
-              1.6800000000000002,
-              9.94,
-              4.0600000000000005,
+              0.56,
+              6.72,
+              2.38,
               null
             ],
             "p75": [
               1.54,
-              1.61,
-              0.10500000000000001,
-              4.515,
-              13.440000000000001,
-              8.54,
+              1.1900000000000002,
+              0.21000000000000002,
+              1.8199999999999998,
+              11.34,
+              4.9,
               null
             ],
             "p90": [
-              1.9180000000000006,
-              2.016000000000001,
-              0.840000000000001,
-              6.468000000000001,
-              17.472,
-              12.432000000000002,
+              1.736000000000001,
+              1.8200000000000003,
+              0.7280000000000004,
+              4.984000000000001,
+              14.588000000000001,
+              6.0760000000000005,
               null
             ],
             "prob_5cm": [
               0.02564102564102564,
               0.0,
               0.0,
-              0.20512820512820512,
-              0.7435897435897436,
-              0.46153846153846156,
+              0.10256410256410256,
+              0.6666666666666666,
+              0.2564102564102564,
               null
             ],
             "prob_15cm": [
@@ -3521,120 +3533,120 @@
               0.0,
               0.0,
               0.0,
-              0.20512820512820512,
-              0.05128205128205128,
+              0.07692307692307693,
+              0.0,
               null
             ]
           },
           "precipitation": {
             "p10": [
-              1.04,
-              0.48,
+              0.66,
+              0.18,
               0.0,
-              1.7199999999999998,
-              11.32,
-              1.96,
+              1.8,
+              10.120000000000001,
+              1.4000000000000001,
               null
             ],
             "p25": [
-              1.65,
-              0.7000000000000001,
-              0.30000000000000004,
-              3.3499999999999996,
-              15.399999999999999,
-              3.5,
+              1.7,
+              0.55,
+              0.2,
+              3.0,
+              15.899999999999999,
+              3.0999999999999996,
               null
             ],
             "p50": [
-              2.3,
-              1.5,
-              0.6000000000000001,
-              4.7,
-              20.400000000000002,
-              8.2,
+              2.1,
+              1.2,
+              0.7000000000000001,
+              4.2,
+              18.8,
+              5.4,
               null
             ],
             "p75": [
-              2.9000000000000004,
-              2.45,
-              1.6,
-              8.1,
-              25.799999999999997,
-              14.7,
+              2.7,
+              2.25,
+              1.5,
+              6.6,
+              22.9,
+              9.2,
               null
             ],
             "p90": [
-              3.820000000000002,
-              3.7,
-              1.9400000000000004,
-              12.44,
-              29.640000000000004,
-              18.440000000000005,
+              3.8000000000000016,
+              3.4800000000000013,
+              3.5600000000000023,
+              9.4,
+              27.840000000000003,
+              11.28,
               null
             ],
             "prob_5cm": [
               0.05128205128205128,
-              0.0,
               0.02564102564102564,
-              0.46153846153846156,
-              0.9743589743589743,
-              0.6666666666666666,
+              0.07692307692307693,
+              0.41025641025641024,
+              1.0,
+              0.5897435897435898,
               null
             ],
             "prob_15cm": [
               0.0,
               0.0,
               0.0,
+              0.02564102564102564,
+              0.7948717948717948,
               0.0,
-              0.7692307692307693,
-              0.23076923076923078,
               null
             ]
           },
           "temperature_2m": {
             "p10": [
-              -5.495833333333334,
-              -4.7325,
-              -3.1966666666666668,
-              -4.156666666666667,
-              -4.25,
-              -4.118571428571428,
+              -5.27,
+              -4.6241666666666665,
+              -3.078333333333333,
+              -3.6125,
+              -4.16,
+              -3.9299999999999997,
               null
             ],
             "p25": [
-              -5.3291666666666675,
-              -4.579166666666667,
-              -2.7020833333333334,
-              -3.5062500000000005,
-              -3.7729166666666663,
-              -3.685714285714286,
+              -5.089583333333334,
+              -4.410416666666666,
+              -2.8812499999999996,
+              -3.2458333333333336,
+              -3.8541666666666665,
+              -3.65625,
               null
             ],
             "p50": [
-              -5.104166666666667,
-              -4.429166666666666,
-              -2.433333333333333,
-              -3.1791666666666667,
-              -3.295833333333333,
-              -3.2714285714285714,
+              -4.8875,
+              -4.245833333333334,
+              -2.4833333333333334,
+              -2.7624999999999997,
+              -2.908333333333333,
+              -3.1125,
               null
             ],
             "p75": [
-              -4.93125,
-              -4.2375,
-              -2.1729166666666666,
-              -2.6375,
-              -2.7708333333333335,
-              -2.3357142857142854,
+              -4.664583333333333,
+              -4.016666666666667,
+              -2.129166666666667,
+              -2.166666666666667,
+              -2.2416666666666667,
+              -2.6812500000000004,
               null
             ],
             "p90": [
-              -4.795,
-              -4.0874999999999995,
-              -1.9691666666666665,
-              -2.0949999999999998,
-              -2.194166666666667,
-              -1.8385714285714283,
+              -4.5675,
+              -3.8041666666666667,
+              -1.6958333333333333,
+              -1.786666666666666,
+              -1.7533333333333327,
+              -2.1199999999999983,
               null
             ]
           }
@@ -3654,57 +3666,57 @@
       ],
       "snowfall": {
         "p10": [
-          0.378,
-          0.336,
+          0.252,
+          0.14,
           0.0,
-          0.392,
-          2.5759999999999996,
           0.0,
+          1.12,
+          0.11199999999999999,
           null
         ],
         "p25": [
-          0.77,
-          0.49,
+          0.49000000000000005,
+          0.42000000000000004,
           0.0,
-          0.9450000000000001,
-          5.109999999999999,
-          0.91,
+          0.28,
+          3.43,
+          0.7000000000000001,
           null
         ],
         "p50": [
-          0.98,
-          0.9100000000000001,
+          0.9800000000000001,
+          0.56,
           0.0,
-          1.6800000000000002,
-          9.94,
-          4.0600000000000005,
+          0.56,
+          6.72,
+          2.38,
           null
         ],
         "p75": [
           1.54,
-          1.61,
-          0.10500000000000001,
-          4.515,
-          13.440000000000001,
-          8.54,
+          1.1900000000000002,
+          0.21000000000000002,
+          1.8199999999999998,
+          11.34,
+          4.9,
           null
         ],
         "p90": [
-          1.9180000000000006,
-          2.016000000000001,
-          0.840000000000001,
-          6.468000000000001,
-          17.472,
-          12.432000000000002,
+          1.736000000000001,
+          1.8200000000000003,
+          0.7280000000000004,
+          4.984000000000001,
+          14.588000000000001,
+          6.0760000000000005,
           null
         ],
         "prob_5cm": [
           0.02564102564102564,
           0.0,
           0.0,
-          0.20512820512820512,
-          0.7435897435897436,
-          0.46153846153846156,
+          0.10256410256410256,
+          0.6666666666666666,
+          0.2564102564102564,
           null
         ],
         "prob_15cm": [
@@ -3712,120 +3724,120 @@
           0.0,
           0.0,
           0.0,
-          0.20512820512820512,
-          0.05128205128205128,
+          0.07692307692307693,
+          0.0,
           null
         ]
       },
       "precipitation": {
         "p10": [
-          1.04,
-          0.48,
+          0.66,
+          0.18,
           0.0,
-          1.7199999999999998,
-          11.32,
-          1.96,
+          1.8,
+          10.120000000000001,
+          1.4000000000000001,
           null
         ],
         "p25": [
-          1.65,
-          0.7000000000000001,
-          0.30000000000000004,
-          3.3499999999999996,
-          15.399999999999999,
-          3.5,
+          1.7,
+          0.55,
+          0.2,
+          3.0,
+          15.899999999999999,
+          3.0999999999999996,
           null
         ],
         "p50": [
-          2.3,
-          1.5,
-          0.6000000000000001,
-          4.7,
-          20.400000000000002,
-          8.2,
+          2.1,
+          1.2,
+          0.7000000000000001,
+          4.2,
+          18.8,
+          5.4,
           null
         ],
         "p75": [
-          2.9000000000000004,
-          2.45,
-          1.6,
-          8.1,
-          25.799999999999997,
-          14.7,
+          2.7,
+          2.25,
+          1.5,
+          6.6,
+          22.9,
+          9.2,
           null
         ],
         "p90": [
-          3.820000000000002,
-          3.7,
-          1.9400000000000004,
-          12.44,
-          29.640000000000004,
-          18.440000000000005,
+          3.8000000000000016,
+          3.4800000000000013,
+          3.5600000000000023,
+          9.4,
+          27.840000000000003,
+          11.28,
           null
         ],
         "prob_5cm": [
           0.05128205128205128,
-          0.0,
           0.02564102564102564,
-          0.46153846153846156,
-          0.9743589743589743,
-          0.6666666666666666,
+          0.07692307692307693,
+          0.41025641025641024,
+          1.0,
+          0.5897435897435898,
           null
         ],
         "prob_15cm": [
           0.0,
           0.0,
           0.0,
+          0.02564102564102564,
+          0.7948717948717948,
           0.0,
-          0.7692307692307693,
-          0.23076923076923078,
           null
         ]
       },
       "temperature_2m": {
         "p10": [
-          -5.495833333333334,
-          -4.7325,
-          -3.1966666666666668,
-          -4.156666666666667,
-          -4.25,
-          -4.118571428571428,
+          -5.27,
+          -4.6241666666666665,
+          -3.078333333333333,
+          -3.6125,
+          -4.16,
+          -3.9299999999999997,
           null
         ],
         "p25": [
-          -5.3291666666666675,
-          -4.579166666666667,
-          -2.7020833333333334,
-          -3.5062500000000005,
-          -3.7729166666666663,
-          -3.685714285714286,
+          -5.089583333333334,
+          -4.410416666666666,
+          -2.8812499999999996,
+          -3.2458333333333336,
+          -3.8541666666666665,
+          -3.65625,
           null
         ],
         "p50": [
-          -5.104166666666667,
-          -4.429166666666666,
-          -2.433333333333333,
-          -3.1791666666666667,
-          -3.295833333333333,
-          -3.2714285714285714,
+          -4.8875,
+          -4.245833333333334,
+          -2.4833333333333334,
+          -2.7624999999999997,
+          -2.908333333333333,
+          -3.1125,
           null
         ],
         "p75": [
-          -4.93125,
-          -4.2375,
-          -2.1729166666666666,
-          -2.6375,
-          -2.7708333333333335,
-          -2.3357142857142854,
+          -4.664583333333333,
+          -4.016666666666667,
+          -2.129166666666667,
+          -2.166666666666667,
+          -2.2416666666666667,
+          -2.6812500000000004,
           null
         ],
         "p90": [
-          -4.795,
-          -4.0874999999999995,
-          -1.9691666666666665,
-          -2.0949999999999998,
-          -2.194166666666667,
-          -1.8385714285714283,
+          -4.5675,
+          -3.8041666666666667,
+          -1.6958333333333333,
+          -1.786666666666666,
+          -1.7533333333333327,
+          -2.1199999999999983,
           null
         ]
       }
@@ -3846,43 +3858,43 @@
     {
       "name": "open_meteo",
       "status": "ok",
-      "fetched_at": "2026-03-28T15:28:05.586132Z",
+      "fetched_at": "2026-03-28T15:11:45.591571Z",
       "age": "just now"
     },
     {
       "name": "yr_no",
       "status": "ok",
-      "fetched_at": "2026-03-28T15:28:06.278881Z",
+      "fetched_at": "2026-03-28T15:11:46.232986Z",
       "age": "just now"
     },
     {
       "name": "snow_forecast",
       "status": "ok",
-      "fetched_at": "2026-03-28T15:28:06.702655Z",
+      "fetched_at": "2026-03-28T15:11:46.664120Z",
       "age": "just now"
     },
     {
       "name": "mountain_forecast",
       "status": "ok",
-      "fetched_at": "2026-03-28T15:28:07.676451Z",
+      "fetched_at": "2026-03-28T15:11:47.707826Z",
       "age": "just now"
     },
     {
       "name": "open_meteo_ensemble",
       "status": "ok",
-      "fetched_at": "2026-03-28T15:28:08.216727Z",
+      "fetched_at": "2026-03-28T15:11:48.312954Z",
       "age": "just now"
     },
     {
       "name": "seasonal",
       "status": "ok",
-      "fetched_at": "2026-03-28T15:28:08.746108Z",
+      "fetched_at": "2026-03-28T15:11:48.888000Z",
       "age": "just now"
     },
     {
       "name": "rainviewer",
       "status": "ok",
-      "fetched_at": "2026-03-28T15:28:08.934161Z",
+      "fetched_at": "2026-03-28T15:11:49.073715Z",
       "age": "just now"
     }
   ],
@@ -3893,7 +3905,7 @@
         "depth_cm": 78.0
       },
       {
-        "date": "2026-03-28T15:27:42",
+        "date": "2026-03-28T15:10:24",
         "depth_cm": 63.0
       }
     ],
@@ -4320,18 +4332,6 @@
         {
           "run_date": "2026-03-28T15:10:24",
           "score": 30
-        },
-        {
-          "run_date": "2026-03-28T15:11:49",
-          "score": 30
-        },
-        {
-          "run_date": "2026-03-28T15:19:17",
-          "score": 30
-        },
-        {
-          "run_date": "2026-03-28T15:27:42",
-          "score": 30
         }
       ],
       "2026-03-29": [
@@ -4377,18 +4377,6 @@
         },
         {
           "run_date": "2026-03-28T15:10:24",
-          "score": 30
-        },
-        {
-          "run_date": "2026-03-28T15:11:49",
-          "score": 30
-        },
-        {
-          "run_date": "2026-03-28T15:19:17",
-          "score": 30
-        },
-        {
-          "run_date": "2026-03-28T15:27:42",
           "score": 30
         }
       ],
@@ -4436,18 +4424,6 @@
         {
           "run_date": "2026-03-28T15:10:24",
           "score": 30
-        },
-        {
-          "run_date": "2026-03-28T15:11:49",
-          "score": 30
-        },
-        {
-          "run_date": "2026-03-28T15:19:17",
-          "score": 30
-        },
-        {
-          "run_date": "2026-03-28T15:27:42",
-          "score": 30
         }
       ],
       "2026-03-31": [
@@ -4493,18 +4469,6 @@
         },
         {
           "run_date": "2026-03-28T15:10:24",
-          "score": 30.6
-        },
-        {
-          "run_date": "2026-03-28T15:11:49",
-          "score": 30.6
-        },
-        {
-          "run_date": "2026-03-28T15:19:17",
-          "score": 30.6
-        },
-        {
-          "run_date": "2026-03-28T15:27:42",
           "score": 30.6
         }
       ],
@@ -4552,18 +4516,6 @@
         {
           "run_date": "2026-03-28T15:10:24",
           "score": 45.6
-        },
-        {
-          "run_date": "2026-03-28T15:11:49",
-          "score": 45.6
-        },
-        {
-          "run_date": "2026-03-28T15:19:17",
-          "score": 45.6
-        },
-        {
-          "run_date": "2026-03-28T15:27:42",
-          "score": 48.1
         }
       ],
       "2026-04-02": [
@@ -4610,18 +4562,6 @@
         {
           "run_date": "2026-03-28T15:10:24",
           "score": 58.2
-        },
-        {
-          "run_date": "2026-03-28T15:11:49",
-          "score": 58.2
-        },
-        {
-          "run_date": "2026-03-28T15:19:17",
-          "score": 58.2
-        },
-        {
-          "run_date": "2026-03-28T15:27:42",
-          "score": 59.0
         }
       ],
       "2026-04-03": [
@@ -4668,18 +4608,6 @@
         {
           "run_date": "2026-03-28T15:10:24",
           "score": 23.8
-        },
-        {
-          "run_date": "2026-03-28T15:11:49",
-          "score": 23.8
-        },
-        {
-          "run_date": "2026-03-28T15:19:17",
-          "score": 23.8
-        },
-        {
-          "run_date": "2026-03-28T15:27:42",
-          "score": 23.8
         }
       ]
     }
@@ -4706,7 +4634,7 @@
   "model_weights": null,
   "seasonal_outlook": {
     "source": "seasonal",
-    "fetched_at": "2026-03-28T15:28:08.746108Z",
+    "fetched_at": "2026-03-28T15:11:48.888000Z",
     "location": "Popova Shapka",
     "weeks": [
       {
@@ -9727,9 +9655,14 @@
   "seasonal_context": "6-week outlook: wetter, warmer",
   "radar": {
     "source": "rainviewer",
-    "fetched_at": "2026-03-28T15:28:08.934161Z",
+    "fetched_at": "2026-03-28T15:11:49.073715Z",
     "location": "Popova Shapka",
     "frames": [
+      {
+        "timestamp": 1774704000,
+        "url": "https://tilecache.rainviewer.com/v2/radar/4555aba60ce1/256/6/35/23/2/1_1.png",
+        "type": "past"
+      },
       {
         "timestamp": 1774704600,
         "url": "https://tilecache.rainviewer.com/v2/radar/067481c739a5/256/6/35/23/2/1_1.png",
@@ -9784,14 +9717,9 @@
         "timestamp": 1774710600,
         "url": "https://tilecache.rainviewer.com/v2/radar/8a3ebf50e4b2/256/6/35/23/2/1_1.png",
         "type": "past"
-      },
-      {
-        "timestamp": 1774711200,
-        "url": "https://tilecache.rainviewer.com/v2/radar/ad8e7678f7d8/256/6/35/23/2/1_1.png",
-        "type": "past"
       }
     ],
-    "generated_at": "2026-03-28T15:25:27Z",
+    "generated_at": "2026-03-28T15:10:25Z",
     "past_frame_count": 12,
     "nowcast_frame_count": 0,
     "elevations": {},
@@ -9801,11 +9729,11 @@
   },
   "season_stats": {
     "total_powder_days": 0,
-    "total_snowfall_cm": 43.8,
-    "biggest_day_cm": 15.3,
+    "total_snowfall_cm": 48.3,
+    "biggest_day_cm": 14.4,
     "biggest_day_date": "2026-04-02",
-    "longest_dry_spell": 8,
-    "current_dry_spell": 8,
+    "longest_dry_spell": 6,
+    "current_dry_spell": 0,
     "season_days_tracked": 16
   }
 }

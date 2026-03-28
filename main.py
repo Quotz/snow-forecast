@@ -23,7 +23,8 @@ sys.path.insert(0, str(PROJECT_DIR))
 
 from collectors import (OpenMeteoCollector, YrNoCollector,
                         SnowForecastCollector, MountainForecastCollector,
-                        OpenMeteoEnsembleCollector, MeteoblueCollector)
+                        OpenMeteoEnsembleCollector, MeteoblueCollector,
+                        SeasonalCollector, RainViewerCollector)
 from scoring import (calculate_powder_score, smooth_scores,
                      load_model_weights, update_model_weights)
 from patterns import detect_all_patterns
@@ -32,14 +33,17 @@ from data_extract import (extract_daily_data_from_open_meteo, build_model_compar
                           _safe, extract_yr_daily_data)
 from analysis import (build_chart_data, build_safety_flags, _build_source_comparison,
                       _format_chart_date, estimate_avalanche_danger,
-                      build_multi_chart_data, build_model_spread)
+                      build_multi_chart_data, build_model_spread,
+                      build_spaghetti_data, build_probability_fan_data,
+                      build_season_stats)
 from notify import notify_if_needed
 from subscribers import process_subscriber_updates
 from validation import validate_sources
-from insights import generate_insights
+from insights import generate_insights, compute_go_verdict, format_seasonal_context
 from forecast_diff import compute_forecast_diff
 from history import build_history_summary
 from verification import run_verification
+from recalibration import should_recalibrate, run_weekly_recalibration
 
 # Logging setup
 logging.basicConfig(
@@ -131,6 +135,34 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
     else:
         results["open_meteo_ensemble"] = ensemble_data
 
+    # Seasonal forecast (46-day outlook — separate from main collectors)
+    seasonal_data = None
+    try:
+        seasonal_collector = SeasonalCollector(config)
+        seasonal_data = seasonal_collector.safe_fetch(location)
+        if seasonal_data.get("error"):
+            logger.warning(f"Seasonal: {seasonal_data['error']}")
+            seasonal_data = None
+        else:
+            results["seasonal"] = seasonal_data
+            logger.info(f"Seasonal: {len(seasonal_data.get('weeks', []))} weeks fetched")
+    except Exception as e:
+        logger.warning(f"Seasonal collector failed: {e}")
+
+    # RainViewer radar (real-time precipitation radar tiles)
+    radar_data = None
+    try:
+        radar_collector = RainViewerCollector(config)
+        radar_data = radar_collector.safe_fetch(location)
+        if radar_data.get("error"):
+            logger.warning(f"Radar: {radar_data['error']}")
+            radar_data = None
+        else:
+            results["rainviewer"] = radar_data
+            logger.info(f"Radar: {len(radar_data.get('frames', []))} frames")
+    except Exception as e:
+        logger.warning(f"RainViewer collector failed: {e}")
+
     om_data = results.get("open_meteo", {})
     yr_data = results.get("yr_no", {})
     sf_data = results.get("snow_forecast", {})
@@ -180,11 +212,14 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
 
     # ===== LOAD ADAPTIVE WEIGHTS =====
     weights_path = os.path.join(PROJECT_DIR, "docs", "verification", "model_weights.json")
+    kalman_state_path = os.path.join(PROJECT_DIR, "docs", "verification", "kalman_state.json")
     adaptive_weights = None
     if config.get("verification", {}).get("adaptive_weights", False):
         adaptive_weights = load_model_weights(weights_path)
         if adaptive_weights:
             logger.info(f"Loaded adaptive model weights: {adaptive_weights.get('weights', {})}")
+            # Attach Kalman state path for use in scoring
+            adaptive_weights["kalman_state_path"] = kalman_state_path
         else:
             logger.info("No adaptive weights found, using equal weighting")
 
@@ -276,10 +311,20 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
     # Model spread (min/max across models per day)
     model_spread = build_model_spread(model_comparison)
 
+    # Spaghetti plot data (per-model traces for 16 days)
+    spaghetti_data = build_spaghetti_data(model_comparison, all_models)
+
+    # Probability fan data (ensemble percentile bands)
+    probability_fan = build_probability_fan_data(ensemble_data)
+
     # Generate actionable insights
     insights = generate_insights(scores, patterns, current)
     if insights:
         logger.info(f"Insight: {insights.get('headline', '')}")
+
+    # "Should I Go?" verdict
+    go_verdict = compute_go_verdict(scores, patterns, current)
+    logger.info(f"Verdict: {go_verdict.get('verdict', '?')} — {go_verdict.get('reason', '')}")
 
     # Historical trends
     history_dir = os.path.join(PROJECT_DIR, data_cfg.get("history_dir", "docs/history"))
@@ -329,6 +374,15 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
         except Exception as e:
             logger.error(f"Verification failed: {e}")
 
+    # Weekly recalibration (Sundays only)
+    if should_recalibrate():
+        try:
+            recal_result = run_weekly_recalibration(config, os.path.join(PROJECT_DIR, "docs"))
+            if recal_result.get("actions"):
+                logger.info(f"Recalibration: {recal_result['actions']}")
+        except Exception as e:
+            logger.error(f"Recalibration failed: {e}")
+
     # Load verification stats for dashboard (even if we didn't run verification this time)
     if verification_stats is None:
         stats_path = os.path.join(PROJECT_DIR, "docs", "verification", "stats.json")
@@ -357,9 +411,13 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
         "safety_flags": safety_flags,
         "source_comparison": source_comparison,
         "insights": insights,
+        "go_verdict": go_verdict,
+        "webcams": config.get("webcams", []),
         "avalanche_danger": avalanche_danger,
         "multi_charts": multi_charts,
         "model_spread": model_spread,
+        "spaghetti_data": spaghetti_data,
+        "probability_fan": probability_fan,
         "validation": validation_result,
         "ensemble": ensemble_data if ensemble_data and not ensemble_data.get("error") else None,
         "source_health": source_health,
@@ -372,6 +430,10 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
         },
         "verification_stats": verification_stats,
         "model_weights": model_weights_data,
+        "seasonal_outlook": seasonal_data if seasonal_data and not seasonal_data.get("error") else None,
+        "seasonal_context": format_seasonal_context(seasonal_data) if seasonal_data else "",
+        "radar": radar_data if radar_data and not radar_data.get("error") else None,
+        "season_stats": build_season_stats(history_dir),
     }
 
     # ===== OUTPUT =====

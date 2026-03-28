@@ -4,3 +4,5 @@ from .yr_no import YrNoCollector
 from .snow_forecast import SnowForecastCollector
 from .mountain_forecast import MountainForecastCollector
 from .meteoblue import MeteoblueCollector
+from .seasonal import SeasonalCollector
+from .rainviewer import RainViewerCollector
