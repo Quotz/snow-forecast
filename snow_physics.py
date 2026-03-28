@@ -195,6 +195,7 @@ def assess_surface_hoar_risk(night_cloud_pct: float, humidity: float,
 
 def classify_bluebird(gph_500hpa_hourly: list, cloud_cover_hourly: list,
                        wind_speed_hourly: list, pressure_hourly: list = None,
+                       shortwave_hourly: list = None, direct_hourly: list = None,
                        cfg: dict = None) -> dict:
     """Classify bluebird day potential from upper-atmosphere indicators.
 
@@ -296,6 +297,22 @@ def classify_bluebird(gph_500hpa_hourly: list, cloud_cover_hourly: list,
             p_trend = valid_pressure[-1] - valid_pressure[0]
             if p_trend > 3:  # Rising pressure
                 result["confidence"] += 10
+
+    # Solar radiation confirmation (strongest signal for actual sunshine)
+    if shortwave_hourly and direct_hourly:
+        skiing_sw = [shortwave_hourly[h] for h in range(8, min(17, len(shortwave_hourly)))
+                     if h < len(shortwave_hourly) and shortwave_hourly[h] is not None]
+        skiing_dir = [direct_hourly[h] for h in range(8, min(17, len(direct_hourly)))
+                      if h < len(direct_hourly) and direct_hourly[h] is not None]
+        if skiing_sw and skiing_dir:
+            avg_sw = sum(skiing_sw) / len(skiing_sw)
+            avg_dir = sum(skiing_dir) / len(skiing_dir)
+            if avg_sw > 10:
+                dfrac = avg_dir / avg_sw
+                if avg_sw > 500 and dfrac > 0.6:
+                    result["confidence"] += 15  # Strong direct sunshine confirmed
+                elif avg_sw > 300 and dfrac > 0.4:
+                    result["confidence"] += 8
 
     # Clamp confidence
     result["confidence"] = min(100, result["confidence"])

@@ -26,8 +26,11 @@ HOURLY_PARAMS = [
     "cloud_cover_low",
     "cloud_cover_high",
     "direct_radiation",
+    "shortwave_radiation",
+    "diffuse_radiation",
     "sunshine_duration",
     "surface_pressure",
+    "is_day",
 ]
 
 # Pressure-level parameters for snow physics analysis

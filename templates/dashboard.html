@@ -1051,12 +1051,15 @@
                         <div class="period-temp">{{ p.temp_avg_c|round(0)|int if p.temp_avg_c is not none else '?' }}&deg;</div>
                         <div class="period-wind">{{ p.wind_avg_kmh|round(0)|int if p.wind_avg_kmh is not none else '?' }}</div>
                         <div class="period-cloud">
-                            {% if p.cloud_pct is not none %}
-                                {% if p.abbr in ('NT', 'EVE') %}
+                            {% if p.abbr in ('NT', 'EVE') %}
+                                {% if p.cloud_pct is not none %}
                                     {% if p.cloud_pct < 30 %}&#9734;{% elif p.cloud_pct < 70 %}&#9789;{% else %}&#9729;{% endif %}
-                                {% else %}
-                                    {% if p.cloud_pct < 20 %}&#9728;{% elif p.cloud_pct < 50 %}&#127780;{% elif p.cloud_pct < 80 %}&#9925;{% else %}&#9729;{% endif %}
                                 {% endif %}
+                            {% elif p.direct_fraction is not none and p.radiation_w is not none and p.radiation_w > 20 %}
+                                {# Radiation-backed sky icon (more accurate than cloud %) #}
+                                {% if p.direct_fraction > 0.7 %}&#9728;{% elif p.direct_fraction > 0.4 %}&#127780;{% elif p.direct_fraction > 0.2 %}&#9925;{% else %}&#9729;{% endif %}
+                            {% elif p.cloud_pct is not none %}
+                                {% if p.cloud_pct < 20 %}&#9728;{% elif p.cloud_pct < 50 %}&#127780;{% elif p.cloud_pct < 80 %}&#9925;{% else %}&#9729;{% endif %}
                             {% endif %}
                         </div>
                     </div>

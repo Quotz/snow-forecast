@@ -80,6 +80,14 @@ def _period_stats(hourly_data: dict, day_index: int, start_hour: int,
     else:
         precip_type = "none"
 
+    # Radiation data
+    shortwave = _slice_avg("shortwave_radiation")
+    direct = _slice_avg("direct_radiation")
+    diffuse = _slice_avg("diffuse_radiation")
+    direct_frac = None
+    if shortwave and shortwave > 10 and direct is not None:
+        direct_frac = round(direct / shortwave, 2)
+
     return {
         "snowfall_cm": round(_slice_sum("snowfall"), 1),
         "rain_mm": round(_slice_sum("rain"), 1),
@@ -90,9 +98,13 @@ def _period_stats(hourly_data: dict, day_index: int, start_hour: int,
         "wind_max_kmh": _slice_max("wind_speed_10m"),
         "gust_max_kmh": _slice_max("wind_gusts_10m"),
         "cloud_pct": _slice_avg("cloud_cover"),
+        "cloud_high_pct": _slice_avg("cloud_cover_high"),
+        "cloud_low_pct": _slice_avg("cloud_cover_low"),
         "freezing_m": _slice_avg("freezing_level_height"),
         "visibility_m": _slice_avg("visibility"),
         "humidity_pct": _slice_avg("relative_humidity_2m"),
+        "radiation_w": shortwave,
+        "direct_fraction": direct_frac,
         "precip_type": precip_type,
         "snow_hours": snow_hrs,
         "rain_hours": rain_hrs,
@@ -227,15 +239,30 @@ def extract_daily_data_from_open_meteo(om_data: dict, elevation: int,
         hourly_temp_min = None
         hourly_temp_max = None
 
+        # Radiation data (skiing hours)
+        direct_radiation_avg = None
+        shortwave_radiation_avg = None
+        diffuse_radiation_avg = None
+        cloud_high = None
+        direct_fraction = None
+
         if first_model in elev_data.get("models", {}):
             mh = elev_data["models"][first_model]["hourly"]
             freezing = _skiing_hours_average(mh.get("freezing_level_height", []), i)
             cloud = _skiing_hours_average(mh.get("cloud_cover", []), i)
             cloud_low = _skiing_hours_average(mh.get("cloud_cover_low", []), i)
+            cloud_high = _skiing_hours_average(mh.get("cloud_cover_high", []), i)
             visibility = _skiing_hours_average(mh.get("visibility", []), i)
             dew_point = _skiing_hours_average(mh.get("dew_point_2m", []), i)
             temp_2m = _skiing_hours_average(mh.get("temperature_2m", []), i)
             humidity_avg = _skiing_hours_average(mh.get("relative_humidity_2m", []), i)
+            direct_radiation_avg = _skiing_hours_average(mh.get("direct_radiation", []), i)
+            shortwave_radiation_avg = _skiing_hours_average(mh.get("shortwave_radiation", []), i)
+            diffuse_radiation_avg = _skiing_hours_average(mh.get("diffuse_radiation", []), i)
+
+            # Direct fraction: how much of total radiation is direct sunlight
+            if shortwave_radiation_avg and shortwave_radiation_avg > 10 and direct_radiation_avg is not None:
+                direct_fraction = round(direct_radiation_avg / shortwave_radiation_avg, 2)
 
             # Full-day extraction for weather codes, rain, temp range
             day_start = i * 24
@@ -384,8 +411,14 @@ def extract_daily_data_from_open_meteo(om_data: dict, elevation: int,
             sp_arr = mh.get("surface_pressure", [])
             sp_day = sp_arr[day_start:day_end] if sp_arr else []
 
+            sw_arr = mh.get("shortwave_radiation", [])
+            sw_day = sw_arr[day_start:day_end] if sw_arr else []
+            dr_arr = mh.get("direct_radiation", [])
+            dr_day = dr_arr[day_start:day_end] if dr_arr else []
+
             if gph_day or cc_day:
-                bluebird_info = classify_bluebird(gph_day, cc_day, ws_day, sp_day)
+                bluebird_info = classify_bluebird(gph_day, cc_day, ws_day, sp_day,
+                                                   sw_day, dr_day)
 
             # Crystal type estimation
             crystal_type = estimate_crystal_type(temp_700_avg, avg_temp, humidity_avg)
@@ -415,6 +448,11 @@ def extract_daily_data_from_open_meteo(om_data: dict, elevation: int,
             "humidity_avg": _safe(humidity_avg, 50),
             "temperature_min_c": hourly_temp_min if hourly_temp_min is not None else (temp_min or -5),
             "temperature_max_c": hourly_temp_max if hourly_temp_max is not None else (temp_max or -5),
+            "cloud_cover_high": cloud_high,
+            "direct_radiation_avg": direct_radiation_avg,
+            "shortwave_radiation_avg": shortwave_radiation_avg,
+            "diffuse_radiation_avg": diffuse_radiation_avg,
+            "direct_fraction": direct_fraction,
             "forecast_day_index": i,
             # Time-of-day periods
             "periods": periods,

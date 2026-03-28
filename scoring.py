@@ -693,8 +693,12 @@ def compute_confidence_pct(forecast_day_index: int) -> float:
 
 def score_sky_conditions(cloud_cover: float, cloud_cover_low: float,
                          sunshine_hours: float, visibility_m: float,
-                         cfg: dict) -> dict:
-    """Score sky/experience conditions. Returns dict with classification and details.
+                         cfg: dict, day_data: dict = None) -> dict:
+    """Score sky/experience conditions using cloud + radiation data.
+
+    Uses radiation data (direct_fraction, shortwave) when available for
+    more accurate classification. Falls back to cloud-only logic when
+    radiation data is missing.
 
     Not part of the main powder score (since stormy days ARE powder days),
     but tracked for the "day after" bluebird detection.
@@ -708,25 +712,78 @@ def score_sky_conditions(cloud_cover: float, cloud_cover_low: float,
     sun = _safe(sunshine_hours, 0) / 3600 if sunshine_hours and sunshine_hours > 100 else _safe(sunshine_hours, 0)
     vis = _safe(visibility_m, 10000)
 
-    if cloud < 10 and sun > 8:
-        classification = "BLUEBIRD"
-    elif cloud < 30 and sun > 6:
-        classification = "MOSTLY_SUNNY"
-    elif cloud < 60:
-        classification = "PARTLY_CLOUDY"
-    elif cloud < 80:
-        classification = "MOSTLY_OVERCAST"
+    # Extract radiation data if available
+    dfrac = None
+    shortwave = None
+    cloud_high = None
+    if day_data:
+        dfrac = day_data.get("direct_fraction")
+        shortwave = day_data.get("shortwave_radiation_avg")
+        cloud_high = day_data.get("cloud_cover_high")
+
+    # Radiation-aware classification (more accurate than cloud % alone)
+    if dfrac is not None and shortwave is not None and shortwave > 20:
+        # Use radiation as primary signal — this measures actual sunshine
+        if dfrac > 0.7 and shortwave > 400 and cloud < 20:
+            classification = "BLUEBIRD"
+        elif dfrac > 0.7 and shortwave > 300:
+            # High direct fraction even with some cloud → thin high cloud, still sunny
+            classification = "BLUEBIRD" if cloud < 30 else "MOSTLY_SUNNY"
+        elif dfrac > 0.5 and cloud < 40:
+            classification = "MOSTLY_SUNNY"
+        elif dfrac > 0.3 or cloud < 55:
+            classification = "PARTLY_CLOUDY"
+        elif cloud < 85:
+            classification = "MOSTLY_OVERCAST"
+        else:
+            classification = "OVERCAST"
+
+        # Cloud layer nuance: high-only cloud often lets sun through
+        if cloud_high is not None and low is not None:
+            if cloud_high > 50 and low < 25 and classification == "MOSTLY_OVERCAST":
+                # High thin cloud + clear below = still feels partly sunny
+                classification = "PARTLY_CLOUDY"
     else:
-        classification = "OVERCAST"
+        # Fallback: cloud-only classification (original logic)
+        if cloud < 10 and sun > 8:
+            classification = "BLUEBIRD"
+        elif cloud < 30 and sun > 6:
+            classification = "MOSTLY_SUNNY"
+        elif cloud < 60:
+            classification = "PARTLY_CLOUDY"
+        elif cloud < 80:
+            classification = "MOSTLY_OVERCAST"
+        else:
+            classification = "OVERCAST"
+
+    # Flat light detection: high diffuse fraction = scattered light, no shadows
+    flat_light = low > low_warning
+    if dfrac is not None and dfrac < 0.2 and shortwave and shortwave > 50:
+        flat_light = True  # Radiation confirms flat light even if low cloud isn't extreme
+
+    # Sun quality score (0-100): how good is the sunshine for skiing experience
+    sun_quality = 0
+    if dfrac is not None and shortwave is not None:
+        # Combine direct fraction (clarity) with intensity (radiation)
+        clarity_score = min(50, dfrac * 70)  # Max 50 from clarity
+        intensity_score = min(50, shortwave / 12)  # Max 50 at 600+ W/m²
+        sun_quality = round(clarity_score + intensity_score)
+    elif sun > 0:
+        # Fallback from sunshine hours
+        sun_quality = round(min(100, sun * 12))
 
     return {
         "classification": classification,
         "cloud_cover": cloud,
         "cloud_cover_low": low,
+        "cloud_cover_high": cloud_high,
         "sunshine_hours": sun,
         "visibility_m": vis,
-        "flat_light_warning": low > low_warning,
+        "flat_light_warning": flat_light,
         "good_visibility": vis > good_vis,
+        "sun_quality": sun_quality,
+        "direct_fraction": dfrac,
+        "shortwave_radiation": shortwave,
     }
 
 
@@ -1007,6 +1064,7 @@ def calculate_powder_score(day_data: dict, scoring_cfg: dict, sky_cfg: dict,
         day_data.get("sunshine_hours", 0),
         day_data.get("visibility_m", 10000),
         sky_cfg,
+        day_data=day_data,
     )
 
     # Forecast confidence
