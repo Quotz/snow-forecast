@@ -53,7 +53,8 @@ DAILY_PARAMS = ["snowfall_sum", "temperature_2m_max", "temperature_2m_min",
                 "sunshine_duration"]
 
 ERA5_PARAMS = ["temperature_2m_max", "temperature_2m_min", "snowfall_sum",
-               "precipitation_sum", "wind_speed_10m_max", "wind_gusts_10m_max"]
+               "precipitation_sum", "wind_speed_10m_max", "wind_gusts_10m_max",
+               "sunshine_duration"]
 
 
 def _monthly_batches(start_date, end_date):
@@ -168,12 +169,18 @@ def fetch_era5(start_date, end_date):
             dates = daily.get("time", [])
 
             for i, date_str in enumerate(dates):
+                def _get(key):
+                    arr = daily.get(key, [])
+                    return arr[i] if i < len(arr) else None
+
+                sunshine_sec = _get("sunshine_duration")
                 results[date_str] = {
-                    "snowfall": daily.get("snowfall_sum", [None])[i] if i < len(daily.get("snowfall_sum", [])) else None,
-                    "temperature_max": daily.get("temperature_2m_max", [None])[i] if i < len(daily.get("temperature_2m_max", [])) else None,
-                    "temperature_min": daily.get("temperature_2m_min", [None])[i] if i < len(daily.get("temperature_2m_min", [])) else None,
-                    "wind_max": daily.get("wind_speed_10m_max", [None])[i] if i < len(daily.get("wind_speed_10m_max", [])) else None,
-                    "precipitation": daily.get("precipitation_sum", [None])[i] if i < len(daily.get("precipitation_sum", [])) else None,
+                    "snowfall": _get("snowfall_sum"),
+                    "temperature_max": _get("temperature_2m_max"),
+                    "temperature_min": _get("temperature_2m_min"),
+                    "wind_max": _get("wind_speed_10m_max"),
+                    "precipitation": _get("precipitation_sum"),
+                    "sunshine_hours": round(sunshine_sec / 3600, 1) if sunshine_sec else None,
                 }
 
         except requests.RequestException as e:
@@ -243,6 +250,7 @@ def build_training_data(forecasts, era5):
             "temperature_max": obs.get("temperature_max"),
             "temperature_min": obs.get("temperature_min"),
             "wind_max": obs.get("wind_max"),
+            "sunshine_hours": obs.get("sunshine_hours"),
         }
 
         store_analog(features, observed, analogs_path, max_entries=1000)
@@ -253,26 +261,21 @@ def build_training_data(forecasts, era5):
 
 
 def train(analogs_path):
-    """Train the ML model on accumulated analog data."""
-    from ml_postprocess import train_model, should_use_ml
+    """Train ML models for all targets on accumulated analog data."""
+    from ml_postprocess import train_all_models, should_use_ml
 
-    model_path = str(Path(__file__).parent / "docs" / "verification" / "ml_model.pkl")
+    models_dir = str(Path(__file__).parent / "docs" / "verification")
 
     if not should_use_ml(analogs_path):
         logger.warning("Not enough analog data for training")
         return None
 
-    result = train_model(analogs_path, model_path)
-    if result:
-        logger.info(f"Model trained: CV MAE = {result['cv_mae']:.2f} cm on {result['n_samples']} samples")
-        logger.info(f"Feature importances: {json.dumps(result['feature_importances'], indent=2)}")
+    results = train_all_models(analogs_path, models_dir)
+    if results:
+        for target, info in results.items():
+            logger.info(f"  {target}: CV MAE = {info['cv_mae']:.2f} {info['unit']} ({info['n_samples']} samples)")
 
-        # Save training report
-        report_path = str(Path(__file__).parent / "docs" / "verification" / "ml_training_report.json")
-        with open(report_path, "w") as f:
-            json.dump(result, f, indent=2)
-
-    return result
+    return results
 
 
 def main():
@@ -317,15 +320,17 @@ def main():
 
     # Train model
     analogs_path = str(Path(__file__).parent / "docs" / "verification" / "analogs.json")
-    result = train(analogs_path)
+    results = train(analogs_path)
 
-    if result:
-        print(f"\nModel trained successfully!")
-        print(f"  CV MAE: {result['cv_mae']:.2f} cm")
-        print(f"  Samples: {result['n_samples']}")
-        print(f"  Feature importances:")
-        for feat, imp in sorted(result['feature_importances'].items(), key=lambda x: -x[1]):
-            print(f"    {feat:15s}: {imp:.4f}")
+    if results:
+        print(f"\nModels trained successfully!")
+        for target, info in results.items():
+            print(f"\n  {target} ({info['unit']}):")
+            print(f"    CV MAE: {info['cv_mae']:.2f} {info['unit']}")
+            print(f"    Samples: {info['n_samples']}")
+            print(f"    Top features:")
+            for feat, imp in sorted(info['importances'].items(), key=lambda x: -x[1])[:5]:
+                print(f"      {feat:15s}: {imp:.4f}")
     else:
         print(f"\nTraining failed — need at least 30 pairs, have {n_pairs}")
 

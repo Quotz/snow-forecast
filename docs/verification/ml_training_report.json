@@ -1,18 +1,96 @@
 {
-  "trained_at": "2026-03-29T11:42:15.022281Z",
-  "n_samples": 121,
-  "cv_mae": 0.737,
-  "feature_importances": {
-    "model_0": 0.0935,
-    "model_1": 0.5957,
-    "model_2": 0.0522,
-    "model_3": 0.0248,
-    "model_4": 0.0719,
-    "model_5": 0.0,
-    "model_6": 0.0,
-    "mean": 0.1482,
-    "spread": 0.0009,
-    "lead_time": 0.0,
-    "day_of_year": 0.0129
+  "trained_at": "2026-03-29T11:52:04.376211Z",
+  "n_analogs": 242,
+  "targets": {
+    "snowfall": {
+      "cv_mae": 0.39,
+      "n_samples": 242,
+      "importances": {
+        "model_0": 0.0364,
+        "model_1": 0.74,
+        "model_2": 0.0548,
+        "model_3": 0.0143,
+        "model_4": 0.0546,
+        "model_5": 0.0,
+        "model_6": 0.0,
+        "mean": 0.0818,
+        "spread": 0.0029,
+        "lead_time": 0.0,
+        "day_of_year": 0.0152
+      },
+      "unit": "cm"
+    },
+    "temperature_max": {
+      "cv_mae": 1.159,
+      "n_samples": 242,
+      "importances": {
+        "model_0": 0.0146,
+        "model_1": 0.0289,
+        "model_2": 0.0261,
+        "model_3": 0.0923,
+        "model_4": 0.0761,
+        "model_5": 0.0,
+        "model_6": 0.0,
+        "mean": 0.0997,
+        "spread": 0.1135,
+        "lead_time": 0.0,
+        "day_of_year": 0.5489
+      },
+      "unit": "\u00b0C"
+    },
+    "temperature_min": {
+      "cv_mae": 1.491,
+      "n_samples": 242,
+      "importances": {
+        "model_0": 0.0188,
+        "model_1": 0.0238,
+        "model_2": 0.0118,
+        "model_3": 0.0364,
+        "model_4": 0.0373,
+        "model_5": 0.0,
+        "model_6": 0.0,
+        "mean": 0.0466,
+        "spread": 0.0672,
+        "lead_time": 0.0,
+        "day_of_year": 0.758
+      },
+      "unit": "\u00b0C"
+    },
+    "wind_max": {
+      "cv_mae": 1.326,
+      "n_samples": 242,
+      "importances": {
+        "model_0": 0.0878,
+        "model_1": 0.0418,
+        "model_2": 0.0437,
+        "model_3": 0.1697,
+        "model_4": 0.033,
+        "model_5": 0.0,
+        "model_6": 0.0,
+        "mean": 0.1134,
+        "spread": 0.1814,
+        "lead_time": 0.0,
+        "day_of_year": 0.3291
+      },
+      "unit": "km/h"
+    },
+    "sunshine_hours": {
+      "cv_mae": 1.902,
+      "n_samples": 110,
+      "importances": {
+        "model_0": 0.0912,
+        "model_1": 0.1763,
+        "model_2": 0.0214,
+        "model_3": 0.2303,
+        "model_4": 0.0307,
+        "model_5": 0.0,
+        "model_6": 0.0,
+        "mean": 0.0563,
+        "spread": 0.1931,
+        "lead_time": 0.0,
+        "day_of_year": 0.2007
+      },
+      "unit": "h"
+    }
   }
 }

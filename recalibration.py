@@ -56,15 +56,15 @@ def run_weekly_recalibration(config: dict, docs_dir: str = "docs") -> dict:
     if kalman_adjusted:
         actions.append(f"Adjusted Kalman parameters: {kalman_adjusted}")
 
-    # 2.5. Train ML model if enough analog data
+    # 2.5. Train ML models for all targets (snowfall, temp, wind, sunshine)
     analogs_path = os.path.join(docs_dir, "verification", "analogs.json")
-    ml_model_path = os.path.join(docs_dir, "verification", "ml_model.pkl")
+    models_dir = os.path.join(docs_dir, "verification")
     try:
-        from ml_postprocess import should_use_ml, train_model
+        from ml_postprocess import should_use_ml, train_all_models
         if should_use_ml(analogs_path):
-            ml_result = train_model(analogs_path, ml_model_path)
-            if ml_result:
-                actions.append(f"ML model trained: CV MAE={ml_result.get('cv_mae', '?')} cm on {ml_result.get('n_samples', 0)} samples")
+            ml_results = train_all_models(analogs_path, models_dir)
+            for target, info in ml_results.items():
+                actions.append(f"ML {target}: CV MAE={info['cv_mae']:.2f}{info['unit']} ({info['n_samples']} samples)")
     except ImportError:
         pass  # scikit-learn not available
     except Exception as e:

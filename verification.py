@@ -700,7 +700,9 @@ def run_verification(config, docs_dir="docs"):
                 observed = {
                     "snowfall": actual["snowfall"],
                     "temperature_max": actual.get("temperature_max"),
+                    "temperature_min": actual.get("temperature_min"),
                     "wind_max": actual.get("wind_max"),
+                    "precipitation": actual.get("precipitation"),
                 }
                 store_analog(features, observed, analogs_path)
 
