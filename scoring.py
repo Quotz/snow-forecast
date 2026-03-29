@@ -13,6 +13,7 @@ import json
 import math
 import os
 import logging
+from datetime import datetime
 from typing import Optional
 
 from kalman import kalman_batch_correct, initialize_from_ewma
@@ -980,6 +981,33 @@ def calculate_powder_score(day_data: dict, scoring_cfg: dict, sky_cfg: dict,
         # Fall back to simple bias subtraction
         model_snowfall = apply_bias_correction(model_snowfall, model_names, bias_corrections)
 
+    # ML-corrected snowfall prediction (blended with model average)
+    ml_prediction = None
+    ml_model_path = adaptive_weights.get("ml_model_path") if adaptive_weights else None
+    if ml_model_path and os.path.exists(ml_model_path):
+        try:
+            from ml_postprocess import predict
+            valid_sf = [v for v in model_snowfall if v is not None]
+            if valid_sf:
+                date_str = day_data.get("date", "")
+                try:
+                    doy = datetime.strptime(str(date_str)[:10], "%Y-%m-%d").timetuple().tm_yday
+                except (ValueError, TypeError):
+                    doy = 180
+                ml_features = {
+                    "model_predictions": model_snowfall,
+                    "mean": sum(valid_sf) / len(valid_sf),
+                    "spread": max(valid_sf) - min(valid_sf) if len(valid_sf) > 1 else 0,
+                    "lead_time": day_data.get("forecast_day_index", 2),
+                    "day_of_year": doy,
+                }
+                ml_prediction = predict(ml_features, ml_model_path)
+                if ml_prediction is not None:
+                    # Blend: 60% ML, 40% model average (ML has proven lower MAE)
+                    snow_24h = round(0.6 * ml_prediction + 0.4 * snow_24h, 1)
+        except Exception:
+            pass  # ML not available, continue with model average
+
     # Calculate component scores
     snow_pts = score_snow_quantity(snow_24h, scoring_cfg.get("snow", {}))
     temp_pts = score_temperature(temp, scoring_cfg.get("temperature", {}))
@@ -1132,6 +1160,7 @@ def calculate_powder_score(day_data: dict, scoring_cfg: dict, sky_cfg: dict,
             "rain_hours": day_data.get("rain_hours", 0),
         },
         "periods": day_data.get("periods", []),
+        "ml_prediction": ml_prediction,
     }
 
 

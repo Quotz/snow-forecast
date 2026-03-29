@@ -218,10 +218,18 @@ def run(config: dict, no_notify: bool = False, dashboard_only: bool = False,
         adaptive_weights = load_model_weights(weights_path)
         if adaptive_weights:
             logger.info(f"Loaded adaptive model weights: {adaptive_weights.get('weights', {})}")
-            # Attach Kalman state path for use in scoring
+            # Attach paths for use in scoring
             adaptive_weights["kalman_state_path"] = kalman_state_path
         else:
             logger.info("No adaptive weights found, using equal weighting")
+
+    # ML model: works independently of adaptive weights
+    ml_model_path = os.path.join(PROJECT_DIR, "docs", "verification", "ml_model.pkl")
+    if os.path.exists(ml_model_path):
+        if adaptive_weights is None:
+            adaptive_weights = {}
+        adaptive_weights["ml_model_path"] = ml_model_path
+        logger.info("ML model loaded for snowfall prediction")
 
     # ===== SCORE =====
     logger.info("Calculating powder scores")

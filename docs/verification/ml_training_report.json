@@ -1,0 +1,18 @@
+{
+  "trained_at": "2026-03-29T11:42:15.022281Z",
+  "n_samples": 121,
+  "cv_mae": 0.737,
+  "feature_importances": {
+    "model_0": 0.0935,
+    "model_1": 0.5957,
+    "model_2": 0.0522,
+    "model_3": 0.0248,
+    "model_4": 0.0719,
+    "model_5": 0.0,
+    "model_6": 0.0,
+    "mean": 0.1482,
+    "spread": 0.0009,
+    "lead_time": 0.0,
+    "day_of_year": 0.0129
+  }
+}
