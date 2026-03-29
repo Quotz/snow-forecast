@@ -5,1058 +5,222 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="refresh" content="3600">
     <title>Powder Forecast — {{ data.location }}</title>
-    <meta property="og:title" content="Powder Forecast — {{ data.location }}">
-    <meta property="og:description" content="16-day powder forecast for {{ data.location }}. {{ data.models|length }} models, updated 3x daily.">
-    <meta property="og:type" content="website">
     <meta name="theme-color" content="#0b1016">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#10052;</text></svg>">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        :root {
-            --bg: #0b1016;
-            --bg-raised: #111922;
-            --card: #151e2b;
-            --card-hover: #1a2637;
-            --card-border: #1e2d42;
-            --text: #e4eaf0;
-            --text-secondary: #a0b4c8;
-            --text-dim: #7b8fa6;
-            --text-muted: #4e6074;
-            --accent: #3b9cf5;
-            --accent-glow: rgba(59, 156, 245, 0.15);
-            --epic: #4d8df7;
-            --good: #3cc068;
-            --fair: #f0c230;
-            --marginal: #7a8a9a;
-            --skip: #e5453a;
-            --warning: #f57c3b;
-            --verdict-yes: #3cc068;
-            --verdict-maybe: #f0c230;
-            --verdict-wait: #7a8a9a;
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 20px;
-            --shadow-card: 0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.15);
-            --shadow-hover: 0 4px 20px rgba(0,0,0,0.4);
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --bg:#0b1016;--bg2:#111922;--card:#151e2b;--border:#1e2d42;
+            --text:#e4eaf0;--dim:#7b8fa6;--muted:#4e6074;--accent:#3b9cf5;
+            --epic:#4d8df7;--good:#3cc068;--fair:#f0c230;--marginal:#7a8a9a;--skip:#e5453a;
+            --yes:#3cc068;--maybe:#f0c230;--wait:#7a8a9a;
         }
+        body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+        .c{max-width:900px;margin:0 auto;padding:0 16px}
+        a{color:var(--accent);text-decoration:none}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* === HEADER === */
+        .hdr{padding:12px 0;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--dim);display:flex;justify-content:space-between;align-items:center}
+        .hdr b{color:var(--text);font-size:.95rem}
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+        /* === VERDICT === */
+        .verdict{text-align:center;padding:28px 0 20px}
+        .v-badge{display:inline-block;font-size:2.8rem;font-weight:900;letter-spacing:-2px;line-height:1}
+        .v-YES{color:var(--yes)}.v-MAYBE{color:var(--maybe)}.v-WAIT{color:var(--wait)}
+        .v-reason{font-size:1rem;color:var(--dim);margin-top:6px}
+        .v-detail{font-size:.8rem;color:var(--muted);margin-top:2px}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+        /* === SECTION TITLES === */
+        .stitle{font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:28px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
 
-        /* ===== TOP NAV BAR ===== */
-        .topbar {
-            background: linear-gradient(180deg, rgba(11,16,22,0.95) 0%, rgba(11,16,22,0.8) 100%);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--card-border);
-            padding: 12px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .topbar-inner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-        }
-        .topbar-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .topbar-logo {
-            font-size: 1.25rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #fff 0%, #7eb8e0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .topbar-location {
-            font-size: 0.8rem;
-            color: var(--text-dim);
-            padding: 3px 10px;
-            background: var(--card);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-        }
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .source-dots {
-            display: flex;
-            gap: 3px;
-            align-items: center;
-        }
-        .source-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-        }
-        .topbar-time {
-            font-size: 0.72rem;
-            color: var(--text-muted);
-        }
+        /* === 7-DAY TABLE (main view) === */
+        .forecast-table{width:100%;border-collapse:collapse}
+        .forecast-table th{font-size:.6rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:6px 4px;text-align:center;border-bottom:1px solid var(--border)}
+        .forecast-table th:first-child{text-align:left}
+        .forecast-table td{padding:8px 4px;border-bottom:1px solid rgba(30,45,66,.3);text-align:center;font-size:.8rem;vertical-align:top}
+        .forecast-table td:first-child{text-align:left}
+        .forecast-table tr:hover{background:rgba(59,156,245,.03)}
+        .day-name{font-weight:700;font-size:.85rem}
+        .day-date{font-size:.65rem;color:var(--muted)}
+        .score-pill{display:inline-block;padding:2px 10px;border-radius:10px;font-size:.7rem;font-weight:700;color:#fff}
+        .pill-EPIC{background:var(--epic)}.pill-GOOD{background:var(--good)}.pill-FAIR{background:var(--fair);color:#1a1a1a}.pill-MARGINAL{background:var(--marginal)}.pill-SKIP{background:var(--skip)}
+        .period-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:4px}
+        .period-cell{text-align:center;background:rgba(0,0,0,.15);border-radius:4px;padding:3px 2px;font-size:.65rem;line-height:1.3}
+        .period-label{font-weight:700;color:var(--muted);font-size:.55rem;letter-spacing:.5px}
+        .period-snow{font-weight:700;color:var(--dim)}
+        .has-snow{color:var(--accent)}
+        .period-meta{color:var(--muted);font-size:.6rem}
+        .sky-icon{font-size:.75rem}
+        .crystal-badge{font-size:.6rem;padding:1px 5px;border-radius:4px;background:rgba(59,156,245,.1);color:var(--accent)}
+        .dgz-badge{font-size:.55rem;padding:1px 4px;border-radius:3px;background:rgba(77,141,247,.15);color:var(--epic)}
+        .conf-dot{display:inline-block;width:5px;height:5px;border-radius:50%;vertical-align:middle;margin-right:2px}
 
-        /* ===== HERO / GO VERDICT ===== */
-        .hero {
-            padding: 48px 0 40px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            opacity: 0.08;
-            pointer-events: none;
-        }
-        .hero.verdict-YES::before { background: radial-gradient(circle, var(--verdict-yes) 0%, transparent 70%); }
-        .hero.verdict-MAYBE::before { background: radial-gradient(circle, var(--verdict-maybe) 0%, transparent 70%); }
-        .hero.verdict-WAIT::before { background: radial-gradient(circle, var(--verdict-wait) 0%, transparent 70%); }
+        /* === INSIGHTS === */
+        .insights{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin:16px 0}
+        .insights h3{font-size:1rem;margin-bottom:6px}
+        .ins-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--dim)}
+        .ins-actions{margin-top:8px;padding:0;list-style:none}
+        .ins-actions li{font-size:.78rem;color:var(--dim);padding:2px 0}
+        .ins-actions li::before{content:'→ ';color:var(--accent)}
 
-        .verdict-label {
-            display: inline-block;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
-        .verdict-text {
-            font-size: 5rem;
-            font-weight: 900;
-            letter-spacing: -3px;
-            line-height: 1;
-            margin-bottom: 12px;
-        }
-        .verdict-YES .verdict-text { color: var(--verdict-yes); }
-        .verdict-MAYBE .verdict-text { color: var(--verdict-maybe); }
-        .verdict-WAIT .verdict-text { color: var(--verdict-wait); }
+        /* === PATTERNS === */
+        .pattern{background:var(--card);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:8px 12px;margin:4px 0;font-size:.78rem}
+        .pattern.storm_then_clear{border-color:var(--epic)}.pattern.multi_day_storm{border-color:var(--fair)}
+        .pattern.bluebird_day{border-color:var(--good)}.pattern.surface_hoar_risk,.pattern.wind_slab_risk{border-color:var(--skip)}
+        .pattern b{color:var(--text)}
 
-        .verdict-reason {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-            margin-bottom: 6px;
-        }
-        .verdict-detail {
-            font-size: 0.85rem;
-            color: var(--text-dim);
-        }
-        .verdict-score-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 16px;
-            padding: 6px 16px;
-            background: var(--card);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            font-size: 0.8rem;
-            color: var(--text-dim);
-        }
-        .verdict-score-badge strong {
-            color: var(--text);
-            font-weight: 700;
-        }
+        /* === CHARTS === */
+        .tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+        .tab{padding:6px 14px;border-radius:8px;font-size:.75rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg2);color:var(--dim)}
+        .tab.active{background:rgba(59,156,245,.12);border-color:var(--accent);color:var(--accent)}
+        .chart-box{background:var(--card);border-radius:10px;padding:14px;position:relative;height:260px}
+        @media(max-width:600px){.chart-box{height:200px}}
 
-        /* ===== 16-DAY TIMELINE ===== */
-        .timeline-section {
-            padding: 0 0 32px;
-        }
-        .timeline-label {
-            font-size: 0.7rem;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-        }
-        .timeline-bar {
-            display: flex;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            height: 40px;
-            box-shadow: var(--shadow-card);
-        }
-        .timeline-segment {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            transition: opacity 0.2s;
-            cursor: default;
-            min-width: 0;
-        }
-        .timeline-segment:hover { opacity: 0.85; }
-        .timeline-segment .t-score {
-            font-size: 0.72rem;
-            font-weight: 800;
-            color: rgba(255,255,255,0.9);
-            line-height: 1;
-        }
-        .timeline-dates {
-            display: flex;
-            margin-top: 4px;
-        }
-        .timeline-dates span {
-            flex: 1;
-            text-align: center;
-            font-size: 0.62rem;
-            color: var(--text-muted);
-            min-width: 0;
-            overflow: hidden;
-        }
+        /* === MAP === */
+        #map{height:300px;border-radius:10px;border:1px solid var(--border)}
+        @media(max-width:600px){ #map{height:220px} }
 
-        /* ===== SECTION HEADINGS ===== */
-        .section-heading {
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin: 36px 0 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--card-border);
-        }
+        /* === AVALANCHE === */
+        .avy-row{display:flex;gap:4px;flex-wrap:wrap}
+        .avy-cell{padding:5px 10px;border-radius:6px;font-size:.7rem;font-weight:600;text-align:center;min-width:70px}
 
-        /* ===== 7-DAY SCORE CARDS ===== */
-        .score-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-        }
-        .score-card {
-            background: var(--card);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 16px 8px 14px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-        }
-        .score-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
-            background: var(--card-hover);
-        }
-        .score-card::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-        }
-        .score-card.border-EPIC::after { background: var(--epic); }
-        .score-card.border-GOOD::after { background: var(--good); }
-        .score-card.border-FAIR::after { background: var(--fair); }
-        .score-card.border-MARGINAL::after { background: var(--marginal); }
-        .score-card.border-SKIP::after { background: var(--skip); }
+        /* === COLLAPSIBLE === */
+        .coll-hdr{cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--card);border-radius:8px;font-size:.8rem;font-weight:600;color:var(--dim);border:1px solid var(--border);margin-top:6px}
+        .coll-hdr::after{content:'▸';transition:transform .2s}
+        .coll-hdr.open::after{transform:rotate(90deg)}
+        .coll-body{padding:12px 14px;font-size:.78rem}
+        .coll-body table{width:100%;border-collapse:collapse;font-size:.75rem}
+        .coll-body th{text-align:left;padding:5px 4px;color:var(--muted);border-bottom:1px solid var(--border);font-size:.65rem;text-transform:uppercase}
+        .coll-body td{padding:5px 4px;border-bottom:1px solid rgba(30,45,66,.3)}
 
-        .sc-day {
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--text);
-            line-height: 1.2;
-        }
-        .sc-date {
-            font-size: 0.68rem;
-            color: var(--text-dim);
-            margin-bottom: 8px;
-        }
-        .sc-score {
-            font-size: 2.2rem;
-            font-weight: 900;
-            line-height: 1;
-            margin: 4px 0;
-        }
-        .score-EPIC { color: var(--epic); }
-        .score-GOOD { color: var(--good); }
-        .score-FAIR { color: var(--fair); }
-        .score-MARGINAL { color: var(--marginal); }
-        .score-SKIP { color: var(--skip); }
+        /* === FOOTER === */
+        .footer{text-align:center;padding:20px 0;border-top:1px solid var(--border);margin-top:24px;font-size:.72rem;color:var(--muted)}
+        .src-dots{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:6px 0}
+        .src-dot{display:flex;align-items:center;gap:3px}
+        .dot{width:7px;height:7px;border-radius:50%}
+        .dot-ok{background:var(--good)}.dot-err{background:var(--skip)}
 
-        .sc-label {
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 10px;
-            font-size: 0.6rem;
-            font-weight: 700;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-            margin: 4px 0;
-        }
-        .label-EPIC { background: var(--epic); color: #fff; }
-        .label-GOOD { background: var(--good); color: #fff; }
-        .label-FAIR { background: var(--fair); color: #1a1a1a; }
-        .label-MARGINAL { background: var(--marginal); color: #fff; }
-        .label-SKIP { background: var(--skip); color: #fff; }
-
-        .sc-conditions {
-            margin-top: 8px;
-            font-size: 0.72rem;
-            color: var(--text-dim);
-            line-height: 1.5;
-        }
-        .sc-crystal {
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-            font-size: 0.65rem;
-            padding: 1px 6px;
-            border-radius: 6px;
-            margin-top: 4px;
-        }
-        .crystal-powder { background: rgba(77,141,247,0.15); color: var(--epic); }
-        .crystal-light { background: rgba(60,192,104,0.15); color: var(--good); }
-        .crystal-mixed { background: rgba(122,138,154,0.15); color: var(--text-dim); }
-        .crystal-wet { background: rgba(245,124,59,0.15); color: var(--warning); }
-
-        .sc-badges {
-            display: flex;
-            gap: 4px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 6px;
-        }
-        .badge-dgz {
-            font-size: 0.6rem;
-            padding: 1px 5px;
-            border-radius: 4px;
-            background: rgba(77,141,247,0.2);
-            color: var(--epic);
-        }
-        .badge-bluebird {
-            font-size: 0.6rem;
-            padding: 1px 5px;
-            border-radius: 4px;
-            background: rgba(240,194,48,0.15);
-            color: var(--fair);
-        }
-
-        .sc-expand {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid var(--card-border);
-            font-size: 0.7rem;
-            color: var(--text-dim);
-            text-align: left;
-        }
-        .sc-expand-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 2px 0;
-        }
-        .sc-expand-row span:last-child { font-weight: 600; color: var(--text-secondary); }
-
-        /* ===== PERIOD BREAKDOWN (NT/AM/PM/EVE) ===== */
-        .period-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 3px;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid var(--card-border);
-        }
-        .period-cell {
-            text-align: center;
-            padding: 4px 2px;
-            border-radius: 6px;
-            background: rgba(0,0,0,0.15);
-        }
-        .period-label {
-            font-size: 0.58rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            margin-bottom: 2px;
-        }
-        .period-snow {
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--text-dim);
-            line-height: 1.3;
-        }
-        .period-has-snow {
-            color: var(--accent);
-        }
-        .period-temp {
-            font-size: 0.62rem;
-            color: var(--text-dim);
-        }
-        .period-wind {
-            font-size: 0.58rem;
-            color: var(--text-muted);
-        }
-        .period-cloud {
-            font-size: 0.7rem;
-            line-height: 1;
-        }
-        @media (max-width: 480px) {
-            .period-grid { gap: 2px; }
-            .period-snow { font-size: 0.78rem; }
-            .period-temp { font-size: 0.68rem; }
-            .period-label { font-size: 0.62rem; }
-        }
-
-        /* ===== EXTENDED DAYS ===== */
-        .extended-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-            gap: 6px;
-        }
-        .ext-card {
-            background: var(--card);
-            border: 1px dashed var(--card-border);
-            border-radius: var(--radius-sm);
-            padding: 10px 4px;
-            text-align: center;
-        }
-        .ext-card .ext-day { font-size: 0.65rem; font-weight: 600; color: var(--text-dim); }
-        .ext-card .ext-score { font-size: 1.2rem; font-weight: 800; line-height: 1.3; }
-        .ext-card .ext-label { font-size: 0.55rem; font-weight: 700; text-transform: uppercase; }
-        .ext-card .ext-snow { font-size: 0.6rem; color: var(--text-muted); margin-top: 2px; }
-        .ext-conf { font-size: 0.55rem; color: var(--warning); margin-top: 2px; }
-
-        /* ===== CARD (generic) ===== */
-        .card {
-            background: var(--card);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: var(--shadow-card);
-        }
-        .card-title {
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 12px;
-        }
-        .card-subtitle {
-            font-size: 0.78rem;
-            color: var(--text-dim);
-            margin-bottom: 16px;
-        }
-
-        /* ===== INSIGHTS ===== */
-        .insights-card {
-            background: linear-gradient(135deg, rgba(59,156,245,0.08) 0%, var(--card) 60%);
-            border-left: 3px solid var(--accent);
-        }
-        .insights-headline {
-            font-size: 1.3rem;
-            font-weight: 800;
-            letter-spacing: -0.3px;
-            margin-bottom: 12px;
-            color: var(--text);
-        }
-        .insights-best-day {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 14px;
-            background: var(--bg-raised);
-            border-radius: var(--radius-sm);
-            margin-bottom: 12px;
-            font-size: 0.88rem;
-        }
-        .insights-best-day strong { color: var(--accent); }
-        .insights-actions {
-            list-style: none;
-            margin: 10px 0;
-        }
-        .insights-actions li {
-            font-size: 0.82rem;
-            color: var(--text-secondary);
-            padding: 3px 0 3px 16px;
-            position: relative;
-        }
-        .insights-actions li::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 5px;
-            height: 5px;
-            background: var(--accent);
-            border-radius: 50%;
-        }
-        .insights-meta {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid var(--card-border);
-            font-size: 0.78rem;
-            color: var(--text-dim);
-        }
-        .insights-meta strong { color: var(--text-secondary); }
-
-        /* ===== PATTERNS ===== */
-        .pattern-card {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 14px 16px;
-            margin-bottom: 8px;
-            border-radius: var(--radius-md);
-            border-left: 3px solid var(--accent);
-            background: var(--accent-glow);
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-        .pattern-card.type-storm_then_clear,
-        .pattern-card.type-legendary_setup { border-left-color: var(--epic); background: rgba(77,141,247,0.08); }
-        .pattern-card.type-multi_day_storm { border-left-color: var(--accent); background: rgba(59,156,245,0.08); }
-        .pattern-card.type-warming_trend,
-        .pattern-card.type-melt_freeze_crust,
-        .pattern-card.type-wind_slab_risk { border-left-color: var(--warning); background: rgba(245,124,59,0.08); }
-        .pattern-card.type-cold_snap { border-left-color: var(--epic); background: rgba(77,141,247,0.08); }
-        .pattern-card .pattern-icon { font-size: 1.2rem; flex-shrink: 0; line-height: 1; }
-        .pattern-card .pattern-msg { flex: 1; }
-        .pattern-near-miss { opacity: 0.7; border-style: dashed; }
-
-        /* ===== CURRENT CONDITIONS ===== */
-        .conditions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 8px;
-        }
-        .cond-item {
-            text-align: center;
-            padding: 14px 6px;
-            background: var(--bg-raised);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--card-border);
-        }
-        .cond-value {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--accent);
-            line-height: 1.2;
-        }
-        .cond-unit {
-            font-size: 0.7rem;
-            color: var(--text-dim);
-            font-weight: 500;
-        }
-        .cond-name {
-            font-size: 0.62rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 2px;
-        }
-
-        /* ===== CHART TABS ===== */
-        .chart-tabs {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-        .chart-tab {
-            padding: 6px 14px;
-            border-radius: var(--radius-sm);
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: 1px solid var(--card-border);
-            background: var(--bg-raised);
-            color: var(--text-dim);
-            transition: all 0.15s ease;
-        }
-        .chart-tab:hover { color: var(--text); border-color: var(--text-muted); }
-        .chart-tab.active {
-            background: var(--accent-glow);
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-        .chart-container {
-            position: relative;
-            height: 280px;
-        }
-
-        /* ===== MAP ===== */
-        .map-wrap {
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            height: 320px;
-            border: 1px solid var(--card-border);
-        }
-        #mapEl { width: 100%; height: 100%; }
-
-        /* ===== TABLES ===== */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.78rem;
-        }
-        .data-table th {
-            text-align: left;
-            padding: 8px 6px;
-            color: var(--text-muted);
-            border-bottom: 2px solid var(--card-border);
-            font-weight: 600;
-            font-size: 0.68rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .data-table td {
-            padding: 7px 6px;
-            border-bottom: 1px solid rgba(30,45,66,0.5);
-        }
-        .data-table tr:hover td { background: rgba(59,156,245,0.03); }
-        .td-date { white-space: nowrap; font-weight: 500; }
-        .agree { color: var(--good); font-weight: 600; }
-        .disagree { color: var(--warning); font-weight: 600; }
-        .src-snow { font-weight: 700; font-size: 0.85rem; }
-        .src-detail { color: var(--text-dim); font-size: 0.7rem; }
-
-        .consensus-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 2px 8px;
-            border-radius: 8px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-        .consensus-agree { background: rgba(60,192,104,0.12); color: var(--good); }
-        .consensus-dry { background: rgba(122,138,154,0.12); color: var(--text-dim); }
-        .consensus-mixed { background: rgba(245,124,59,0.12); color: var(--warning); }
-
-        /* ===== COLLAPSIBLE SECTIONS ===== */
-        .collapsible {
-            background: var(--card);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            margin-bottom: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow-card);
-        }
-        .collapsible-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 20px;
-            cursor: pointer;
-            font-size: 0.88rem;
-            font-weight: 700;
-            color: var(--text);
-            user-select: none;
-            transition: background 0.15s;
-        }
-        .collapsible-header:hover { background: var(--card-hover); }
-        .collapsible-chevron {
-            width: 16px;
-            height: 16px;
-            color: var(--text-muted);
-            transition: transform 0.2s;
-        }
-        .collapsible-body {
-            padding: 0 20px 20px;
-        }
-
-        /* ===== SAFETY ===== */
-        .safety-card {
-            background: rgba(229, 69, 58, 0.05);
-            border: 1px solid rgba(229, 69, 58, 0.15);
-        }
-        .safety-card .card-title { color: var(--skip); }
-        .safety-flag {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            padding: 4px 0;
-            font-size: 0.82rem;
-            color: var(--warning);
-        }
-        .avy-grid {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            margin: 10px 0;
-        }
-        .avy-cell {
-            text-align: center;
-            padding: 8px 10px;
-            border-radius: var(--radius-sm);
-            min-width: 72px;
-        }
-        .avy-cell .avy-date { font-size: 0.65rem; font-weight: 600; }
-        .avy-cell .avy-level { font-size: 1.3rem; font-weight: 800; }
-        .avy-cell .avy-name { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.3px; }
-
-        /* ===== RADAR ===== */
-        .radar-frames {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-            font-size: 0.7rem;
-            color: var(--text-dim);
-        }
-        .radar-frame-tag {
-            padding: 3px 8px;
-            background: var(--bg-raised);
-            border-radius: 6px;
-            border: 1px solid var(--card-border);
-        }
-        .radar-frame-tag.type-past { border-left: 2px solid var(--accent); }
-        .radar-frame-tag.type-nowcast { border-left: 2px solid var(--good); }
-
-        /* ===== FOOTER ===== */
-        .footer {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            padding: 32px 0;
-            margin-top: 24px;
-            border-top: 1px solid var(--card-border);
-        }
-        .footer a { color: var(--text-dim); text-decoration: none; }
-        .footer a:hover { color: var(--accent); }
-        .footer-sources {
-            display: flex;
-            justify-content: center;
-            gap: 6px;
-            flex-wrap: wrap;
-            margin-top: 6px;
-        }
-        .footer-src-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.65rem;
-            background: var(--bg-raised);
-            border: 1px solid var(--card-border);
-        }
-
-        /* ===== VERIFICATION STATS ===== */
-        .metric-grid {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin: 10px 0;
-        }
-        .metric-box {
-            text-align: center;
-            padding: 10px 16px;
-            background: var(--bg-raised);
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--card-border);
-        }
-        .metric-value { font-size: 1.3rem; font-weight: 800; line-height: 1.2; }
-        .metric-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
-
-        /* ===== RESPONSIVE ===== */
-
-        /* Tablet */
-        @media (max-width: 900px) {
-            .score-grid { grid-template-columns: repeat(4, 1fr); }
-        }
-
-        /* Mobile */
-        @media (max-width: 600px) {
-            .container { padding: 0 12px; }
-            .hero { padding: 24px 0 20px; }
-            .hero::before { width: 300px; height: 300px; opacity: 0.05; }
-            .verdict-text { font-size: 3rem; letter-spacing: -2px; }
-            .verdict-reason { font-size: 0.9rem; }
-            .verdict-detail { font-size: 0.8rem; }
-            .verdict-score-badge { margin-top: 10px; padding: 4px 12px; font-size: 0.75rem; }
-            .score-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
-            .sc-score { font-size: 1.9rem; }
-            .sc-label { font-size: 0.68rem; padding: 2px 8px; }
-            .sc-conditions { font-size: 0.78rem; }
-            .score-card { padding: 12px 8px 10px; }
-            .score-card:hover { transform: none; }
-            .timeline-bar { height: 32px; }
-            .timeline-dates span { font-size: 0.65rem; }
-            .chart-tab { font-size: 0.8rem; padding: 8px 14px; }
-            .chart-container { height: 220px; max-height: 45vh; }
-            .map-wrap { height: 240px; max-height: 50vh; }
-            .extended-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
-            .insights-headline { font-size: 1.15rem; }
-            .section-heading { margin: 24px 0 12px; }
-            .conditions-grid { grid-template-columns: repeat(3, 1fr); }
-            .cond-name { font-size: 0.68rem; }
-            .cond-value { font-size: 1.3rem; }
-            .data-table { font-size: 0.8rem; }
-            .data-table th { font-size: 0.65rem; padding: 6px 4px; }
-            .data-table td { padding: 5px 4px; }
-            .collapsible-header { padding: 12px 14px; min-height: 44px; }
-            body { padding-bottom: 60px; }
-        }
-
-        /* Small phones */
-        @media (max-width: 480px) {
-            .hero { padding: 20px 0 16px; }
-            .hero::before { display: none; }
-            .verdict-text { font-size: 2.5rem; margin-bottom: 8px; }
-            .verdict-reason { font-size: 0.85rem; }
-            .score-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
-            .score-card { padding: 14px 10px 12px; }
-            .sc-score { font-size: 2rem; }
-            .sc-label { font-size: 0.72rem; }
-            .sc-conditions { font-size: 0.8rem; line-height: 1.6; }
-            .sc-crystal { font-size: 0.72rem; }
-            .timeline-dates span:nth-child(even) { visibility: hidden; }
-            .timeline-bar .t-score { font-size: 0.7rem; }
-            .chart-container { height: 180px; }
-            .map-wrap { height: 200px; }
-            .conditions-grid { grid-template-columns: repeat(2, 1fr); }
-            .cond-value { font-size: 1.2rem; }
-            .pattern-card { padding: 10px 12px; }
-            .chart-tab { font-size: 0.78rem; padding: 8px 12px; }
-            .ext-score { font-size: 1.1rem; }
-        }
-
-        /* Very small phones */
-        @media (max-width: 360px) {
-            .verdict-text { font-size: 2.2rem; }
-            .score-grid { gap: 4px; }
-            .score-card { padding: 12px 8px 10px; }
-            .sc-score { font-size: 1.8rem; }
-            .chart-tab { padding: 6px 10px; font-size: 0.75rem; }
-        }
-
-        /* ===== MOBILE NAV BAR ===== */
-        .mobile-nav {
-            display: none;
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            z-index: 1000;
-            background: var(--bg-raised);
-            border-top: 1px solid var(--card-border);
-            padding: 6px 0;
-            padding-bottom: max(6px, env(safe-area-inset-bottom));
-        }
-        .mobile-nav-inner {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        .mobile-nav a {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            color: var(--text-dim);
-            text-decoration: none;
-            font-size: 0.6rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            padding: 4px 8px;
-            min-height: 44px;
-            justify-content: center;
-        }
-        .mobile-nav a:hover, .mobile-nav a:active { color: var(--accent); }
-        .mobile-nav .nav-icon { font-size: 1.2rem; }
-        @media (max-width: 600px) {
-            .mobile-nav { display: block; }
-        }
-
-        /* Hidden utility */
-        [x-cloak] { display: none !important; }
+        /* === MOBILE NAV === */
+        .mnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:1000;background:var(--bg2);border-top:1px solid var(--border);padding:6px 0;padding-bottom:max(6px,env(safe-area-inset-bottom))}
+        .mnav-inner{display:flex;justify-content:space-around;max-width:500px;margin:0 auto}
+        .mnav a{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--dim);font-size:.55rem;font-weight:600;text-transform:uppercase;padding:4px 8px;min-height:44px;justify-content:center;text-decoration:none}
+        .mnav .ni{font-size:1.1rem}
+        @media(max-width:600px){
+            .mnav{display:block}
+            body{padding-bottom:56px}
+            .verdict{padding:20px 0 14px}
+            .v-badge{font-size:2.2rem}
+            .forecast-table{font-size:.72rem}
+            .period-cell{font-size:.6rem}
+            .tab{padding:8px 12px}
+        }
+        @media(max-width:400px){
+            .forecast-table .hide-sm{display:none}
+            .period-row{grid-template-columns:repeat(2,1fr)}
+        }
+        [x-cloak]{display:none!important}
     </style>
 </head>
 <body>
+<div class="c">
 
-    {# ===== TOP NAV ===== #}
-    <div class="topbar">
-        <div class="container topbar-inner">
-            <div class="topbar-left">
-                <span class="topbar-logo">&#10052; Powder</span>
-                <span class="topbar-location">{{ data.location }}</span>
-            </div>
-            <div class="topbar-right">
-                {% if data.source_health %}
-                <div class="source-dots" title="{{ data.source_health|length }} sources">
-                    {% for src in data.source_health %}
-                    <span class="source-dot" style="background:{{ 'var(--good)' if src.status == 'ok' else 'var(--skip)' }};" title="{{ src.name }}: {{ src.age }}"></span>
-                    {% endfor %}
-                </div>
-                {% endif %}
-                <span class="topbar-time" id="relative-time" data-utc="{{ data.generated_at }}">{{ generated_at }}</span>
-            </div>
+    <!-- HEADER -->
+    <div class="hdr">
+        <div><b>&#10052; {{ data.location }}</b></div>
+        <div>
+            {% if data.source_health %}{% for src in data.source_health %}<span class="dot {{ 'dot-ok' if src.status == 'ok' else 'dot-err' }}" title="{{ src.name }}"></span> {% endfor %}{% endif %}
+            <span id="timeAgo"></span>
         </div>
     </div>
 
-    {# ===== HERO: SHOULD I GO? ===== #}
-    <div class="container">
+    <!-- VERDICT -->
     {% if data.go_verdict %}
-    <div class="hero verdict-{{ data.go_verdict.verdict }}">
-        <div class="verdict-label">Should I Go?</div>
-        <div class="verdict-text">{{ data.go_verdict.verdict }}</div>
-        <div class="verdict-reason">{{ data.go_verdict.reason }}</div>
-        <div class="verdict-detail">{{ data.go_verdict.detail }}</div>
-        <div class="verdict-score-badge">
-            Score <strong>{{ data.go_verdict.score }}</strong> / 100
-        </div>
+    <div class="verdict">
+        <div class="v-badge v-{{ data.go_verdict.verdict }}">{{ data.go_verdict.verdict }}</div>
+        <div class="v-reason">{{ data.go_verdict.reason }}</div>
+        {% if data.go_verdict.detail %}<div class="v-detail">{{ data.go_verdict.detail }}</div>{% endif %}
     </div>
     {% endif %}
 
-    {# ===== 16-DAY TIMELINE BAR ===== #}
-    {% if data.scores %}
-    <div class="timeline-section">
-        <div class="timeline-label">16-Day Outlook</div>
-        <div class="timeline-bar">
-            {% for s in data.scores %}
-            {% set bg_color = '#4d8df7' if s.label == 'EPIC' else '#3cc068' if s.label == 'GOOD' else '#f0c230' if s.label == 'FAIR' else '#7a8a9a' if s.label == 'MARGINAL' else '#e5453a' %}
-            <div class="timeline-segment" style="background:{{ bg_color }};" title="{{ s.date }}: {{ s.total|round(0)|int }} ({{ s.label }})">
-                <span class="t-score">{{ s.total|round(0)|int }}</span>
-            </div>
-            {% endfor %}
+    <!-- INSIGHTS -->
+    {% if data.insights %}
+    <div class="insights">
+        <h3>{{ data.insights.headline }}</h3>
+        <div class="ins-meta">
+            {% if data.insights.best_day %}<span>Best: <b>{{ data.insights.best_day.date|dateshort }}</b> ({{ data.insights.best_day.label }})</span>{% endif %}
+            <span>7-day: <b>{{ data.insights.seven_day_snow_total }}cm</b></span>
+            <span>Snowpack: <b>{{ data.insights.snowpack_status }}</b></span>
         </div>
-        <div class="timeline-dates">
-            {% for s in data.scores %}
-            {% set d = s.date %}
-            <span>{{ d[8:10] }}/{{ d[5:7] }}</span>
-            {% endfor %}
-        </div>
+        {% if data.seasonal_context %}<div style="margin-top:6px;font-size:.75rem;color:var(--muted)">{{ data.seasonal_context }}</div>{% endif %}
+        {% if data.insights.action_items %}
+        <ul class="ins-actions">{% for item in data.insights.action_items %}<li>{{ item }}</li>{% endfor %}</ul>
+        {% endif %}
     </div>
     {% endif %}
 
-    {# ===== 7-DAY SCORE CARDS ===== #}
-    <div id="sec-forecast" class="section-heading">7-Day Powder Outlook</div>
-    <div class="score-grid">
-        {% for i in range(data.scores|length) %}
-        {% if i < 7 %}
-        {% set s = data.scores[i] %}
-        {% set date = data.dates[i] if i < data.dates|length else '' %}
-        <div class="score-card border-{{ s.label }}" x-data="{ open: false }" @click="open = !open">
-            <div class="sc-day">{{ date|datecard|safe }}</div>
-            <div class="sc-score score-{{ s.label }}">{{ s.total|round(0)|int }}</div>
-            <div class="sc-label label-{{ s.label }}">{{ s.label }}</div>
-            <div class="sc-conditions">
-                {{ s.conditions.snowfall_24h_cm|round(0)|int }}cm &middot;
-                {{ s.conditions.temperature_c|round(0)|int }}&deg;C &middot;
-                {{ s.conditions.wind_speed_kmh|round(0)|int }}km/h
-            </div>
-            {# Crystal type #}
-            {% if s.crystal_type %}
-            <div class="sc-badges">
-                <span class="sc-crystal crystal-{{ s.crystal_type }}">
-                    {% if s.crystal_type == 'powder' %}&#10052;{% elif s.crystal_type == 'light' %}&#10053;{% elif s.crystal_type == 'wet' %}&#9676;{% else %}&#10023;{% endif %}
-                    {{ s.crystal_type }}
-                </span>
-                {% if s.dgz and s.dgz.active %}
-                <span class="badge-dgz">DGZ</span>
-                {% endif %}
-                {% if s.bluebird and s.bluebird.confidence > 30 %}
-                <span class="badge-bluebird">&#9728; {{ s.bluebird.confidence }}%</span>
-                {% endif %}
-            </div>
-            {% endif %}
-            {# Source confidence dot #}
-            {% if s.source_confidence %}
-            <div style="margin-top:4px;font-size:0.62rem;color:var(--text-muted);">
-                <span style="display:inline-block;width:6px;height:6px;border-radius:50%;vertical-align:middle;background:{{ 'var(--good)' if s.source_confidence.confidence == 'HIGH' else 'var(--warning)' if s.source_confidence.confidence == 'LOW' else 'var(--text-muted)' }}"></span>
-                {{ s.source_confidence.confidence }}
-            </div>
-            {% endif %}
-            {# Model spread #}
-            {% if data.model_spread and i < data.model_spread|length %}
-            {% set sp = data.model_spread[i] %}
-            {% if sp.spread_cm is defined and sp.spread_cm > 0 %}
-            <div style="margin-top:3px;font-size:0.62rem;color:var(--text-muted);">
-                {{ sp.min_cm|round(0)|int }}&ndash;{{ sp.max_cm|round(0)|int }}cm range
-            </div>
-            {% endif %}
-            {% endif %}
-            {# Ensemble prob #}
-            {% if data.ensemble and data.ensemble.daily and data.ensemble.daily.snowfall and data.ensemble.daily.snowfall.prob_5cm and i < data.ensemble.daily.snowfall.prob_5cm|length and data.ensemble.daily.snowfall.prob_5cm[i] is not none %}
-            <div style="font-size:0.62rem;color:var(--text-muted);margin-top:2px;">
-                {{ (data.ensemble.daily.snowfall.prob_5cm[i] * 100)|round(0)|int }}% &ge;5cm
-            </div>
-            {% endif %}
-
-            {# ===== EXPANDED DETAIL ===== #}
-            <div class="sc-expand" x-show="open" x-cloak @click.stop>
-                <div class="sc-expand-row"><span>Snowfall</span><span>{{ s.conditions.snowfall_24h_cm|round(1) }}cm</span></div>
-                <div class="sc-expand-row"><span>Temp</span><span>{{ s.conditions.temperature_min_c|round(0)|int }}/{{ s.conditions.temperature_max_c|round(0)|int }}&deg;C</span></div>
-                <div class="sc-expand-row"><span>Wind</span><span>{{ s.conditions.wind_speed_kmh|round(0)|int }} (gusts {{ s.conditions.wind_gust_kmh|round(0)|int }}) km/h</span></div>
-                <div class="sc-expand-row"><span>Freeze Lvl</span><span>{{ s.conditions.freezing_level_m|round(0)|int }}m</span></div>
-                {% if s.conditions.snow_depth_m is not none and s.conditions.snow_depth_m > 0 %}
-                <div class="sc-expand-row"><span>Snow Depth</span><span>{{ (s.conditions.snow_depth_m * 100)|round(0)|int }}cm</span></div>
-                {% endif %}
-                <div class="sc-expand-row"><span>Sky</span><span>
-                    {% if s.sky.classification == 'BLUEBIRD' %}&#9728;{% elif s.sky.classification == 'MOSTLY_SUNNY' %}&#127780;{% elif s.sky.classification == 'PARTLY_CLOUDY' %}&#9925;{% elif s.sky.classification == 'MOSTLY_OVERCAST' %}&#127781;{% else %}&#9729;{% endif %}
-                    {{ SKY_LABELS.get(s.sky.classification, s.sky.classification) }}
-                </span></div>
-                {% if s.sky.flat_light_warning %}
-                <div style="font-size:0.62rem;color:var(--warning);margin-top:4px;">Flat light warning</div>
-                {% endif %}
-                {% if s.bluebird and s.bluebird.message %}
-                <div style="font-size:0.62rem;color:var(--fair);margin-top:4px;">{{ s.bluebird.message }}</div>
-                {% endif %}
-                {# ===== PERIOD BREAKDOWN (NT/AM/PM/EVE) ===== #}
+    <!-- 7-DAY FORECAST TABLE WITH PERIODS -->
+    <div id="sec-forecast" class="stitle">7-Day Forecast</div>
+    <table class="forecast-table">
+        <thead>
+            <tr>
+                <th style="width:80px">Day</th>
+                <th>Score</th>
+                <th>Snow</th>
+                <th class="hide-sm">Temp</th>
+                <th class="hide-sm">Wind</th>
+                <th>NT / AM / PM / EVE</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for s in data.scores[:7] %}
+        {% set i = loop.index0 %}
+        <tr>
+            <td>
+                <div class="day-name">{{ s.date|datecard }}</div>
+                {% if s.crystal_type and s.crystal_type != 'mixed' %}<span class="crystal-badge">{{ s.crystal_type }}</span>{% endif %}
+                {% if s.dgz and s.dgz.active %}<span class="dgz-badge">DGZ</span>{% endif %}
+            </td>
+            <td>
+                <div style="font-size:1.2rem;font-weight:800;color:var(--{{ s.label|lower }})">{{ s.total|round|int }}</div>
+                <span class="score-pill pill-{{ s.label }}">{{ s.label }}</span>
+                <div style="font-size:.6rem;color:var(--muted);margin-top:2px">
+                    <span class="conf-dot" style="background:{{ 'var(--good)' if s.confidence_pct >= 80 else 'var(--fair)' if s.confidence_pct >= 50 else 'var(--muted)' }}"></span>{{ s.confidence_pct|round|int }}%
+                </div>
+            </td>
+            <td>
+                <div style="font-size:1rem;font-weight:700">{{ s.conditions.snowfall_24h_cm|round(1) }}cm</div>
+                {% if s.conditions.rain_mm > 0.5 %}<div style="font-size:.6rem;color:var(--skip)">+{{ s.conditions.rain_mm|round(1) }}mm rain</div>{% endif %}
+                {% if s.ml_prediction is not none %}<div style="font-size:.55rem;color:var(--muted)">ML: {{ s.ml_prediction }}cm</div>{% endif %}
+            </td>
+            <td class="hide-sm">
+                {{ s.conditions.temperature_min_c|round|int }}° / {{ s.conditions.temperature_max_c|round|int }}°
+                <div style="font-size:.6rem;color:var(--muted)">FL {{ s.conditions.freezing_level_m|round|int }}m</div>
+            </td>
+            <td class="hide-sm">
+                {{ s.conditions.wind_speed_kmh|round|int }} km/h
+                {% if s.conditions.wind_gust_kmh > 40 %}<div style="font-size:.6rem;color:var(--skip)">Gusts {{ s.conditions.wind_gust_kmh|round|int }}</div>{% endif %}
+            </td>
+            <td>
                 {% if s.periods %}
-                <div class="period-grid">
+                <div class="period-row">
                     {% for p in s.periods %}
                     <div class="period-cell">
                         <div class="period-label">{{ p.abbr }}</div>
-                        <div class="period-snow {% if p.snowfall_cm >= 3 %}period-has-snow{% endif %}">
-                            {% if p.snowfall_cm > 0 %}{{ p.snowfall_cm|round(0)|int }}cm{% elif p.precip_type == 'rain' %}&#127783;{% else %}&mdash;{% endif %}
+                        <div class="period-snow {% if p.snowfall_cm >= 3 %}has-snow{% endif %}">
+                            {% if p.snowfall_cm > 0 %}{{ p.snowfall_cm|round|int }}cm{% elif p.precip_type == 'rain' %}&#127783;{% else %}&mdash;{% endif %}
                         </div>
-                        <div class="period-temp">{{ p.temp_avg_c|round(0)|int if p.temp_avg_c is not none else '?' }}&deg;</div>
-                        <div class="period-wind">{{ p.wind_avg_kmh|round(0)|int if p.wind_avg_kmh is not none else '?' }}</div>
-                        <div class="period-cloud">
+                        <div class="period-meta">{{ p.temp_avg_c|round|int if p.temp_avg_c is not none else '?' }}° {{ p.wind_avg_kmh|round|int if p.wind_avg_kmh is not none else '' }}</div>
+                        <div class="sky-icon">
                             {% if p.abbr in ('NT', 'EVE') %}
-                                {% if p.cloud_pct is not none %}
-                                    {% if p.cloud_pct < 30 %}&#9734;{% elif p.cloud_pct < 70 %}&#9789;{% else %}&#9729;{% endif %}
-                                {% endif %}
+                                {% if p.cloud_pct is not none %}{% if p.cloud_pct < 30 %}&#9734;{% elif p.cloud_pct < 70 %}&#9789;{% else %}&#9729;{% endif %}{% endif %}
                             {% elif p.direct_fraction is not none and p.radiation_w is not none and p.radiation_w > 20 %}
-                                {# Radiation-backed sky icon (more accurate than cloud %) #}
                                 {% if p.direct_fraction > 0.7 %}&#9728;{% elif p.direct_fraction > 0.4 %}&#127780;{% elif p.direct_fraction > 0.2 %}&#9925;{% else %}&#9729;{% endif %}
                             {% elif p.cloud_pct is not none %}
                                 {% if p.cloud_pct < 20 %}&#9728;{% elif p.cloud_pct < 50 %}&#127780;{% elif p.cloud_pct < 80 %}&#9925;{% else %}&#9729;{% endif %}
@@ -1066,748 +230,217 @@
                     {% endfor %}
                 </div>
                 {% endif %}
-                <div style="margin-top:6px;font-size:0.6rem;color:var(--text-muted);">
-                    Confidence: {{ s.confidence_pct|round(0)|int }}%
-                </div>
-            </div>
-        </div>
-        {% endif %}
+            </td>
+        </tr>
         {% endfor %}
-    </div>
+        </tbody>
+    </table>
 
-    {# ===== EXTENDED OUTLOOK 8-16 ===== #}
+    <!-- EXTENDED OUTLOOK -->
     {% if data.scores|length > 7 %}
-    <div class="section-heading">Extended Outlook &mdash; Days 8&ndash;16 <span style="font-weight:400;color:var(--text-muted);">(lower confidence)</span></div>
-    <div class="extended-grid">
-        {% for i in range(7, data.scores|length) %}
-        {% set s = data.scores[i] %}
-        {% set date = data.dates[i] if i < data.dates|length else '' %}
-        <div class="ext-card">
-            <div class="ext-day">{{ date|datecard|safe }}</div>
-            <div class="ext-score score-{{ s.label }}">{{ s.total|round(0)|int }}</div>
-            <div class="ext-label score-{{ s.label }}">{{ s.label }}</div>
-            <div class="ext-snow">{{ s.conditions.snowfall_24h_cm|round(0)|int }}cm</div>
-            <div class="ext-conf">{{ s.confidence_pct|round(0)|int }}%</div>
+    <div class="stitle" style="margin-top:16px">Extended Outlook (8-16 days, low confidence)</div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap">
+        {% for s in data.scores[7:16] %}
+        <div style="background:var(--card);border:1px dashed var(--border);border-radius:8px;padding:6px 8px;text-align:center;flex:1;min-width:65px">
+            <div style="font-size:.6rem;color:var(--muted)">{{ s.date|dateshort }}</div>
+            <div style="font-size:1.1rem;font-weight:800;color:var(--{{ s.label|lower }})">{{ s.total|round|int }}</div>
+            <div style="font-size:.6rem;color:var(--dim)">{{ s.conditions.snowfall_24h_cm|round|int }}cm</div>
         </div>
         {% endfor %}
     </div>
     {% endif %}
 
-    {# ===== INSIGHTS ===== #}
-    {% if data.insights %}
-    <div class="section-heading">Insights</div>
-    <div class="card insights-card">
-        <div class="insights-headline">{{ data.insights.headline }}</div>
-        {% if data.insights.best_day %}
-        <div class="insights-best-day">
-            <span>&#127956;</span>
-            <span>Best Day: <strong>{{ data.insights.best_day.date|dateshort }}</strong> &mdash;
-            {{ data.insights.best_day.score }} ({{ data.insights.best_day.label }})</span>
-            <span style="color:var(--text-dim);font-size:0.8rem;">{{ data.insights.best_day.reason }}</span>
-        </div>
-        {% endif %}
-        {% if data.insights.action_items %}
-        <ul class="insights-actions">
-            {% for item in data.insights.action_items %}
-            <li>{{ item }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        <div class="insights-meta">
-            <span>Snowpack: <strong>{{ data.insights.snowpack_status }}</strong></span>
-            <span>7-day total: <strong>{{ data.insights.seven_day_snow_total|round(0)|int }}cm</strong></span>
-            {% if data.seasonal_context %}
-            <span>Seasonal: <strong>{{ data.seasonal_context }}</strong></span>
-            {% endif %}
-        </div>
-    </div>
-    {% endif %}
-
-    {# ===== PATTERNS ===== #}
+    <!-- PATTERNS -->
     {% if data.patterns %}
-    <div id="sec-patterns" class="section-heading">Weather Patterns</div>
-    {% for p in data.patterns %}
-    <div class="pattern-card type-{{ p.type }} {% if p.quality is defined and p.quality == 'NEAR_MISS' %}pattern-near-miss{% endif %}">
-        <span class="pattern-icon">
-            {% if p.type == 'storm_then_clear' %}&#9889;{% elif p.type == 'multi_day_storm' %}&#127784;{% elif p.type == 'warming_trend' %}&#9888;{% elif p.type == 'cold_snap' %}&#10052;{% elif p.type == 'upslope_event' %}&#127956;{% elif p.type == 'wind_slab_risk' %}&#9888;{% elif p.type == 'melt_freeze_crust' %}&#129482;{% elif p.type == 'legendary_setup' %}&#127942;{% elif p.type == 'near_miss_warm' or p.type == 'near_miss_wind' or p.type == 'near_miss_low_snow' %}&#128064;{% else %}&#10039;{% endif %}
-        </span>
-        <span class="pattern-msg">{{ p.message }}</span>
+    <div id="sec-patterns" class="stitle">Patterns</div>
+    {% for p in data.patterns[:6] %}
+    <div class="pattern {{ p.type }}">
+        <b>{{ p.type|replace('_',' ')|title }}</b>
+        {% if p.quality is defined and p.quality == 'NEAR_MISS' %}<span style="font-size:.6rem;color:var(--fair)">(near miss)</span>{% endif %}
+        <div style="color:var(--dim);margin-top:2px">{{ p.message }}</div>
     </div>
     {% endfor %}
     {% endif %}
 
-    {# ===== CURRENT CONDITIONS ===== #}
-    {% if data.current %}
-    <div class="section-heading">Current Conditions &mdash; {{ data.current.elevation }}m</div>
-    <div class="card">
-        <div class="conditions-grid">
-            <div class="cond-item">
-                <div class="cond-value">{{ data.current.temperature|round(1) }}</div>
-                <div class="cond-unit">&deg;C</div>
-                <div class="cond-name">Temperature</div>
-            </div>
-            <div class="cond-item">
-                <div class="cond-value">{{ data.current.wind_speed|round(0)|int }}</div>
-                <div class="cond-unit">km/h</div>
-                <div class="cond-name">Wind</div>
-            </div>
-            <div class="cond-item">
-                <div class="cond-value">{{ (data.current.snow_depth * 100)|round(0)|int }}</div>
-                <div class="cond-unit">cm</div>
-                <div class="cond-name">Snow Depth</div>
-            </div>
-            <div class="cond-item">
-                <div class="cond-value">{{ data.current.freezing_level|round(0)|int }}</div>
-                <div class="cond-unit">m</div>
-                <div class="cond-name">Freeze Lvl</div>
-            </div>
-            <div class="cond-item">
-                <div class="cond-value">{{ data.current.cloud_cover|round(0)|int }}</div>
-                <div class="cond-unit">%</div>
-                <div class="cond-name">Cloud Cover</div>
-            </div>
-            <div class="cond-item">
-                <div class="cond-value">{{ data.current.humidity|round(0)|int }}</div>
-                <div class="cond-unit">%</div>
-                <div class="cond-name">Humidity</div>
-            </div>
+    <!-- AVALANCHE -->
+    {% if data.avalanche_danger %}
+    <div class="stitle">Avalanche Danger (estimated)</div>
+    <div class="avy-row">
+        {% for a in data.avalanche_danger[:7] %}
+        {% set colors = {1:'#4CAF50',2:'#FFEB3B',3:'#FF9800',4:'#F44336',5:'#212121'} %}
+        {% set names = {1:'LOW',2:'MOD',3:'CONS',4:'HIGH',5:'EXTR'} %}
+        <div class="avy-cell" style="background:{{ colors.get(a.level,'#666') }};color:{% if a.level == 2 %}#333{% else %}#fff{% endif %}">
+            {{ a.date|dateshort }}<br>L{{ a.level }}
         </div>
+        {% endfor %}
+    </div>
+    <div style="font-size:.6rem;color:var(--muted);margin-top:4px">Automated estimate. Consult local avalanche bulletins.</div>
+    {% endif %}
+
+    <!-- CHARTS -->
+    <div id="sec-charts" class="stitle">Charts</div>
+    <div x-data="{ tab: 'snow' }">
+        <div class="tabs">
+            <div class="tab" :class="tab==='snow'&&'active'" @click="tab='snow'">Snowfall</div>
+            <div class="tab" :class="tab==='spaghetti'&&'active'" @click="tab='spaghetti'">Models</div>
+            <div class="tab" :class="tab==='temp'&&'active'" @click="tab='temp'">Temp</div>
+            <div class="tab" :class="tab==='wind'&&'active'" @click="tab='wind'">Wind</div>
+        </div>
+        <div class="chart-box" x-show="tab==='snow'"><canvas id="cSnow"></canvas></div>
+        <div class="chart-box" x-show="tab==='spaghetti'" x-cloak><canvas id="cSpag"></canvas></div>
+        <div class="chart-box" x-show="tab==='temp'" x-cloak><canvas id="cTemp"></canvas></div>
+        <div class="chart-box" x-show="tab==='wind'" x-cloak><canvas id="cWind"></canvas></div>
+    </div>
+
+    <!-- MAP -->
+    <div id="sec-map" class="stitle">Map</div>
+    <div id="map"></div>
+    {% if data.webcams %}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px;font-size:.75rem">
+        {% for cam in data.webcams %}<a href="{{ cam.url }}" target="_blank">&#128247; {{ cam.name }}</a>{% endfor %}
     </div>
     {% endif %}
 
-    {# ===== CHARTS (TABBED) ===== #}
-    <div id="sec-charts" class="section-heading">Forecast Charts</div>
-    <div class="card" x-data="{ tab: 'snow' }">
-        <div class="chart-tabs">
-            <button class="chart-tab" :class="{ active: tab === 'snow' }" @click="tab = 'snow'">Model Snowfall</button>
-            {% if data.spaghetti_data %}
-            <button class="chart-tab" :class="{ active: tab === 'spaghetti' }" @click="tab = 'spaghetti'; $nextTick(() => initChart('spaghetti'))">Spaghetti Plot</button>
-            {% endif %}
-            {% if data.probability_fan %}
-            <button class="chart-tab" :class="{ active: tab === 'fan' }" @click="tab = 'fan'; $nextTick(() => initChart('fan'))">Probability Fan</button>
-            {% endif %}
-            {% if data.multi_charts %}
-            <button class="chart-tab" :class="{ active: tab === 'temp' }" @click="tab = 'temp'; $nextTick(() => initChart('temp'))">Temperature</button>
-            <button class="chart-tab" :class="{ active: tab === 'wind' }" @click="tab = 'wind'; $nextTick(() => initChart('wind'))">Wind</button>
-            <button class="chart-tab" :class="{ active: tab === 'depth' }" @click="tab = 'depth'; $nextTick(() => initChart('depth'))">Snow Depth</button>
-            {% endif %}
-        </div>
-
-        {# Snow chart (default) #}
-        <div x-show="tab === 'snow'">
-            <div class="chart-container"><canvas id="chartSnow"></canvas></div>
-        </div>
-
-        {% if data.spaghetti_data %}
-        <div x-show="tab === 'spaghetti'" x-cloak>
-            <div class="chart-container"><canvas id="chartSpaghetti"></canvas></div>
-        </div>
-        {% endif %}
-
-        {% if data.probability_fan %}
-        <div x-show="tab === 'fan'" x-cloak>
-            <div class="chart-container"><canvas id="chartFan"></canvas></div>
-        </div>
-        {% endif %}
-
-        {% if data.multi_charts %}
-        <div x-show="tab === 'temp'" x-cloak>
-            <div class="chart-container"><canvas id="chartTemp"></canvas></div>
-        </div>
-        <div x-show="tab === 'wind'" x-cloak>
-            <div class="chart-container"><canvas id="chartWind"></canvas></div>
-        </div>
-        <div x-show="tab === 'depth'" x-cloak>
-            <div class="chart-container"><canvas id="chartDepth"></canvas></div>
-        </div>
-        {% endif %}
-
-        <noscript>
-            <p style="color:var(--text-dim);font-size:0.85rem;text-align:center;padding:20px;">
-                Enable JavaScript to view interactive charts.
-            </p>
-        </noscript>
-    </div>
-
-    {# ===== MAP ===== #}
-    <div id="sec-map" class="section-heading">Mountain Map</div>
-    <div class="card" style="padding:12px;">
-        <div class="map-wrap">
-            <div id="mapEl"></div>
-        </div>
-        {% if data.webcams %}
-        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
-            {% for cam in data.webcams %}
-            <a href="{{ cam.url }}" target="_blank" rel="noopener" style="font-size:0.72rem;color:var(--accent);text-decoration:none;padding:4px 10px;background:var(--bg-raised);border:1px solid var(--card-border);border-radius:6px;">
-                &#128247; {{ cam.name }} ({{ cam.elevation }}m)
-            </a>
-            {% endfor %}
-        </div>
-        {% endif %}
-    </div>
-
-    {# ===== RADAR ===== #}
-    {% if data.radar and data.radar.frames %}
-    <div class="section-heading">Radar</div>
-    <div class="card">
-        <div class="card-subtitle">{{ data.radar.frames|length }} frames from {{ data.radar.source }}</div>
-        <div class="radar-frames">
-            {% for frame in data.radar.frames %}
-            <span class="radar-frame-tag type-{{ frame.type }}">{{ frame.type }}</span>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
-    {# ===== SOURCE COMPARISON ===== #}
+    <!-- SOURCE COMPARISON (collapsible) -->
     {% if data.source_comparison %}
-    <div x-data="{ open: true }" class="collapsible">
-        <div class="collapsible-header" @click="open = !open">
-            <span>Source Comparison</span>
-            <svg class="collapsible-chevron" :style="open ? '' : 'transform:rotate(-90deg)'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </div>
-        <div class="collapsible-body" x-show="open" x-cloak>
-            <p class="card-subtitle" style="margin-bottom:10px;">
-                Cross-referencing API models with curated mountain forecasts.
-                <span style="color:var(--good);">Green</span> = consensus.
-                <span style="color:var(--warning);">Orange</span> = disagreement.
-            </p>
-            <div style="overflow-x:auto;">
-            <table class="data-table">
-                <tr>
-                    <th>Date</th>
-                    <th>Open-Meteo</th>
-                    <th>Snow-Forecast</th>
-                    <th>Mtn-Forecast</th>
-                    <th>Consensus</th>
-                </tr>
+    <div x-data="{open:false}">
+        <div class="coll-hdr" :class="open&&'open'" @click="open=!open">Source Comparison</div>
+        <div class="coll-body" x-show="open" x-cloak>
+            <table>
+                <tr><th>Date</th><th>Open-Meteo</th><th>Snow-Fcst</th><th>Mtn-Fcst</th><th>Status</th></tr>
                 {% for row in data.source_comparison %}
                 <tr>
-                    <td class="td-date">{{ row.date|dateshort }}</td>
-                    <td>
-                        <span class="src-snow">{{ row.open_meteo.snow_cm }}cm</span>
-                        <span class="src-detail">{{ row.open_meteo.temp_c }}&deg;C &middot; {{ row.open_meteo.wind_kmh|int }}km/h</span>
-                    </td>
-                    <td>
-                        {% if row.snow_forecast %}
-                        <span class="src-snow">{{ row.snow_forecast.snow_cm }}cm</span>
-                        <span class="src-detail">{{ row.snow_forecast.temp_min_c }}/{{ row.snow_forecast.temp_max_c }}&deg;C</span>
-                        {% else %}<span class="src-detail">&mdash;</span>{% endif %}
-                    </td>
-                    <td>
-                        {% if row.mountain_forecast %}
-                        <span class="src-snow">{{ row.mountain_forecast.snow_cm }}cm</span>
-                        <span class="src-detail">{{ row.mountain_forecast.temp_min_c }}/{{ row.mountain_forecast.temp_max_c }}&deg;C</span>
-                        {% else %}<span class="src-detail">&mdash;</span>{% endif %}
-                    </td>
-                    <td>
-                        {% if row.consensus == 'ALL_SNOW' %}<span class="consensus-badge consensus-agree">&#10004; Snow</span>
-                        {% elif row.consensus == 'ALL_DRY' %}<span class="consensus-badge consensus-dry">&#10004; Dry</span>
-                        {% else %}<span class="consensus-badge consensus-mixed">&#9888; Mixed</span>{% endif %}
-                    </td>
+                    <td>{{ row.date|dateshort }}</td>
+                    <td>{{ row.open_meteo.snow_cm|round(1) if row.open_meteo and row.open_meteo.snow_cm is not none else '—' }}</td>
+                    <td>{{ row.snow_forecast.snow_cm|round(1) if row.snow_forecast and row.snow_forecast.snow_cm is defined and row.snow_forecast.snow_cm is not none else '—' }}</td>
+                    <td>{{ row.mountain_forecast.snow_cm|round(1) if row.mountain_forecast and row.mountain_forecast.snow_cm is defined and row.mountain_forecast.snow_cm is not none else '—' }}</td>
+                    <td>{{ row.consensus }}</td>
                 </tr>
                 {% endfor %}
             </table>
-            </div>
         </div>
     </div>
     {% endif %}
 
-    {# ===== MODEL ACCURACY (VERIFICATION) ===== #}
+    <!-- MODEL ACCURACY (collapsible) -->
     {% if data.verification_stats and data.verification_stats.per_model %}
-    <div x-data="{ open: false }" class="collapsible">
-        <div class="collapsible-header" @click="open = !open">
-            <span>Model Accuracy</span>
-            <svg class="collapsible-chevron" :style="open ? '' : 'transform:rotate(-90deg)'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </div>
-        <div class="collapsible-body" x-show="open" x-cloak>
-            <p class="card-subtitle">
-                Forecast vs ERA5 reanalysis. {{ data.verification_stats.n_verifications }} verification run{{ 's' if data.verification_stats.n_verifications != 1 else '' }}.
-                Lower MAE = more accurate.
-            </p>
-            <div style="overflow-x:auto;">
-            <table class="data-table">
+    <div x-data="{open:false}">
+        <div class="coll-hdr" :class="open&&'open'" @click="open=!open">Model Accuracy</div>
+        <div class="coll-body" x-show="open" x-cloak>
+            <table>
+                <tr><th>Model</th><th>MAE</th><th>Bias</th><th>Weight</th></tr>
+                {% for model, metrics in data.verification_stats.per_model.items() %}
+                {% set snow = metrics.get('snowfall', {}) %}
+                {% set w = data.model_weights.weights.get(model, '') if data.model_weights and data.model_weights.weights else '' %}
                 <tr>
-                    <th>Model</th>
-                    <th>Snow MAE</th>
-                    <th>Snow Bias</th>
-                    <th>Samples</th>
-                    {% if data.model_weights and data.model_weights.weights %}
-                    <th>Weight</th>
-                    {% endif %}
+                    <td>{{ AI_NAME_MAP.get(model, model|replace('_seamless','')|replace('_ifs025','')|upper) }}</td>
+                    <td>{{ snow.mae|round(2) if snow.mae is not none else '—' }}</td>
+                    <td>{{ snow.bias|round(2) if snow.bias is not none else '—' }}</td>
+                    <td>{{ (w * 100)|round(1) if w else '—' }}%</td>
                 </tr>
-                {% for model_name, metrics in data.verification_stats.per_model.items() %}
-                {% if metrics.snowfall %}
-                <tr>
-                    <td style="font-weight:600;">{{ AI_NAME_MAP.get(model_name, model_name|replace('_seamless','')|replace('_ifs025','')|upper) }}</td>
-                    <td>{{ metrics.snowfall.mae|round(1) }}cm</td>
-                    <td style="color:{{ 'var(--warning)' if metrics.snowfall.bias|abs > 3 else 'var(--text-dim)' }};">
-                        {{ '+' if metrics.snowfall.bias > 0 else '' }}{{ metrics.snowfall.bias|round(1) }}cm
-                    </td>
-                    <td style="color:var(--text-muted);">{{ metrics.snowfall.n_samples }}</td>
-                    {% if data.model_weights and data.model_weights.weights %}
-                    <td>
-                        {% set w = data.model_weights.weights.get(model_name) %}
-                        {% if w is not none %}
-                        <span style="font-weight:600;">{{ (w * 100)|round(0)|int }}%</span>
-                        {% else %}<span style="color:var(--text-muted);">&mdash;</span>{% endif %}
-                    </td>
-                    {% endif %}
-                </tr>
-                {% endif %}
                 {% endfor %}
             </table>
-            </div>
-
-            {% if data.verification_stats.powder_accuracy and data.verification_stats.powder_accuracy.n_days %}
-            {% set pa = data.verification_stats.powder_accuracy %}
-            <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--card-border);">
-                <div class="card-title" style="margin-bottom:10px;">Powder Day Detection</div>
-                <div class="metric-grid">
-                    <div class="metric-box">
-                        <div class="metric-value" style="color:var(--good);">{{ (pa.hit_rate * 100)|round(0)|int }}%</div>
-                        <div class="metric-label">Hit Rate</div>
-                    </div>
-                    <div class="metric-box">
-                        <div class="metric-value" style="color:{{ 'var(--warning)' if pa.false_alarm_rate > 0.2 else 'var(--text)' }};">{{ (pa.false_alarm_rate * 100)|round(0)|int }}%</div>
-                        <div class="metric-label">False Alarm</div>
-                    </div>
-                    <div class="metric-box">
-                        <div class="metric-value" style="color:{{ 'var(--skip)' if pa.miss_rate > 0.3 else 'var(--text)' }};">{{ (pa.miss_rate * 100)|round(0)|int }}%</div>
-                        <div class="metric-label">Miss Rate</div>
-                    </div>
-                    <div class="metric-box">
-                        <div class="metric-value" style="color:var(--text-dim);">{{ pa.n_days }}</div>
-                        <div class="metric-label">Days Verified</div>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-
-            {% if data.model_weights and data.model_weights.weights %}
-            <div style="margin-top:14px;font-size:0.75rem;color:var(--text-muted);">
-                Weighting: <strong style="color:var(--accent);">Adaptive</strong> &mdash; weights derived from recent accuracy (EWMA)
-            </div>
-            {% endif %}
         </div>
     </div>
     {% endif %}
 
-    {# ===== MODEL COMPARISON ===== #}
-    {% if data.model_comparison %}
-    <div x-data="{ open: true }" class="collapsible">
-        <div class="collapsible-header" @click="open = !open">
-            <span>Model Comparison &mdash; Daily Snowfall (cm)</span>
-            <svg class="collapsible-chevron" :style="open ? '' : 'transform:rotate(-90deg)'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </div>
-        <div class="collapsible-body" x-show="open" x-cloak>
-            <div style="overflow-x:auto;">
-            <table class="data-table">
-                <tr>
-                    <th>Date</th>
-                    {% for model in data.models %}
-                    <th>{{ AI_NAME_MAP.get(model, model|replace('_seamless','')|replace('_ifs025','')|upper) }}</th>
-                    {% endfor %}
-                    <th>Agree</th>
-                </tr>
-                {% for row in data.model_comparison %}
-                <tr>
-                    <td class="td-date">{{ row.date|dateshort }}</td>
-                    {% for val in row.snowfall_values %}
-                    <td>{{ val|round(1) if val is not none else '&mdash;' }}</td>
-                    {% endfor %}
-                    <td class="{{ 'agree' if row.agreement == 'HIGH' else 'disagree' if row.agreement == 'LOW' else '' }}">{{ row.agreement }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-    {# ===== SCORE BREAKDOWN ===== #}
-    <div x-data="{ open: false }" class="collapsible">
-        <div class="collapsible-header" @click="open = !open">
-            <span>Score Breakdown</span>
-            <svg class="collapsible-chevron" :style="open ? '' : 'transform:rotate(-90deg)'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </div>
-        <div class="collapsible-body" x-show="open" x-cloak>
-            <div style="overflow-x:auto;">
-            <table class="data-table">
-                <tr>
-                    <th>Date</th>
-                    <th>Total</th>
-                    <th>Snow <span style="font-weight:400">/{{ data.score_weights.snow if data.score_weights is defined and data.score_weights else 40 }}</span></th>
-                    {% if data.score_weights is defined and data.score_weights and data.score_weights.quality is defined %}
-                    <th>Quality <span style="font-weight:400">/{{ data.score_weights.quality }}</span></th>
-                    {% endif %}
-                    <th>Temp <span style="font-weight:400">/15</span></th>
-                    <th>Wind <span style="font-weight:400">/10</span></th>
-                    <th>Freeze <span style="font-weight:400">/5</span></th>
-                    <th>Timing <span style="font-weight:400">/5</span></th>
-                    <th>Depth <span style="font-weight:400">/5</span></th>
-                    <th>Models <span style="font-weight:400">/{{ data.score_weights.models if data.score_weights is defined and data.score_weights else 20 }}</span></th>
-                    {% if data.score_weights is defined and data.score_weights and data.score_weights.loading is defined %}
-                    <th>Loading <span style="font-weight:400">/{{ data.score_weights.loading }}</span></th>
-                    {% endif %}
-                    {% if data.score_weights is defined and data.score_weights and data.score_weights.ensemble is defined %}
-                    <th>Ens <span style="font-weight:400">&plusmn;{{ data.score_weights.ensemble }}</span></th>
-                    {% endif %}
-                    <th>Src</th>
-                </tr>
-                {% for i in range(data.scores|length) %}
-                {% if i < 7 %}
-                {% set s = data.scores[i] %}
-                {% set b = s.breakdown %}
-                {% set date = data.dates[i] if i < data.dates|length else '' %}
-                <tr>
-                    <td class="td-date">{{ date|dateshort }}</td>
-                    <td><strong class="score-{{ s.label }}">{{ s.total|round(0)|int }}</strong></td>
-                    <td>{{ b.snow_quantity|round(1) }}</td>
-                    {% if data.score_weights is defined and data.score_weights and data.score_weights.quality is defined %}
-                    <td>{{ b.snow_quality|round(1) if b.snow_quality is defined else '&mdash;' }}</td>
-                    {% endif %}
-                    <td>{{ b.temperature|round(1) }}</td>
-                    <td>{{ b.wind|round(1) }}</td>
-                    <td>{{ b.freezing_level|round(1) }}</td>
-                    <td>{{ b.storm_timing|round(1) }}</td>
-                    <td>{{ b.snow_depth_trend|round(1) }}</td>
-                    <td>{{ b.model_agreement|round(1) }}</td>
-                    {% if data.score_weights is defined and data.score_weights and data.score_weights.loading is defined %}
-                    <td>{{ b.wind_loading|round(1) if b.wind_loading is defined else '&mdash;' }}</td>
-                    {% endif %}
-                    {% if data.score_weights is defined and data.score_weights and data.score_weights.ensemble is defined %}
-                    <td>{{ b.ensemble_confidence|round(1) if b.ensemble_confidence is defined else '&mdash;' }}</td>
-                    {% endif %}
-                    <td class="{{ 'agree' if s.source_confidence.confidence == 'HIGH' else 'disagree' if s.source_confidence.confidence == 'LOW' else '' }}" title="{{ s.source_confidence.detail }}">
-                        {% if b.source_confidence > 0 %}+{% endif %}{{ b.source_confidence|round(0)|int }}
-                        <span style="font-size:0.62rem;opacity:0.7;">{{ s.source_confidence.confidence }}</span>
-                    </td>
-                </tr>
-                {% endif %}
-                {% endfor %}
-            </table>
-            </div>
-        </div>
-    </div>
-
-    {# ===== SAFETY ===== #}
-    <div class="section-heading">Safety</div>
-    <div class="card safety-card">
-        <div class="card-title">&#9888; Avalanche Safety</div>
-        <p style="margin:8px 0 12px;font-size:0.85rem;color:var(--text-secondary);">
-            <strong>No formal avalanche bulletin exists for Shar Mountains.</strong>
-            Beacon, shovel, and probe are mandatory for off-piste.
-        </p>
-        {% if data.safety_flags %}
-        {% for flag in data.safety_flags %}
-        <div class="safety-flag"><span>&#9888;</span><span>{{ flag }}</span></div>
-        {% endfor %}
-        {% endif %}
-
-        {% if data.avalanche_danger %}
-        <div style="margin:14px 0 8px;font-size:0.82rem;font-weight:600;color:var(--text-secondary);">Estimated Avalanche Danger</div>
-        <div class="avy-grid">
-            {% for ad in data.avalanche_danger[:7] %}
-            <div class="avy-cell" style="background:{{ AVALANCHE_COLORS[ad.level].bg if ad.level in AVALANCHE_COLORS else 'var(--card)' }};color:{{ '#1a1a1a' if ad.level in [2,3] else '#fff' if ad.level >= 4 else '#fff' }};">
-                <div class="avy-date">{{ ad.date|dateshort }}</div>
-                <div class="avy-level">{{ ad.level }}</div>
-                <div class="avy-name">{{ ad.level_name }}</div>
-            </div>
-            {% endfor %}
-        </div>
-        <p style="font-size:0.7rem;color:var(--warning);margin-top:8px;font-style:italic;">
-            Automated estimate only. Always consult local avalanche bulletins before venturing off-piste.
-        </p>
-        {% endif %}
-
-        <p style="margin-top:10px;font-size:0.7rem;color:var(--text-muted);">
-            Nearest reference: Bulgarian Avalanche Service (Pirin/Rila) &middot; Slovenian Avalanche Service
-        </p>
-    </div>
-
-    {# ===== FOOTER ===== #}
+    <!-- FOOTER -->
     <div class="footer">
-        <div>
-            Snow Monitor v4.0 &nbsp;&middot;&nbsp;
-            {{ data.models|length }} models{% if data.ai_models %} ({{ data.models|length - data.ai_models|length }} physics + {{ data.ai_models|length }} AI){% endif %}
-            &nbsp;&middot;&nbsp; {{ generated_at }}
-            {% if data.model_weights and data.model_weights.weights %} &nbsp;&middot;&nbsp; Adaptive Weighting{% endif %}
-        </div>
-        {% if data.source_health %}
-        <div class="footer-sources">
+        <div><b>{{ data.location }}</b> &mdash; Updated {{ generated_at }}</div>
+        <div class="src-dots">
             {% for src in data.source_health %}
-            <span class="footer-src-badge">
-                <span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:{{ 'var(--good)' if src.status == 'ok' else 'var(--skip)' }};"></span>
-                {{ src.name }}: {{ src.age }}
-            </span>
+            <div class="src-dot"><span class="dot {{ 'dot-ok' if src.status == 'ok' else 'dot-err' }}"></span>{{ src.name }}</div>
             {% endfor %}
         </div>
-        {% endif %}
-        {% if data.webcams %}
-        <div style="margin-top:8px;">
-            {% for cam in data.webcams %}
-            <a href="{{ cam.url }}" target="_blank" rel="noopener">{{ cam.name }}</a>{% if not loop.last %} &middot; {% endif %}
-            {% endfor %}
-        </div>
-        {% endif %}
+        <div>{{ data.models|length }} models {% if data.go_verdict and data.go_verdict.score %}| ML-enhanced{% endif %} | {{ data.sources|length }} sources</div>
     </div>
-    </div>{# end .container #}
 
-    {# ===== SCRIPTS ===== #}
-    <script>
-    // ======= Chart.js global defaults =======
-    Chart.defaults.color = '#7b8fa6';
-    Chart.defaults.borderColor = 'rgba(30,45,66,0.3)';
-    Chart.defaults.plugins.legend.labels.padding = 16;
-    Chart.defaults.plugins.legend.labels.usePointStyle = true;
-    Chart.defaults.plugins.legend.labels.pointStyle = 'circle';
+</div>
 
-    var chartInstances = {};
+<!-- MOBILE NAV -->
+<nav class="mnav">
+    <div class="mnav-inner">
+        <a href="#sec-forecast"><span class="ni">&#10052;</span>Forecast</a>
+        <a href="#sec-charts"><span class="ni">&#128200;</span>Charts</a>
+        <a href="#sec-map"><span class="ni">&#127956;</span>Map</a>
+        <a href="#sec-patterns"><span class="ni">&#9889;</span>Patterns</a>
+    </div>
+</nav>
 
-    function initChart(name) {
-        if (chartInstances[name]) return;
+<script>
+Chart.defaults.color='#7b8fa6';
+Chart.defaults.borderColor='rgba(30,45,66,.3)';
 
-        switch(name) {
-            case 'spaghetti': initSpaghetti(); break;
-            case 'fan': initFan(); break;
-            case 'temp': initMultiChart('temp', 'temperature_chart', 'chartTemp'); break;
-            case 'wind': initMultiChart('wind', 'wind_chart', 'chartWind'); break;
-            case 'depth': initMultiChart('depth', 'snow_depth_chart', 'chartDepth'); break;
-        }
+// Snowfall bar chart
+(function(){
+    var d={{ data.chart_data|tojson }};
+    if(!d||!d.labels)return;
+    new Chart(document.getElementById('cSnow'),{
+        type:'bar',
+        data:{labels:d.labels,datasets:d.datasets.map(function(s){return{label:s.label,data:s.data,backgroundColor:s.color,borderRadius:3}})},
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:10,font:{size:10}}}},scales:{y:{beginAtZero:true,title:{display:true,text:'cm'}}}}
+    });
+})();
+
+// Spaghetti
+(function(){
+    var d={{ data.spaghetti_data|tojson }};
+    if(!d||!d.labels)return;
+    new Chart(document.getElementById('cSpag'),{
+        type:'line',
+        data:{labels:d.labels,datasets:d.traces.map(function(t){return{label:t.model,data:t.values,borderColor:t.color,backgroundColor:'transparent',borderWidth:2,tension:.3,pointRadius:2}})},
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:10,font:{size:10}}}},scales:{y:{beginAtZero:true,title:{display:true,text:'cm'}}}}
+    });
+})();
+
+// Temperature
+(function(){
+    var mc={{ data.multi_charts|tojson }};
+    if(!mc||!mc.temperature)return;
+    var t=mc.temperature;
+    new Chart(document.getElementById('cTemp'),{
+        type:'line',
+        data:{labels:t.labels,datasets:(t.datasets||[]).map(function(d){return{label:d.label,data:d.data,borderColor:d.color||'#3b9cf5',backgroundColor:'transparent',borderWidth:2,tension:.3,pointRadius:2}})},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{title:{display:true,text:'°C'}}}}
+    });
+})();
+
+// Wind
+(function(){
+    var mc={{ data.multi_charts|tojson }};
+    if(!mc||!mc.wind)return;
+    var w=mc.wind;
+    new Chart(document.getElementById('cWind'),{
+        type:'line',
+        data:{labels:w.labels,datasets:(w.datasets||[]).map(function(d){return{label:d.label,data:d.data,borderColor:d.color||'#f57c3b',backgroundColor:'transparent',borderWidth:2,tension:.3,pointRadius:2}})},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,title:{display:true,text:'km/h'}}}}
+    });
+})();
+
+// Map
+(function(){
+    var map=L.map('map').setView([42.0,20.87],12);
+    L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{maxZoom:17,attribution:'OpenTopoMap'}).addTo(map);
+    var scores={{ data.scores|tojson }};
+    if(scores&&scores.length>0){
+        var c=scores[0].conditions||{};
+        L.marker([42.0,20.87]).addTo(map).bindPopup('<b>Summit 2400m</b><br>'+((c.temperature_c||'?'))+'°C, '+(c.wind_speed_kmh||'?')+' km/h<br>Snow: '+((c.snow_depth_m||0)*100).toFixed(0)+'cm');
     }
+    var cams={{ data.webcams|tojson }};
+    if(cams){var ci=L.divIcon({html:'📷',className:'',iconSize:[18,18]});cams.forEach(function(cam){L.marker([42.0+(Math.random()-.5)*.01,20.87+(Math.random()-.5)*.01],{icon:ci}).addTo(map).bindPopup('<a href="'+cam.url+'" target="_blank">'+cam.name+'</a>');})}
+})();
 
-    // ======= Model Snowfall Bar Chart =======
-    {% if data.chart_data %}
-    (function() {
-        var ctx = document.getElementById('chartSnow');
-        if (!ctx) return;
-        chartInstances['snow'] = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: {{ data.chart_data.labels|tojson }},
-                datasets: [
-                    {% for ds in data.chart_data.datasets %}
-                    {
-                        label: '{{ ds.label }}',
-                        data: {{ ds.data|tojson }},
-                        backgroundColor: '{{ ds.color }}',
-                        borderRadius: 4,
-                        barPercentage: 0.75,
-                    },
-                    {% endfor %}
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: { ticks: { font: { size: 11 } }, grid: { display: false } },
-                    y: {
-                        ticks: { callback: function(v) { return v + ' cm'; }, font: { size: 11 } },
-                        title: { display: true, text: 'Snowfall (cm)', font: { size: 12 } },
-                    }
-                }
-            }
-        });
-    })();
-    {% endif %}
-
-    // ======= Spaghetti Plot =======
-    {% if data.spaghetti_data %}
-    function initSpaghetti() {
-        var canvas = document.getElementById('chartSpaghetti');
-        if (!canvas || chartInstances['spaghetti']) return;
-        var sd = {{ data.spaghetti_data|tojson }};
-        var datasets = [];
-        for (var i = 0; i < sd.traces.length; i++) {
-            var t = sd.traces[i];
-            datasets.push({
-                label: t.model,
-                data: t.values,
-                borderColor: t.color,
-                backgroundColor: 'transparent',
-                tension: 0.3,
-                pointRadius: 2,
-                borderWidth: 2,
-            });
-        }
-        chartInstances['spaghetti'] = new Chart(canvas, {
-            type: 'line',
-            data: { labels: sd.labels, datasets: datasets },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                scales: {
-                    x: { ticks: { font: { size: 10 } }, grid: { display: false } },
-                    y: {
-                        ticks: { callback: function(v) { return v + 'cm'; }, font: { size: 11 } },
-                        title: { display: true, text: 'Snowfall (cm)', font: { size: 12 } },
-                    }
-                }
-            }
-        });
+// Time ago
+(function(){
+    var gen='{{ data.generated_at }}';
+    if(!gen)return;
+    var el=document.getElementById('timeAgo');
+    function update(){
+        var d=new Date(gen),n=new Date(),m=Math.floor((n-d)/60000);
+        el.textContent=m<60?m+'m ago':Math.floor(m/60)+'h ago';
     }
-    {% endif %}
-
-    // ======= Probability Fan =======
-    {% if data.probability_fan %}
-    function initFan() {
-        var canvas = document.getElementById('chartFan');
-        if (!canvas || chartInstances['fan']) return;
-        var fan = {{ data.probability_fan|tojson }};
-        // Filter null values
-        var labels = fan.labels;
-        var p10 = fan.p10.map(function(v) { return v === null ? 0 : v; });
-        var p25 = fan.p25.map(function(v) { return v === null ? 0 : v; });
-        var p50 = fan.p50.map(function(v) { return v === null ? 0 : v; });
-        var p75 = fan.p75.map(function(v) { return v === null ? 0 : v; });
-        var p90 = fan.p90.map(function(v) { return v === null ? 0 : v; });
-
-        chartInstances['fan'] = new Chart(canvas, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    { label: 'P90', data: p90, borderColor: 'rgba(59,156,245,0.3)', backgroundColor: 'rgba(59,156,245,0.05)', fill: '+1', pointRadius: 0, borderWidth: 1 },
-                    { label: 'P75', data: p75, borderColor: 'rgba(59,156,245,0.4)', backgroundColor: 'rgba(59,156,245,0.08)', fill: '+1', pointRadius: 0, borderWidth: 1 },
-                    { label: 'P50 (median)', data: p50, borderColor: 'rgba(59,156,245,1)', backgroundColor: 'rgba(59,156,245,0.12)', fill: '+1', pointRadius: 3, borderWidth: 2.5 },
-                    { label: 'P25', data: p25, borderColor: 'rgba(59,156,245,0.4)', backgroundColor: 'rgba(59,156,245,0.08)', fill: '+1', pointRadius: 0, borderWidth: 1 },
-                    { label: 'P10', data: p10, borderColor: 'rgba(59,156,245,0.3)', backgroundColor: 'transparent', fill: false, pointRadius: 0, borderWidth: 1 },
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                plugins: {
-                    legend: { labels: { font: { size: 10 } } },
-                },
-                scales: {
-                    x: { ticks: { font: { size: 10 } }, grid: { display: false } },
-                    y: {
-                        ticks: { callback: function(v) { return v + 'cm'; }, font: { size: 11 } },
-                        title: { display: true, text: 'Ensemble Snowfall (cm)', font: { size: 12 } },
-                        beginAtZero: true,
-                    }
-                }
-            }
-        });
-    }
-    {% endif %}
-
-    // ======= Multi-charts (Temp / Wind / Snow Depth) =======
-    {% if data.multi_charts %}
-    var multiChartData = {{ data.multi_charts|tojson }};
-
-    function initMultiChart(name, key, canvasId) {
-        if (chartInstances[name]) return;
-        var cfg = multiChartData[key];
-        if (!cfg) return;
-        var canvas = document.getElementById(canvasId);
-        if (!canvas) return;
-
-        var colors = ['rgba(59,156,245,0.9)', 'rgba(233,30,99,0.7)', 'rgba(60,192,104,0.7)', 'rgba(240,194,48,0.7)'];
-        var datasets = [];
-        for (var i = 0; i < cfg.datasets.length; i++) {
-            var ds = cfg.datasets[i];
-            datasets.push({
-                label: ds.label,
-                data: ds.data,
-                borderColor: ds.color || colors[i % colors.length],
-                backgroundColor: ds.fill ? (ds.color || colors[i % colors.length]).replace('0.7', '0.1').replace('0.9', '0.1') : 'transparent',
-                fill: ds.fill || false,
-                tension: 0.3,
-                pointRadius: 3,
-                borderWidth: 2,
-            });
-        }
-
-        chartInstances[name] = new Chart(canvas, {
-            type: 'line',
-            data: { labels: cfg.labels, datasets: datasets },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                scales: {
-                    x: { ticks: { font: { size: 10 } }, grid: { display: false } },
-                    y: {
-                        ticks: { callback: function(v) { return v + (cfg.unit || ''); }, font: { size: 11 } },
-                        title: { display: true, text: cfg.y_label || '', font: { size: 12 } }
-                    }
-                }
-            }
-        });
-    }
-    {% endif %}
-
-    // ======= Leaflet Map =======
-    (function() {
-        var mapEl = document.getElementById('mapEl');
-        if (!mapEl) return;
-        try {
-            var map = L.map('mapEl', { scrollWheelZoom: false }).setView([42.0, 20.87], 13);
-            L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-                maxZoom: 17,
-                attribution: 'Map: OpenTopoMap'
-            }).addTo(map);
-
-            // Mid-mountain marker
-            var midIcon = L.divIcon({ html: '<div style="background:var(--accent);width:10px;height:10px;border-radius:50%;border:2px solid #fff;"></div>', className: '', iconSize: [14, 14], iconAnchor: [7, 7] });
-            L.marker([41.99, 20.87], { icon: midIcon }).addTo(map)
-                .bindPopup('<b>Mid-Mountain</b><br>1900m{% if data.current %}<br>Snow: {{ (data.current.snow_depth * 100)|round(0)|int }}cm{% endif %}');
-
-            // Summit marker
-            var sumIcon = L.divIcon({ html: '<div style="background:#fff;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);"></div>', className: '', iconSize: [14, 14], iconAnchor: [7, 7] });
-            L.marker([42.01, 20.87], { icon: sumIcon }).addTo(map)
-                .bindPopup('<b>Summit</b><br>2400m{% if data.current %}<br>Temp: {{ data.current.temperature|round(1) }}&deg;C{% endif %}');
-
-            // Webcam markers
-            {% if data.webcams %}
-            {% for cam in data.webcams %}
-            var camIcon{{ loop.index }} = L.divIcon({ html: '<div style="background:var(--fair);width:8px;height:8px;border-radius:50%;border:1px solid #333;"></div>', className: '', iconSize: [10, 10], iconAnchor: [5, 5] });
-            L.marker([42.0 + {{ (loop.index - 2) * 0.005 }}, 20.87 + {{ (loop.index - 2) * 0.003 }}], { icon: camIcon{{ loop.index }} }).addTo(map)
-                .bindPopup('<b>{{ cam.name }}</b><br>{{ cam.elevation }}m<br><a href="{{ cam.url }}" target="_blank">View webcam</a>');
-            {% endfor %}
-            {% endif %}
-        } catch(e) {
-            mapEl.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted);">Map unavailable</div>';
-        }
-    })();
-
-    // ======= Relative Time =======
-    (function() {
-        var el = document.getElementById('relative-time');
-        if (!el) return;
-        var utc = el.getAttribute('data-utc');
-        if (!utc) return;
-        var generated = new Date(utc);
-        if (isNaN(generated.getTime())) return;
-        function update() {
-            var now = new Date();
-            var diff = Math.floor((now - generated) / 1000);
-            var text;
-            if (diff < 60) text = 'just now';
-            else if (diff < 3600) text = Math.floor(diff / 60) + 'm ago';
-            else if (diff < 86400) text = Math.floor(diff / 3600) + 'h ago';
-            else text = Math.floor(diff / 86400) + 'd ago';
-            el.textContent = text;
-        }
-        update();
-        setInterval(update, 60000);
-    })();
-    </script>
-
-    {# ===== MOBILE NAVIGATION BAR ===== #}
-    <nav class="mobile-nav">
-        <div class="mobile-nav-inner">
-            <a href="#sec-forecast"><span class="nav-icon">&#10052;</span>Forecast</a>
-            <a href="#sec-charts"><span class="nav-icon">&#128200;</span>Charts</a>
-            <a href="#sec-map"><span class="nav-icon">&#127956;</span>Map</a>
-            <a href="#sec-patterns"><span class="nav-icon">&#9889;</span>Patterns</a>
-        </div>
-    </nav>
+    update();setInterval(update,60000);
+})();
+</script>
 </body>
 </html>
