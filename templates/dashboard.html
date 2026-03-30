@@ -43,13 +43,7 @@
         /* === SECTION TITLES === */
         .stitle{font-size:.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
 
-        /* === 7-DAY TABLE (main view) === */
-        .forecast-table{width:100%;border-collapse:collapse}
-        .forecast-table th{font-size:.6rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:6px 4px;text-align:center;border-bottom:1px solid var(--border)}
-        .forecast-table th:first-child{text-align:left}
-        .forecast-table td{padding:8px 4px;border-bottom:1px solid rgba(30,45,66,.3);text-align:center;font-size:.8rem;vertical-align:top}
-        .forecast-table td:first-child{text-align:left}
-        .forecast-table tr:hover{background:rgba(59,156,245,.03)}
+        /* === 7-DAY FORECAST CARDS === */
         .day-name{font-weight:700;font-size:.85rem}
         .day-date{font-size:.65rem;color:var(--muted)}
         .score-pill{display:inline-block;padding:2px 10px;border-radius:10px;font-size:.7rem;font-weight:700;color:#fff}
@@ -111,9 +105,7 @@
         #map{height:300px;border-radius:10px;border:1px solid var(--border)}
         @media(max-width:600px){ #map{height:220px} }
 
-        /* === AVALANCHE === */
-        .avy-row{display:flex;gap:4px;flex-wrap:wrap}
-        .avy-cell{padding:5px 10px;border-radius:6px;font-size:.7rem;font-weight:600;text-align:center;min-width:70px}
+        /* === AVALANCHE (inline dots) === */
 
         /* === COLLAPSIBLE === */
         .coll-hdr{cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--card);border-radius:var(--radius);font-size:.8rem;font-weight:600;color:var(--dim);border:1px solid var(--border);margin-top:8px;transition:background .15s}
