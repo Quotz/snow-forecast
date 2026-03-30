@@ -1,0 +1,5082 @@
+{
+  "location": "Popova Shapka",
+  "generated_at": "2026-03-26T11:52:37.168405Z",
+  "sources": [
+    "open_meteo",
+    "yr_no",
+    "snow_forecast",
+    "mountain_forecast",
+    "open_meteo_ensemble"
+  ],
+  "scores": [
+    {
+      "total": 39.5,
+      "label": "MARGINAL",
+      "gate_limited": true,
+      "confidence_pct": 100.0,
+      "breakdown": {
+        "snow_quantity": 4.6,
+        "temperature": 7.5,
+        "wind": 0.7,
+        "freezing_level": 3.7,
+        "storm_timing": 2.0,
+        "snow_depth_trend": 2.5,
+        "model_agreement": 3.5,
+        "snow_quality": 2.3,
+        "wind_loading": 5.0,
+        "ensemble_confidence": 2.0,
+        "source_confidence": 8
+      },
+      "source_confidence": {
+        "confidence": "HIGH",
+        "blended_snow_cm": 2.8,
+        "detail": "All sources agree: ~3cm snow"
+      },
+      "sky": {
+        "classification": "OVERCAST",
+        "cloud_cover": 90.375,
+        "cloud_cover_low": 71.625,
+        "sunshine_hours": 10.900027777777778,
+        "visibility_m": 36967.5,
+        "flat_light_warning": true,
+        "good_visibility": true
+      },
+      "conditions": {
+        "snowfall_24h_cm": 2.6,
+        "temperature_c": -2.5,
+        "temperature_min_c": -5.3,
+        "temperature_max_c": 0.3,
+        "wind_speed_kmh": 21.3,
+        "wind_gust_kmh": 54.4,
+        "wind_direction_deg": 179.39395838240782,
+        "freezing_level_m": 1905.0,
+        "snow_depth_m": 0.62,
+        "snow_to_liquid_ratio": 0.7,
+        "dew_point_depression": 5.7,
+        "humidity_avg": 65.75,
+        "rain_mm": 0.2,
+        "snow_hours": 6,
+        "rain_hours": 0
+      },
+      "date": "2026-03-26"
+    },
+    {
+      "total": 61.5,
+      "label": "GOOD",
+      "gate_limited": false,
+      "confidence_pct": 100.0,
+      "breakdown": {
+        "snow_quantity": 19.1,
+        "temperature": 15.0,
+        "wind": 4.3,
+        "freezing_level": 4.2,
+        "storm_timing": 3.0,
+        "snow_depth_trend": 5.0,
+        "model_agreement": 6.0,
+        "snow_quality": 0.5,
+        "wind_loading": 0.5,
+        "ensemble_confidence": 0,
+        "source_confidence": 4
+      },
+      "source_confidence": {
+        "confidence": "HIGH",
+        "blended_snow_cm": 9.1,
+        "detail": "Sources agree on snow, differ on amount (11 vs 6cm)"
+      },
+      "sky": {
+        "classification": "OVERCAST",
+        "cloud_cover": 93.25,
+        "cloud_cover_low": 85.5,
+        "sunshine_hours": 5.365,
+        "visibility_m": 16335.0,
+        "flat_light_warning": true,
+        "good_visibility": false
+      },
+      "conditions": {
+        "snowfall_24h_cm": 11.2,
+        "temperature_c": -5.5,
+        "temperature_min_c": -7.0,
+        "temperature_max_c": -4.0,
+        "wind_speed_kmh": 15.3,
+        "wind_gust_kmh": 36.7,
+        "wind_direction_deg": 95.89714224092766,
+        "freezing_level_m": 1868.0,
+        "snow_depth_m": 0.72,
+        "snow_to_liquid_ratio": 0.7,
+        "dew_point_depression": 2.5,
+        "humidity_avg": 83.125,
+        "rain_mm": 0.0,
+        "snow_hours": 10,
+        "rain_hours": 0
+      },
+      "date": "2026-03-27"
+    },
+    {
+      "total": 47.7,
+      "label": "FAIR",
+      "gate_limited": false,
+      "confidence_pct": 100.0,
+      "breakdown": {
+        "snow_quantity": 7.2,
+        "temperature": 15.0,
+        "wind": 6.5,
+        "freezing_level": 5.0,
+        "storm_timing": 3.0,
+        "snow_depth_trend": 5.0,
+        "model_agreement": 4.5,
+        "snow_quality": 0.5,
+        "wind_loading": 0.0,
+        "ensemble_confidence": -3.0,
+        "source_confidence": 4
+      },
+      "source_confidence": {
+        "confidence": "HIGH",
+        "blended_snow_cm": 8.1,
+        "detail": "Sources agree on snow, differ on amount (4 vs 14cm)"
+      },
+      "sky": {
+        "classification": "OVERCAST",
+        "cloud_cover": 99.5,
+        "cloud_cover_low": 90.5,
+        "sunshine_hours": 0.4441722222222222,
+        "visibility_m": 9097.5,
+        "flat_light_warning": true,
+        "good_visibility": false
+      },
+      "conditions": {
+        "snowfall_24h_cm": 4.0,
+        "temperature_c": -6.5,
+        "temperature_min_c": -8.1,
+        "temperature_max_c": -4.9,
+        "wind_speed_kmh": 13.4,
+        "wind_gust_kmh": 30.6,
+        "wind_direction_deg": 354.0333429106947,
+        "freezing_level_m": 1804.0,
+        "snow_depth_m": 0.71,
+        "snow_to_liquid_ratio": 0.7,
+        "dew_point_depression": 1.9,
+        "humidity_avg": 86.75,
+        "rain_mm": 0.0,
+        "snow_hours": 8,
+        "rain_hours": 0
+      },
+      "date": "2026-03-28"
+    },
+    {
+      "total": 30.5,
+      "label": "MARGINAL",
+      "gate_limited": true,
+      "confidence_pct": 92.5,
+      "breakdown": {
+        "snow_quantity": 9.4,
+        "temperature": 15.0,
+        "wind": 4.8,
+        "freezing_level": 3.6,
+        "storm_timing": 2.0,
+        "snow_depth_trend": 2.0,
+        "model_agreement": 3.6,
+        "snow_quality": 1.0,
+        "wind_loading": 0.0,
+        "ensemble_confidence": -3.0,
+        "source_confidence": -3
+      },
+      "source_confidence": {
+        "confidence": "LOW",
+        "blended_snow_cm": 3.4,
+        "detail": "Open-Meteo predicts 5cm but scrapers show 1cm"
+      },
+      "sky": {
+        "classification": "OVERCAST",
+        "cloud_cover": 86.5,
+        "cloud_cover_low": 81.5,
+        "sunshine_hours": 11.291572222222223,
+        "visibility_m": 32732.5,
+        "flat_light_warning": true,
+        "good_visibility": true
+      },
+      "conditions": {
+        "snowfall_24h_cm": 5.2,
+        "temperature_c": -4.8,
+        "temperature_min_c": -7.8,
+        "temperature_max_c": -1.9,
+        "wind_speed_kmh": 13.0,
+        "wind_gust_kmh": 39.2,
+        "wind_direction_deg": 353.8466913886774,
+        "freezing_level_m": 1909.0,
+        "snow_depth_m": 0.7,
+        "snow_to_liquid_ratio": 0.7,
+        "dew_point_depression": 3.6,
+        "humidity_avg": 76.25,
+        "rain_mm": 0.0,
+        "snow_hours": 4,
+        "rain_hours": 0
+      },
+      "date": "2026-03-29"
+    },
+    {
+      "total": 30,
+      "label": "MARGINAL",
+      "gate_limited": true,
+      "confidence_pct": 85.0,
+      "breakdown": {
+        "snow_quantity": 6.3,
+        "temperature": 15.0,
+        "wind": 2.3,
+        "freezing_level": 3.4,
+        "storm_timing": 5.0,
+        "snow_depth_trend": 2.0,
+        "model_agreement": 4.6,
+        "snow_quality": 0.5,
+        "wind_loading": 0.0,
+        "ensemble_confidence": -3.0,
+        "source_confidence": -3
+      },
+      "source_confidence": {
+        "confidence": "LOW",
+        "blended_snow_cm": 2.1,
+        "detail": "Open-Meteo predicts 4cm but scrapers show 0cm"
+      },
+      "sky": {
+        "classification": "OVERCAST",
+        "cloud_cover": 94.625,
+        "cloud_cover_low": 89.5,
+        "sunshine_hours": 7.964038888888889,
+        "visibility_m": 24117.5,
+        "flat_light_warning": true,
+        "good_visibility": false
+      },
+      "conditions": {
+        "snowfall_24h_cm": 3.5,
+        "temperature_c": -3.2,
+        "temperature_min_c": -4.8,
+        "temperature_max_c": -1.7,
+        "wind_speed_kmh": 13.5,
+        "wind_gust_kmh": 50.8,
+        "wind_direction_deg": 323.36962971727127,
+        "freezing_level_m": 1929.0,
+        "snow_depth_m": 0.68,
+        "snow_to_liquid_ratio": 0.7,
+        "dew_point_depression": 2.8,
+        "humidity_avg": 81.25,
+        "rain_mm": 0.30000000000000004,
+        "snow_hours": 14,
+        "rain_hours": 0
+      },
+      "date": "2026-03-30"
+    },
+    {
+      "total": 44.3,
+      "label": "FAIR",
+      "gate_limited": false,
+      "confidence_pct": 77.5,
+      "breakdown": {
+        "snow_quantity": 9.3,
+        "temperature": 15.0,
+        "wind": 1.3,
+        "freezing_level": 5.0,
+        "storm_timing": 3.0,
+        "snow_depth_trend": 2.0,
+        "model_agreement": 4.2,
+        "snow_quality": 0.5,
+        "wind_loading": 0.0,
+        "ensemble_confidence": 0,
+        "source_confidence": 4
+      },
+      "source_confidence": {
+        "confidence": "HIGH",
+        "blended_snow_cm": 7.4,
+        "detail": "Sources agree on snow, differ on amount (5 vs 11cm)"
+      },
+      "sky": {
+        "classification": "OVERCAST",
+        "cloud_cover": 100.0,
+        "cloud_cover_low": 98.25,
+        "sunshine_hours": 0,
+        "visibility_m": 10000,
+        "flat_light_warning": true,
+        "good_visibility": false
+      },
+      "conditions": {
+        "snowfall_24h_cm": 5.2,
+        "temperature_c": -5.8,
+        "temperature_min_c": -7.2,
+        "temperature_max_c": -4.3,
+        "wind_speed_kmh": 18.7,
+        "wind_gust_kmh": 74.9,
+        "wind_direction_deg": 15.464689018646567,
+        "freezing_level_m": 1428.0,
+        "snow_depth_m": 0.66,
+        "snow_to_liquid_ratio": 0.7,
+        "dew_point_depression": 0.5,
+        "humidity_avg": 96.125,
+        "rain_mm": 0.16,
+        "snow_hours": 22,
+        "rain_hours": 0
+      },
+      "date": "2026-03-31"
+    },
+    {
+      "total": 47.1,
+      "label": "FAIR",
+      "gate_limited": false,
+      "confidence_pct": 70.0,
+      "breakdown": {
+        "snow_quantity": 19.8,
+        "temperature": 15.0,
+        "wind": 0.7,
+        "freezing_level": 5.0,
+        "storm_timing": 5.0,
+        "snow_depth_trend": 0,
+        "model_agreement": 4.2,
+        "snow_quality": 0.5,
+        "wind_loading": 0.0,
+        "ensemble_confidence": 0,
+        "source_confidence": -3
+      },
+      "source_confidence": {
+        "confidence": "LOW",
+        "blended_snow_cm": 7.2,
+        "detail": "Open-Meteo predicts 12cm but scrapers show 0cm"
+      },
+      "sky": {
+        "classification": "OVERCAST",
+        "cloud_cover": 93.75,
+        "cloud_cover_low": 93.625,
+        "sunshine_hours": 5.856516666666667,
+        "visibility_m": 10000,
+        "flat_light_warning": true,
+        "good_visibility": false
+      },
+      "conditions": {
+        "snowfall_24h_cm": 12.0,
+        "temperature_c": -5.8,
+        "temperature_min_c": -7.5,
+        "temperature_max_c": -4.0,
+        "wind_speed_kmh": 21.7,
+        "wind_gust_kmh": 84.2,
+        "wind_direction_deg": 16.62507440349729,
+        "freezing_level_m": 1400.0,
+        "snow_depth_m": 0.42,
+        "snow_to_liquid_ratio": 0.7,
+        "dew_point_depression": 2.3,
+        "humidity_avg": 84.0,
+        "rain_mm": 0.0,
+        "snow_hours": 15,
+        "rain_hours": 0
+      },
+      "date": "2026-04-01"
+    },
+    {
+      "total": 30.0,
+      "label": "MARGINAL",
+      "gate_limited": true,
+      "confidence_pct": 62.5,
+      "breakdown": {
+        "snow_quantity": 8.9,
+        "temperature": 15.0,
+        "wind": 3.7,
+        "freezing_level": 5.0,
+        "storm_timing": 5.0,
+        "snow_depth_trend": 0,
+        "model_agreement": 3.8,
+        "snow_quality": 2.5,
+        "wind_loading": 0.0,
+        "ensemble_confidence": 0,
+        "source_confidence": -3
+      },
+      "source_confidence": {
+        "confidence": "LOW",
+        "blended_snow_cm": 3.0,
+        "detail": "Open-Meteo predicts 5cm but scrapers show 0cm"
+      },
+      "sky": {
+        "classification": "PARTLY_CLOUDY",
+        "cloud_cover": 36.333333333333336,
+        "cloud_cover_low": 36.333333333333336,
+        "sunshine_hours": 0,
+        "visibility_m": 10000,
+        "flat_light_warning": false,
+        "good_visibility": false
+      },
+      "conditions": {
+        "snowfall_24h_cm": 4.9,
+        "temperature_c": -4.5,
+        "temperature_min_c": -5.3,
+        "temperature_max_c": -2.1,
+        "wind_speed_kmh": 13.1,
+        "wind_gust_kmh": 43.9,
+        "wind_direction_deg": 356.5,
+        "freezing_level_m": 1483.0,
+        "snow_depth_m": 0,
+        "snow_to_liquid_ratio": 0.7,
+        "dew_point_depression": 5.8,
+        "humidity_avg": 64.66666666666667,
+        "rain_mm": 0.0,
+        "snow_hours": 8,
+        "rain_hours": 0
+      },
+      "date": "2026-04-02"
+    },
+    {
+      "total": 30,
+      "label": "MARGINAL",
+      "gate_limited": true,
+      "confidence_pct": 55.0,
+      "breakdown": {
+        "snow_quantity": 3.0,
+        "temperature": 15.0,
+        "wind": 6.6,
+        "freezing_level": 5.0,
+        "storm_timing": 0,
+        "snow_depth_trend": 2.5,
+        "model_agreement": 4.5,
+        "snow_quality": 0,
+        "wind_loading": 0,
+        "ensemble_confidence": 0,
+        "source_confidence": 0
+      },
+      "source_confidence": {
+        "confidence": "MEDIUM",
+        "blended_snow_cm": 1.0,
+        "detail": "Sources borderline (OM:1.7 vs scrapers:0.0cm)"
+      },
+      "sky": {
+        "classification": "PARTLY_CLOUDY",
+        "cloud_cover": 50,
+        "cloud_cover_low": 50,
+        "sunshine_hours": 0,
+        "visibility_m": 10000,
+        "flat_light_warning": false,
+        "good_visibility": false
+      },
+      "conditions": {
+        "snowfall_24h_cm": 1.7,
+        "temperature_c": -4.5,
+        "temperature_min_c": -4.9,
+        "temperature_max_c": -4.0,
+        "wind_speed_kmh": 12.8,
+        "wind_gust_kmh": 31.7,
+        "wind_direction_deg": null,
+        "freezing_level_m": 1500,
+        "snow_depth_m": 0,
+        "snow_to_liquid_ratio": null,
+        "dew_point_depression": null,
+        "humidity_avg": 50,
+        "rain_mm": 0.0,
+        "snow_hours": 0,
+        "rain_hours": 0
+      },
+      "date": "2026-04-03"
+    },
+    {
+      "total": 30,
+      "label": "MARGINAL",
+      "gate_limited": true,
+      "confidence_pct": 47.5,
+      "breakdown": {
+        "snow_quantity": 2.1,
+        "temperature": 14.2,
+        "wind": 8.1,
+        "freezing_level": 5.0,
+        "storm_timing": 0,
+        "snow_depth_trend": 2.5,
+        "model_agreement": 8.0,
+        "snow_quality": 0,
+        "wind_loading": 0,
+        "ensemble_confidence": 0,
+        "source_confidence": 0
+      },
+      "source_confidence": {
+        "confidence": "MEDIUM",
+        "blended_snow_cm": 0.7,
+        "detail": "Sources borderline (OM:1.2 vs scrapers:0.0cm)"
+      },
+      "sky": {
+        "classification": "PARTLY_CLOUDY",
+        "cloud_cover": 50,
+        "cloud_cover_low": 50,
+        "sunshine_hours": 0,
+        "visibility_m": 10000,
+        "flat_light_warning": false,
+        "good_visibility": false
+      },
+      "conditions": {
+        "snowfall_24h_cm": 1.2,
+        "temperature_c": -2.9,
+        "temperature_min_c": -5.3,
+        "temperature_max_c": -0.6,
+        "wind_speed_kmh": 12.9,
+        "wind_gust_kmh": 19.8,
+        "wind_direction_deg": null,
+        "freezing_level_m": 1500,
+        "snow_depth_m": 0,
+        "snow_to_liquid_ratio": null,
+        "dew_point_depression": null,
+        "humidity_avg": 50,
+        "rain_mm": 0.0,
+        "snow_hours": 0,
+        "rain_hours": 0
+      },
+      "date": "2026-04-04"
+    },
+    {
+      "total": 30,
+      "label": "MARGINAL",
+      "gate_limited": true,
+      "confidence_pct": 40.0,
+      "breakdown": {
+        "snow_quantity": 1.2,
+        "temperature": 15.0,
+        "wind": 9.3,
+        "freezing_level": 5.0,
+        "storm_timing": 0,
+        "snow_depth_trend": 2.5,
+        "model_agreement": 8.0,
+        "snow_quality": 0,
+        "wind_loading": 0,
+        "ensemble_confidence": 0,
+        "source_confidence": 5
+      },
+      "source_confidence": {
+        "confidence": "HIGH",
+        "blended_snow_cm": 0.4,
+        "detail": "All sources agree: dry"
+      },
+      "sky": {
+        "classification": "PARTLY_CLOUDY",
+        "cloud_cover": 50,
+        "cloud_cover_low": 50,
+        "sunshine_hours": 0,
+        "visibility_m": 10000,
+        "flat_light_warning": false,
+        "good_visibility": false
+      },
+      "conditions": {
+        "snowfall_24h_cm": 0.7,
+        "temperature_c": -3.0,
+        "temperature_min_c": -6.1,
+        "temperature_max_c": 0.1,
+        "wind_speed_kmh": 8.5,
+        "wind_gust_kmh": 27.4,
+        "wind_direction_deg": null,
+        "freezing_level_m": 1500,
+        "snow_depth_m": 0,
+        "snow_to_liquid_ratio": null,
+        "dew_point_depression": null,
+        "humidity_avg": 50,
+        "rain_mm": 0.0,
+        "snow_hours": 0,
+        "rain_hours": 0
+      },
+      "date": "2026-04-05"
+    },
+    {
+      "total": 29.6,
+      "label": "MARGINAL",
+      "gate_limited": true,
+      "confidence_pct": 36.0,
+      "breakdown": {
+        "snow_quantity": 0.4,
+        "temperature": 3.8,
+        "wind": 10.0,
+        "freezing_level": 5.0,
+        "storm_timing": 0,
+        "snow_depth_trend": 2.5,
+        "model_agreement": 8.0,
+        "snow_quality": 0,
+        "wind_loading": 0,
+        "ensemble_confidence": 0,
+        "source_confidence": 0
+      },
+      "source_confidence": {
+        "confidence": "MEDIUM",
+        "blended_snow_cm": 0.19999999999999998,
+        "detail": "No scraper data available"
+      },
+      "sky": {
+        "classification": "PARTLY_CLOUDY",
+        "cloud_cover": 50,
+        "cloud_cover_low": 50,
+        "sunshine_hours": 0,
+        "visibility_m": 10000,
+        "flat_light_warning": false,
+        "good_visibility": false
+      },
+      "conditions": {
+        "snowfall_24h_cm": 0.2,
+        "temperature_c": -2.2,
+        "temperature_min_c": -6.3,
+        "temperature_max_c": 1.8,
+        "wind_speed_kmh": 9.5,
+        "wind_gust_kmh": 14.4,
+        "wind_direction_deg": null,
+        "freezing_level_m": 1500,
+        "snow_depth_m": 0,
+        "snow_to_liquid_ratio": null,
+        "dew_point_depression": null,
+        "humidity_avg": 50,
+        "rain_mm": 0.0,
+        "snow_hours": 0,
+        "rain_hours": 0
+      },
+      "date": "2026-04-06"
+    },
+    {
+      "total": 30,
+      "label": "MARGINAL",
+      "gate_limited": true,
+      "confidence_pct": 32.0,
+      "breakdown": {
+        "snow_quantity": 3.7,
+        "temperature": 0,
+        "wind": 8.5,
+        "freezing_level": 5.0,
+        "storm_timing": 0,
+        "snow_depth_trend": 2.5,
+        "model_agreement": 8.0,
+        "snow_quality": 5.0,
+        "wind_loading": 0,
+        "ensemble_confidence": 0,
+        "source_confidence": 0
+      },
+      "source_confidence": {
+        "confidence": "MEDIUM",
+        "blended_snow_cm": 2.05,
+        "detail": "No scraper data available"
+      },
+      "sky": {
+        "classification": "PARTLY_CLOUDY",
+        "cloud_cover": 50,
+        "cloud_cover_low": 50,
+        "sunshine_hours": 0,
+        "visibility_m": 10000,
+        "flat_light_warning": false,
+        "good_visibility": false
+      },
+      "conditions": {
+        "snowfall_24h_cm": 2.0,
+        "temperature_c": -1.3,
+        "temperature_min_c": -5.7,
+        "temperature_max_c": 3.1,
+        "wind_speed_kmh": 12.3,
+        "wind_gust_kmh": 19.8,
+        "wind_direction_deg": null,
+        "freezing_level_m": 1500,
+        "snow_depth_m": 0,
+        "snow_to_liquid_ratio": null,
+        "dew_point_depression": null,
+        "humidity_avg": 50,
+        "rain_mm": 0.0,
+        "snow_hours": 0,
+        "rain_hours": 0
+      },
+      "date": "2026-04-07"
+    },
+    {
+      "total": 27.9,
+      "label": "MARGINAL",
+      "gate_limited": true,
+      "confidence_pct": 28.0,
+      "breakdown": {
+        "snow_quantity": 0.0,
+        "temperature": 0,
+        "wind": 5.4,
+        "freezing_level": 5.0,
+        "storm_timing": 0,
+        "snow_depth_trend": 2.5,
+        "model_agreement": 15.0,
+        "snow_quality": 0,
+        "wind_loading": 0,
+        "ensemble_confidence": 0,
+        "source_confidence": 0
+      },
+      "source_confidence": {
+        "confidence": "MEDIUM",
+        "blended_snow_cm": 0.02,
+        "detail": "No scraper data available"
+      },
+      "sky": {
+        "classification": "PARTLY_CLOUDY",
+        "cloud_cover": 50,
+        "cloud_cover_low": 50,
+        "sunshine_hours": 0,
+        "visibility_m": 10000,
+        "flat_light_warning": false,
+        "good_visibility": false
+      },
+      "conditions": {
+        "snowfall_24h_cm": 0.0,
+        "temperature_c": -1.9,
+        "temperature_min_c": -6.2,
+        "temperature_max_c": 2.4,
+        "wind_speed_kmh": 16.6,
+        "wind_gust_kmh": 26.3,
+        "wind_direction_deg": null,
+        "freezing_level_m": 1500,
+        "snow_depth_m": 0,
+        "snow_to_liquid_ratio": null,
+        "dew_point_depression": null,
+        "humidity_avg": 50,
+        "rain_mm": 0.0,
+        "snow_hours": 0,
+        "rain_hours": 0
+      },
+      "date": "2026-04-08"
+    },
+    {
+      "total": 24.4,
+      "label": "MARGINAL",
+      "gate_limited": true,
+      "confidence_pct": 24.0,
+      "breakdown": {
+        "snow_quantity": 0.1,
+        "temperature": 1.5,
+        "wind": 1.7,
+        "freezing_level": 5.0,
+        "storm_timing": 0,
+        "snow_depth_trend": 2.5,
+        "model_agreement": 13.6,
+        "snow_quality": 0,
+        "wind_loading": 0,
+        "ensemble_confidence": 0,
+        "source_confidence": 0
+      },
+      "source_confidence": {
+        "confidence": "MEDIUM",
+        "blended_snow_cm": 0.08,
+        "detail": "No scraper data available"
+      },
+      "sky": {
+        "classification": "PARTLY_CLOUDY",
+        "cloud_cover": 50,
+        "cloud_cover_low": 50,
+        "sunshine_hours": 0,
+        "visibility_m": 10000,
+        "flat_light_warning": false,
+        "good_visibility": false
+      },
+      "conditions": {
+        "snowfall_24h_cm": 0.1,
+        "temperature_c": -2.1,
+        "temperature_min_c": -6.3,
+        "temperature_max_c": 2.1,
+        "wind_speed_kmh": 16.6,
+        "wind_gust_kmh": 50.4,
+        "wind_direction_deg": null,
+        "freezing_level_m": 1500,
+        "snow_depth_m": 0,
+        "snow_to_liquid_ratio": null,
+        "dew_point_depression": null,
+        "humidity_avg": 50,
+        "rain_mm": 0.0,
+        "snow_hours": 0,
+        "rain_hours": 0
+      },
+      "date": "2026-04-09"
+    },
+    {
+      "total": 32.6,
+      "label": "MARGINAL",
+      "gate_limited": true,
+      "confidence_pct": 20.0,
+      "breakdown": {
+        "snow_quantity": 6.6,
+        "temperature": 10.5,
+        "wind": 7.4,
+        "freezing_level": 5.0,
+        "storm_timing": 0,
+        "snow_depth_trend": 2.5,
+        "model_agreement": 8.0,
+        "snow_quality": 5.5,
+        "wind_loading": 0,
+        "ensemble_confidence": 0,
+        "source_confidence": 0
+      },
+      "source_confidence": {
+        "confidence": "MEDIUM",
+        "blended_snow_cm": 3.68,
+        "detail": "No scraper data available"
+      },
+      "sky": {
+        "classification": "PARTLY_CLOUDY",
+        "cloud_cover": 50,
+        "cloud_cover_low": 50,
+        "sunshine_hours": 0,
+        "visibility_m": 10000,
+        "flat_light_warning": false,
+        "good_visibility": false
+      },
+      "conditions": {
+        "snowfall_24h_cm": 3.7,
+        "temperature_c": -2.7,
+        "temperature_min_c": -4.1,
+        "temperature_max_c": -1.3,
+        "wind_speed_kmh": 13.9,
+        "wind_gust_kmh": 18.4,
+        "wind_direction_deg": null,
+        "freezing_level_m": 1500,
+        "snow_depth_m": 0,
+        "snow_to_liquid_ratio": null,
+        "dew_point_depression": null,
+        "humidity_avg": 50,
+        "rain_mm": 0.0,
+        "snow_hours": 0,
+        "rain_hours": 0
+      },
+      "date": "2026-04-10"
+    }
+  ],
+  "dates": [
+    "2026-03-26",
+    "2026-03-27",
+    "2026-03-28",
+    "2026-03-29",
+    "2026-03-30",
+    "2026-03-31",
+    "2026-04-01",
+    "2026-04-02",
+    "2026-04-03",
+    "2026-04-04",
+    "2026-04-05",
+    "2026-04-06",
+    "2026-04-07",
+    "2026-04-08",
+    "2026-04-09",
+    "2026-04-10"
+  ],
+  "patterns": [
+    {
+      "type": "multi_day_storm",
+      "start_index": 0,
+      "end_index": 7,
+      "duration_days": 8,
+      "total_snow_cm": 48.6,
+      "message": "Close to multi-day storm: 49cm over 8 days (needs 3cm/day minimum).",
+      "quality": "NEAR_MISS"
+    },
+    {
+      "type": "multi_day_storm",
+      "start_index": 1,
+      "end_index": 7,
+      "duration_days": 7,
+      "total_snow_cm": 46.0,
+      "message": "Multi-day storm: 46cm over 7 days (Day 2-8)."
+    },
+    {
+      "type": "warming_trend",
+      "quality": "NEAR_MISS",
+      "day_index": 4,
+      "freezing_levels": [
+        1804.0,
+        1909.0,
+        1929.0
+      ],
+      "message": "Close to warming concern: Freezing level rising to 1929m (threshold 2000m)."
+    },
+    {
+      "type": "storm_then_clear",
+      "quality": "GOOD",
+      "storm_day_index": 6,
+      "clear_day_index": 7,
+      "storm_snow_cm": 12.0,
+      "clear_day_cloud": 36.333333333333336,
+      "clear_day_sunshine": 0,
+      "clear_day_wind": 13.1,
+      "clear_day_temp": -4.5,
+      "message": "Clearing powder day! 12cm falls Day 7, clears Day 8."
+    }
+  ],
+  "model_comparison": [
+    {
+      "date": "2026-03-26",
+      "snowfall_values": [
+        4.76,
+        0.28,
+        0.98,
+        9.24,
+        1.89,
+        0.0,
+        0.84
+      ],
+      "agreement": "LOW"
+    },
+    {
+      "date": "2026-03-27",
+      "snowfall_values": [
+        4.13,
+        13.72,
+        6.93,
+        15.05,
+        6.37,
+        8.82,
+        23.31
+      ],
+      "agreement": "MED"
+    },
+    {
+      "date": "2026-03-28",
+      "snowfall_values": [
+        1.82,
+        1.75,
+        1.05,
+        8.05,
+        1.75,
+        1.54,
+        12.18
+      ],
+      "agreement": "LOW"
+    },
+    {
+      "date": "2026-03-29",
+      "snowfall_values": [
+        0.56,
+        0.63,
+        8.96,
+        0.63,
+        2.17,
+        3.43,
+        20.02
+      ],
+      "agreement": "LOW"
+    },
+    {
+      "date": "2026-03-30",
+      "snowfall_values": [
+        4.27,
+        0.14,
+        0.07,
+        0,
+        4.2,
+        0.28,
+        15.61
+      ],
+      "agreement": "LOW"
+    },
+    {
+      "date": "2026-03-31",
+      "snowfall_values": [
+        13.93,
+        0.63,
+        4.62,
+        0,
+        3.85,
+        0.42,
+        12.81
+      ],
+      "agreement": "LOW"
+    },
+    {
+      "date": "2026-04-01",
+      "snowfall_values": [
+        3.71,
+        18.55,
+        0.63,
+        0,
+        14.0,
+        5.88,
+        41.02
+      ],
+      "agreement": "LOW"
+    },
+    {
+      "date": "2026-04-02",
+      "snowfall_values": [
+        0,
+        11.34,
+        0.0,
+        0,
+        1.4,
+        6.37,
+        15.33
+      ],
+      "agreement": "LOW"
+    },
+    {
+      "date": "2026-04-03",
+      "snowfall_values": [
+        0,
+        4.62,
+        0.0,
+        0,
+        0.0,
+        1.54,
+        5.53
+      ],
+      "agreement": "LOW"
+    },
+    {
+      "date": "2026-04-04",
+      "snowfall_values": [
+        0,
+        0.0,
+        0.0,
+        0,
+        0.0,
+        0.14,
+        7.91
+      ],
+      "agreement": "LOW"
+    },
+    {
+      "date": "2026-04-05",
+      "snowfall_values": [
+        0,
+        0.0,
+        0.0,
+        0,
+        0.0,
+        0.0,
+        4.83
+      ],
+      "agreement": "LOW"
+    },
+    {
+      "date": "2026-04-06",
+      "snowfall_values": [
+        0,
+        0.0,
+        0.0,
+        0,
+        0.0,
+        0.0,
+        1.4
+      ],
+      "agreement": "HIGH"
+    },
+    {
+      "date": "2026-04-07",
+      "snowfall_values": [
+        0,
+        0.0,
+        0.0,
+        0,
+        0.0,
+        0.0,
+        14.35
+      ],
+      "agreement": "LOW"
+    },
+    {
+      "date": "2026-04-08",
+      "snowfall_values": [
+        0,
+        0.0,
+        0.0,
+        0,
+        0.0,
+        0.0,
+        0.14
+      ],
+      "agreement": "HIGH"
+    },
+    {
+      "date": "2026-04-09",
+      "snowfall_values": [
+        0,
+        0.0,
+        0.0,
+        0,
+        0.0,
+        0.0,
+        0.56
+      ],
+      "agreement": "HIGH"
+    },
+    {
+      "date": "2026-04-10",
+      "snowfall_values": [
+        0,
+        0,
+        0.21,
+        0,
+        0.0,
+        0,
+        25.55
+      ],
+      "agreement": "LOW"
+    }
+  ],
+  "chart_data": {
+    "labels": [
+      "Thu 26/03",
+      "Fri 27/03",
+      "Sat 28/03",
+      "Sun 29/03",
+      "Mon 30/03",
+      "Tue 31/03",
+      "Wed 01/04"
+    ],
+    "datasets": [
+      {
+        "label": "ICON",
+        "data": [
+          4.76,
+          4.13,
+          1.82,
+          0.56,
+          4.27,
+          13.93,
+          3.71
+        ],
+        "color": "rgba(77,141,247,0.7)"
+      },
+      {
+        "label": "ECMWF",
+        "data": [
+          0.28,
+          13.72,
+          1.75,
+          0.63,
+          0.14,
+          0.63,
+          18.55
+        ],
+        "color": "rgba(60,192,104,0.7)"
+      },
+      {
+        "label": "GFS",
+        "data": [
+          0.98,
+          6.93,
+          1.05,
+          8.96,
+          0.07,
+          4.62,
+          0.63
+        ],
+        "color": "rgba(240,194,48,0.7)"
+      },
+      {
+        "label": "ARPEGE",
+        "data": [
+          9.24,
+          15.05,
+          8.05,
+          0.63,
+          0,
+          0,
+          0
+        ],
+        "color": "rgba(187,134,252,0.7)"
+      },
+      {
+        "label": "UKMO",
+        "data": [
+          1.89,
+          6.37,
+          1.75,
+          2.17,
+          4.2,
+          3.85,
+          14.0
+        ],
+        "color": "rgba(255,138,101,0.7)"
+      },
+      {
+        "label": "AIFS",
+        "data": [
+          0.0,
+          8.82,
+          1.54,
+          3.43,
+          0.28,
+          0.42,
+          5.88
+        ],
+        "color": "rgba(0,188,212,0.7)"
+      },
+      {
+        "label": "GraphCast",
+        "data": [
+          0.84,
+          23.31,
+          12.18,
+          20.02,
+          15.61,
+          12.81,
+          41.02
+        ],
+        "color": "rgba(233,30,99,0.7)"
+      }
+    ]
+  },
+  "models": [
+    "icon_seamless",
+    "ecmwf_ifs025",
+    "gfs_seamless",
+    "arpege_seamless",
+    "ukmo_seamless",
+    "ecmwf_aifs025_single",
+    "gfs_graphcast025"
+  ],
+  "ai_models": [
+    "ecmwf_aifs025_single",
+    "gfs_graphcast025"
+  ],
+  "current": {
+    "elevation": 2400,
+    "temperature": -3.4,
+    "wind_speed": 10.9,
+    "snow_depth": 0.6,
+    "freezing_level": 1980.0,
+    "cloud_cover": 32,
+    "humidity": 50
+  },
+  "safety_flags": [
+    "2026-03-26: Extreme wind gusts (54 km/h). Exposed terrain dangerous.",
+    "2026-03-30: Extreme wind gusts (51 km/h). Exposed terrain dangerous.",
+    "2026-03-31: Extreme wind gusts (75 km/h). Exposed terrain dangerous.",
+    "2026-04-01: Extreme wind gusts (84 km/h). Exposed terrain dangerous."
+  ],
+  "source_comparison": [
+    {
+      "date": "2026-03-26",
+      "open_meteo": {
+        "snow_cm": 2.6,
+        "temp_c": -2.5,
+        "wind_kmh": 21.0
+      },
+      "snow_forecast": {
+        "snow_cm": 0,
+        "temp_min_c": 0.0,
+        "temp_max_c": 1.0,
+        "wind_kmh": 20.0,
+        "freeze_m": 2000.0
+      },
+      "mountain_forecast": {
+        "snow_cm": 0,
+        "temp_min_c": 2.0,
+        "temp_max_c": 3.0,
+        "wind_kmh": 20.0,
+        "freeze_m": 2000.0
+      },
+      "consensus": "MIXED"
+    },
+    {
+      "date": "2026-03-27",
+      "open_meteo": {
+        "snow_cm": 11.2,
+        "temp_c": -5.5,
+        "wind_kmh": 15.0
+      },
+      "snow_forecast": {
+        "snow_cm": 0,
+        "temp_min_c": -1.0,
+        "temp_max_c": 1.0,
+        "wind_kmh": 20.0,
+        "freeze_m": 2150.0
+      },
+      "mountain_forecast": {
+        "snow_cm": 0,
+        "temp_min_c": 1.0,
+        "temp_max_c": 3.0,
+        "wind_kmh": 20.0,
+        "freeze_m": 2150.0
+      },
+      "consensus": "MIXED"
+    },
+    {
+      "date": "2026-03-28",
+      "open_meteo": {
+        "snow_cm": 4.0,
+        "temp_c": -6.5,
+        "wind_kmh": 13.0
+      },
+      "snow_forecast": {
+        "snow_cm": 21.0,
+        "temp_min_c": -5.0,
+        "temp_max_c": -2.0,
+        "wind_kmh": 25.0,
+        "freeze_m": 1600.0
+      },
+      "mountain_forecast": {
+        "snow_cm": 20.0,
+        "temp_min_c": -4.0,
+        "temp_max_c": -1.0,
+        "wind_kmh": 20.0,
+        "freeze_m": 1600.0
+      },
+      "consensus": "ALL_SNOW"
+    },
+    {
+      "date": "2026-03-29",
+      "open_meteo": {
+        "snow_cm": 5.2,
+        "temp_c": -4.8,
+        "wind_kmh": 13.0
+      },
+      "snow_forecast": {
+        "snow_cm": 1.0,
+        "temp_min_c": -4.0,
+        "temp_max_c": -3.0,
+        "wind_kmh": 15.0,
+        "freeze_m": 1450.0
+      },
+      "mountain_forecast": {
+        "snow_cm": 1.0,
+        "temp_min_c": -3.0,
+        "temp_max_c": -2.0,
+        "wind_kmh": 10.0,
+        "freeze_m": 1400.0
+      },
+      "consensus": "MIXED"
+    },
+    {
+      "date": "2026-03-30",
+      "open_meteo": {
+        "snow_cm": 3.5,
+        "temp_c": -3.2,
+        "wind_kmh": 14.0
+      },
+      "snow_forecast": {
+        "snow_cm": 0,
+        "temp_min_c": -4.0,
+        "temp_max_c": -3.0,
+        "wind_kmh": 5.0,
+        "freeze_m": 1650.0
+      },
+      "mountain_forecast": {
+        "snow_cm": 0,
+        "temp_min_c": -3.0,
+        "temp_max_c": -2.0,
+        "wind_kmh": 5.0,
+        "freeze_m": 1600.0
+      },
+      "consensus": "MIXED"
+    },
+    {
+      "date": "2026-03-31",
+      "open_meteo": {
+        "snow_cm": 5.2,
+        "temp_c": -5.8,
+        "wind_kmh": 19.0
+      },
+      "snow_forecast": {
+        "snow_cm": 15.0,
+        "temp_min_c": -8.0,
+        "temp_max_c": -1.0,
+        "wind_kmh": 30.0,
+        "freeze_m": 1504.1666666666667
+      },
+      "mountain_forecast": {
+        "snow_cm": 17.0,
+        "temp_min_c": -7.0,
+        "temp_max_c": 0.0,
+        "wind_kmh": 30.0,
+        "freeze_m": 1479.1666666666667
+      },
+      "consensus": "ALL_SNOW"
+    },
+    {
+      "date": "2026-04-01",
+      "open_meteo": {
+        "snow_cm": 12.0,
+        "temp_c": -5.8,
+        "wind_kmh": 22.0
+      },
+      "snow_forecast": null,
+      "mountain_forecast": null,
+      "consensus": "ALL_SNOW"
+    }
+  ],
+  "insights": {
+    "headline": "Fresh 11cm Fri 27/03 \u2014 Multi-day storm",
+    "best_day": {
+      "date": "2026-03-27",
+      "score": 61.5,
+      "label": "GOOD",
+      "reason": "11cm fresh / -6C / 15km/h"
+    },
+    "action_items": [
+      "Best skiing Fri 27/03",
+      "Avoid Thu 26/03 (54 km/h gusts)",
+      "Avoid Mon 30/03 (51 km/h gusts)",
+      "Avoid Tue 31/03 (75 km/h gusts)",
+      "Avoid Wed 01/04 (84 km/h gusts)",
+      "Watch freezing level Mon 30/03"
+    ],
+    "snowpack_status": "60cm (building)",
+    "seven_day_snow_total": 43.7
+  },
+  "avalanche_danger": [
+    {
+      "date": "2026-03-26",
+      "level": 2,
+      "level_name": "MODERATE",
+      "total_score": 23,
+      "factors": {
+        "new_snow_24h": 3,
+        "new_snow_72h": 0,
+        "wind_transport": 0,
+        "rapid_warming": 0,
+        "rain_on_snow": 20
+      },
+      "disclaimer": "Automated estimate only. Always consult local avalanche bulletins."
+    },
+    {
+      "date": "2026-03-27",
+      "level": 1,
+      "level_name": "LOW",
+      "total_score": 11,
+      "factors": {
+        "new_snow_24h": 11,
+        "new_snow_72h": 0,
+        "wind_transport": 0,
+        "rapid_warming": 0,
+        "rain_on_snow": 0
+      },
+      "disclaimer": "Automated estimate only. Always consult local avalanche bulletins."
+    },
+    {
+      "date": "2026-03-28",
+      "level": 1,
+      "level_name": "LOW",
+      "total_score": 9,
+      "factors": {
+        "new_snow_24h": 4,
+        "new_snow_72h": 5,
+        "wind_transport": 0,
+        "rapid_warming": 0,
+        "rain_on_snow": 0
+      },
+      "disclaimer": "Automated estimate only. Always consult local avalanche bulletins."
+    },
+    {
+      "date": "2026-03-29",
+      "level": 1,
+      "level_name": "LOW",
+      "total_score": 10,
+      "factors": {
+        "new_snow_24h": 5,
+        "new_snow_72h": 5,
+        "wind_transport": 0,
+        "rapid_warming": 0,
+        "rain_on_snow": 0
+      },
+      "disclaimer": "Automated estimate only. Always consult local avalanche bulletins."
+    },
+    {
+      "date": "2026-03-30",
+      "level": 2,
+      "level_name": "MODERATE",
+      "total_score": 24,
+      "factors": {
+        "new_snow_24h": 4,
+        "new_snow_72h": 0,
+        "wind_transport": 0,
+        "rapid_warming": 0,
+        "rain_on_snow": 20
+      },
+      "disclaimer": "Automated estimate only. Always consult local avalanche bulletins."
+    },
+    {
+      "date": "2026-03-31",
+      "level": 2,
+      "level_name": "MODERATE",
+      "total_score": 25,
+      "factors": {
+        "new_snow_24h": 5,
+        "new_snow_72h": 0,
+        "wind_transport": 0,
+        "rapid_warming": 0,
+        "rain_on_snow": 20
+      },
+      "disclaimer": "Automated estimate only. Always consult local avalanche bulletins."
+    },
+    {
+      "date": "2026-04-01",
+      "level": 1,
+      "level_name": "LOW",
+      "total_score": 17,
+      "factors": {
+        "new_snow_24h": 12,
+        "new_snow_72h": 5,
+        "wind_transport": 0,
+        "rapid_warming": 0,
+        "rain_on_snow": 0
+      },
+      "disclaimer": "Automated estimate only. Always consult local avalanche bulletins."
+    }
+  ],
+  "multi_charts": {
+    "temperature_chart": {
+      "labels": [
+        "Thu 26/03",
+        "Fri 27/03",
+        "Sat 28/03",
+        "Sun 29/03",
+        "Mon 30/03",
+        "Tue 31/03",
+        "Wed 01/04"
+      ],
+      "datasets": [
+        {
+          "label": "Max",
+          "data": [
+            0.3,
+            -4.0,
+            -4.9,
+            -1.9,
+            -1.7,
+            -4.3,
+            -4.0
+          ]
+        },
+        {
+          "label": "Min",
+          "data": [
+            -5.3,
+            -7.0,
+            -8.1,
+            -7.8,
+            -4.8,
+            -7.2,
+            -7.5
+          ]
+        },
+        {
+          "label": "Avg",
+          "data": [
+            -2.5,
+            -5.5,
+            -6.5,
+            -4.8,
+            -3.2,
+            -5.8,
+            -5.8
+          ]
+        }
+      ]
+    },
+    "wind_chart": {
+      "labels": [
+        "Thu 26/03",
+        "Fri 27/03",
+        "Sat 28/03",
+        "Sun 29/03",
+        "Mon 30/03",
+        "Tue 31/03",
+        "Wed 01/04"
+      ],
+      "datasets": [
+        {
+          "label": "Sustained",
+          "data": [
+            21.3,
+            15.3,
+            13.4,
+            13.0,
+            13.5,
+            18.7,
+            21.7
+          ]
+        },
+        {
+          "label": "Gusts",
+          "data": [
+            54.4,
+            36.7,
+            30.6,
+            39.2,
+            50.8,
+            74.9,
+            84.2
+          ]
+        }
+      ]
+    },
+    "freezing_level_chart": {
+      "labels": [
+        "Thu 26/03",
+        "Fri 27/03",
+        "Sat 28/03",
+        "Sun 29/03",
+        "Mon 30/03",
+        "Tue 31/03",
+        "Wed 01/04"
+      ],
+      "datasets": [
+        {
+          "label": "Freezing Level",
+          "data": [
+            1905,
+            1868,
+            1804,
+            1909,
+            1929,
+            1428,
+            1400
+          ]
+        }
+      ],
+      "reference_lines": [
+        {
+          "value": 1900,
+          "label": "Mid-mountain (1900m)"
+        },
+        {
+          "value": 2400,
+          "label": "Summit (2400m)"
+        }
+      ]
+    },
+    "snow_depth_chart": {
+      "labels": [
+        "Thu 26/03",
+        "Fri 27/03",
+        "Sat 28/03",
+        "Sun 29/03",
+        "Mon 30/03",
+        "Tue 31/03",
+        "Wed 01/04"
+      ],
+      "datasets": [
+        {
+          "label": "Snow Depth (cm)",
+          "data": [
+            62.0,
+            72.0,
+            71.0,
+            70.0,
+            68.0,
+            66.0,
+            42.0
+          ]
+        }
+      ]
+    }
+  },
+  "model_spread": [
+    {
+      "date": "2026-03-26",
+      "min_cm": 0.0,
+      "max_cm": 9.2,
+      "spread_cm": 9.2
+    },
+    {
+      "date": "2026-03-27",
+      "min_cm": 4.1,
+      "max_cm": 23.3,
+      "spread_cm": 19.2
+    },
+    {
+      "date": "2026-03-28",
+      "min_cm": 1.1,
+      "max_cm": 12.2,
+      "spread_cm": 11.1
+    },
+    {
+      "date": "2026-03-29",
+      "min_cm": 0.6,
+      "max_cm": 20.0,
+      "spread_cm": 19.5
+    },
+    {
+      "date": "2026-03-30",
+      "min_cm": 0,
+      "max_cm": 15.6,
+      "spread_cm": 15.6
+    },
+    {
+      "date": "2026-03-31",
+      "min_cm": 0,
+      "max_cm": 13.9,
+      "spread_cm": 13.9
+    },
+    {
+      "date": "2026-04-01",
+      "min_cm": 0,
+      "max_cm": 41.0,
+      "spread_cm": 41.0
+    }
+  ],
+  "validation": {
+    "flags": [
+      {
+        "type": "snowfall_outlier",
+        "date": "2026-03-28",
+        "detail": "snow_forecast reports 21.0cm snow, others' median is 4.0cm (5.2x)",
+        "severity": "warning",
+        "source": "snow_forecast"
+      },
+      {
+        "type": "snowfall_outlier",
+        "date": "2026-03-28",
+        "detail": "mountain_forecast reports 20.0cm snow, others' median is 4.0cm (5.0x)",
+        "severity": "warning",
+        "source": "mountain_forecast"
+      },
+      {
+        "type": "snowfall_outlier",
+        "date": "2026-03-29",
+        "detail": "open_meteo reports 5.2cm snow, others' median is 1.0cm (5.2x)",
+        "severity": "warning",
+        "source": "open_meteo"
+      },
+      {
+        "type": "snowfall_outlier",
+        "date": "2026-03-31",
+        "detail": "mountain_forecast reports 17.0cm snow, others' median is 5.2cm (3.3x)",
+        "severity": "warning",
+        "source": "mountain_forecast"
+      }
+    ],
+    "source_quality": {
+      "open_meteo": {
+        "status": "degraded",
+        "issues": 1
+      },
+      "yr_no": {
+        "status": "ok",
+        "issues": 0
+      },
+      "snow_forecast": {
+        "status": "degraded",
+        "issues": 1
+      },
+      "mountain_forecast": {
+        "status": "degraded",
+        "issues": 2
+      }
+    }
+  },
+  "ensemble": {
+    "source": "open_meteo_ensemble",
+    "fetched_at": "2026-03-26T11:52:36.102202Z",
+    "location": "Popova Shapka",
+    "elevations": {
+      "2400": {
+        "elevation": 2400,
+        "daily": {
+          "dates": [
+            "2026-03-26",
+            "2026-03-27",
+            "2026-03-28",
+            "2026-03-29",
+            "2026-03-30",
+            "2026-03-31",
+            "2026-04-01"
+          ],
+          "snowfall": {
+            "p10": [
+              1.904,
+              1.7639999999999998,
+              1.036,
+              0.392,
+              0.0,
+              0.0,
+              null
+            ],
+            "p25": [
+              2.8,
+              2.52,
+              2.52,
+              0.56,
+              0.0,
+              0.0,
+              null
+            ],
+            "p50": [
+              3.36,
+              2.8000000000000003,
+              5.04,
+              1.6800000000000002,
+              0.42000000000000004,
+              0.0,
+              null
+            ],
+            "p75": [
+              3.92,
+              4.83,
+              9.03,
+              4.76,
+              1.33,
+              0.77,
+              null
+            ],
+            "p90": [
+              4.592000000000002,
+              6.16,
+              13.804000000000004,
+              10.192000000000004,
+              2.5200000000000005,
+              2.968,
+              null
+            ],
+            "prob_5cm": [
+              0.10256410256410256,
+              0.23076923076923078,
+              0.5128205128205128,
+              0.23076923076923078,
+              0.0,
+              0.05128205128205128,
+              null
+            ],
+            "prob_15cm": [
+              0.0,
+              0.0,
+              0.07692307692307693,
+              0.05128205128205128,
+              0.0,
+              0.0,
+              null
+            ]
+          },
+          "precipitation": {
+            "p10": [
+              3.68,
+              6.66,
+              2.36,
+              1.2000000000000002,
+              1.0,
+              0.0,
+              null
+            ],
+            "p25": [
+              6.05,
+              9.45,
+              4.35,
+              2.1,
+              1.8,
+              0.0,
+              null
+            ],
+            "p50": [
+              9.1,
+              14.1,
+              7.4,
+              3.7,
+              3.8,
+              0.6,
+              null
+            ],
+            "p75": [
+              10.649999999999999,
+              16.2,
+              13.5,
+              10.8,
+              5.7,
+              2.1,
+              null
+            ],
+            "p90": [
+              12.340000000000002,
+              19.0,
+              21.520000000000007,
+              19.34,
+              7.520000000000004,
+              5.440000000000001,
+              null
+            ],
+            "prob_5cm": [
+              0.7948717948717948,
+              0.9743589743589743,
+              0.717948717948718,
+              0.4358974358974359,
+              0.28205128205128205,
+              0.1282051282051282,
+              null
+            ],
+            "prob_15cm": [
+              0.0,
+              0.4358974358974359,
+              0.20512820512820512,
+              0.15384615384615385,
+              0.02564102564102564,
+              0.0,
+              null
+            ]
+          },
+          "temperature_2m": {
+            "p10": [
+              -1.0108333333333333,
+              -3.700833333333333,
+              -5.134166666666667,
+              -4.085833333333333,
+              -2.7175000000000002,
+              -4.5025,
+              null
+            ],
+            "p25": [
+              -0.9166666666666666,
+              -3.564583333333333,
+              -4.814583333333333,
+              -3.7,
+              -2.4916666666666667,
+              -3.9499999999999997,
+              null
+            ],
+            "p50": [
+              -0.7125,
+              -3.341666666666667,
+              -4.620833333333334,
+              -3.375,
+              -1.95,
+              -3.0625,
+              null
+            ],
+            "p75": [
+              -0.51875,
+              -3.1395833333333334,
+              -4.35,
+              -3.2104166666666663,
+              -1.4145833333333333,
+              -2.06875,
+              null
+            ],
+            "p90": [
+              -0.42249999999999993,
+              -2.9699999999999998,
+              -3.8858333333333333,
+              -3.1,
+              -0.9174999999999998,
+              -1.8749999999999998,
+              null
+            ]
+          }
+        },
+        "n_days": 7
+      }
+    },
+    "daily": {
+      "dates": [
+        "2026-03-26",
+        "2026-03-27",
+        "2026-03-28",
+        "2026-03-29",
+        "2026-03-30",
+        "2026-03-31",
+        "2026-04-01"
+      ],
+      "snowfall": {
+        "p10": [
+          1.904,
+          1.7639999999999998,
+          1.036,
+          0.392,
+          0.0,
+          0.0,
+          null
+        ],
+        "p25": [
+          2.8,
+          2.52,
+          2.52,
+          0.56,
+          0.0,
+          0.0,
+          null
+        ],
+        "p50": [
+          3.36,
+          2.8000000000000003,
+          5.04,
+          1.6800000000000002,
+          0.42000000000000004,
+          0.0,
+          null
+        ],
+        "p75": [
+          3.92,
+          4.83,
+          9.03,
+          4.76,
+          1.33,
+          0.77,
+          null
+        ],
+        "p90": [
+          4.592000000000002,
+          6.16,
+          13.804000000000004,
+          10.192000000000004,
+          2.5200000000000005,
+          2.968,
+          null
+        ],
+        "prob_5cm": [
+          0.10256410256410256,
+          0.23076923076923078,
+          0.5128205128205128,
+          0.23076923076923078,
+          0.0,
+          0.05128205128205128,
+          null
+        ],
+        "prob_15cm": [
+          0.0,
+          0.0,
+          0.07692307692307693,
+          0.05128205128205128,
+          0.0,
+          0.0,
+          null
+        ]
+      },
+      "precipitation": {
+        "p10": [
+          3.68,
+          6.66,
+          2.36,
+          1.2000000000000002,
+          1.0,
+          0.0,
+          null
+        ],
+        "p25": [
+          6.05,
+          9.45,
+          4.35,
+          2.1,
+          1.8,
+          0.0,
+          null
+        ],
+        "p50": [
+          9.1,
+          14.1,
+          7.4,
+          3.7,
+          3.8,
+          0.6,
+          null
+        ],
+        "p75": [
+          10.649999999999999,
+          16.2,
+          13.5,
+          10.8,
+          5.7,
+          2.1,
+          null
+        ],
+        "p90": [
+          12.340000000000002,
+          19.0,
+          21.520000000000007,
+          19.34,
+          7.520000000000004,
+          5.440000000000001,
+          null
+        ],
+        "prob_5cm": [
+          0.7948717948717948,
+          0.9743589743589743,
+          0.717948717948718,
+          0.4358974358974359,
+          0.28205128205128205,
+          0.1282051282051282,
+          null
+        ],
+        "prob_15cm": [
+          0.0,
+          0.4358974358974359,
+          0.20512820512820512,
+          0.15384615384615385,
+          0.02564102564102564,
+          0.0,
+          null
+        ]
+      },
+      "temperature_2m": {
+        "p10": [
+          -1.0108333333333333,
+          -3.700833333333333,
+          -5.134166666666667,
+          -4.085833333333333,
+          -2.7175000000000002,
+          -4.5025,
+          null
+        ],
+        "p25": [
+          -0.9166666666666666,
+          -3.564583333333333,
+          -4.814583333333333,
+          -3.7,
+          -2.4916666666666667,
+          -3.9499999999999997,
+          null
+        ],
+        "p50": [
+          -0.7125,
+          -3.341666666666667,
+          -4.620833333333334,
+          -3.375,
+          -1.95,
+          -3.0625,
+          null
+        ],
+        "p75": [
+          -0.51875,
+          -3.1395833333333334,
+          -4.35,
+          -3.2104166666666663,
+          -1.4145833333333333,
+          -2.06875,
+          null
+        ],
+        "p90": [
+          -0.42249999999999993,
+          -2.9699999999999998,
+          -3.8858333333333333,
+          -3.1,
+          -0.9174999999999998,
+          -1.8749999999999998,
+          null
+        ]
+      }
+    },
+    "models": [
+      "icon_eu_eps",
+      "ecmwf_ifs025",
+      "gfs025"
+    ],
+    "member_counts": {
+      "icon_eu_eps": 40,
+      "ecmwf_ifs025": 51,
+      "gfs025": 31
+    },
+    "error": null
+  },
+  "source_health": [
+    {
+      "name": "open_meteo",
+      "status": "ok",
+      "fetched_at": "2026-03-26T11:52:31.767403Z",
+      "age": "just now"
+    },
+    {
+      "name": "yr_no",
+      "status": "ok",
+      "fetched_at": "2026-03-26T11:52:32.986128Z",
+      "age": "just now"
+    },
+    {
+      "name": "snow_forecast",
+      "status": "ok",
+      "fetched_at": "2026-03-26T11:52:34.020992Z",
+      "age": "just now"
+    },
+    {
+      "name": "mountain_forecast",
+      "status": "ok",
+      "fetched_at": "2026-03-26T11:52:35.676525Z",
+      "age": "just now"
+    },
+    {
+      "name": "open_meteo_ensemble",
+      "status": "ok",
+      "fetched_at": "2026-03-26T11:52:36.102202Z",
+      "age": "just now"
+    }
+  ],
+  "history_summary": {
+    "snow_depth_series": [
+      {
+        "date": "2026-02-24T17:57:24",
+        "depth_cm": 74.0
+      },
+      {
+        "date": "2026-02-25T18:00:41",
+        "depth_cm": 70.0
+      },
+      {
+        "date": "2026-02-26T17:56:50",
+        "depth_cm": 69.0
+      },
+      {
+        "date": "2026-02-27T17:38:39",
+        "depth_cm": 68.0
+      },
+      {
+        "date": "2026-02-28T17:23:50",
+        "depth_cm": 66.0
+      },
+      {
+        "date": "2026-03-01T17:25:14",
+        "depth_cm": 64.0
+      },
+      {
+        "date": "2026-03-02T17:50:29",
+        "depth_cm": 63.0
+      },
+      {
+        "date": "2026-03-03T17:46:40",
+        "depth_cm": 60.0
+      },
+      {
+        "date": "2026-03-04T17:41:40",
+        "depth_cm": 59.0
+      },
+      {
+        "date": "2026-03-05T18:48:04",
+        "depth_cm": 56.0
+      },
+      {
+        "date": "2026-03-06T17:37:48",
+        "depth_cm": 57.0
+      },
+      {
+        "date": "2026-03-07T17:24:46",
+        "depth_cm": 56.0
+      },
+      {
+        "date": "2026-03-08T17:26:05",
+        "depth_cm": 55.0
+      },
+      {
+        "date": "2026-03-09T17:48:38",
+        "depth_cm": 55.0
+      },
+      {
+        "date": "2026-03-10T17:49:05",
+        "depth_cm": 64.0
+      },
+      {
+        "date": "2026-03-11T17:51:44",
+        "depth_cm": 62.0
+      },
+      {
+        "date": "2026-03-12T17:51:23",
+        "depth_cm": 60.0
+      },
+      {
+        "date": "2026-03-13T17:37:45",
+        "depth_cm": 58.0
+      },
+      {
+        "date": "2026-03-14T17:30:00",
+        "depth_cm": 57.0
+      },
+      {
+        "date": "2026-03-15T17:31:30",
+        "depth_cm": 55.0
+      },
+      {
+        "date": "2026-03-16T18:01:35",
+        "depth_cm": 53.0
+      },
+      {
+        "date": "2026-03-17T18:03:26",
+        "depth_cm": 52.0
+      },
+      {
+        "date": "2026-03-18T18:01:34",
+        "depth_cm": 58.0
+      },
+      {
+        "date": "2026-03-19T17:54:09",
+        "depth_cm": 61.0
+      },
+      {
+        "date": "2026-03-20T17:37:40",
+        "depth_cm": 65.0
+      },
+      {
+        "date": "2026-03-21T17:28:25",
+        "depth_cm": 65.0
+      },
+      {
+        "date": "2026-03-22T17:28:19",
+        "depth_cm": 63.0
+      },
+      {
+        "date": "2026-03-23T17:53:18",
+        "depth_cm": 61.0
+      },
+      {
+        "date": "2026-03-24T17:58:17",
+        "depth_cm": 65.0
+      },
+      {
+        "date": "2026-03-25T18:00:51",
+        "depth_cm": 64.0
+      },
+      {
+        "date": "2026-03-26T06:13:39",
+        "depth_cm": 60.0
+      }
+    ],
+    "score_evolution": {
+      "2026-02-24": [
+        {
+          "run_date": "2026-02-24T11:42:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-24T17:57:24",
+          "score": 28.9
+        }
+      ],
+      "2026-02-25": [
+        {
+          "run_date": "2026-02-24T11:42:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-24T17:57:24",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-25T06:03:29",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-25T11:42:00",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-25T18:00:41",
+          "score": 30
+        }
+      ],
+      "2026-02-26": [
+        {
+          "run_date": "2026-02-24T11:42:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-24T17:57:24",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-25T06:03:29",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-25T11:42:00",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-25T18:00:41",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-26T05:59:38",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-26T11:41:47",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-26T17:56:50",
+          "score": 30
+        }
+      ],
+      "2026-02-27": [
+        {
+          "run_date": "2026-02-24T11:42:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-24T17:57:24",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-25T06:03:29",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-25T11:42:00",
+          "score": 29.7
+        },
+        {
+          "run_date": "2026-02-25T18:00:41",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-26T05:59:38",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-26T11:41:47",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-26T17:56:50",
+          "score": 29.8
+        },
+        {
+          "run_date": "2026-02-27T05:54:49",
+          "score": 29.9
+        },
+        {
+          "run_date": "2026-02-27T11:35:04",
+          "score": 29.0
+        },
+        {
+          "run_date": "2026-02-27T17:38:39",
+          "score": 29.0
+        }
+      ],
+      "2026-02-28": [
+        {
+          "run_date": "2026-02-24T11:42:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-24T17:57:24",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-25T06:03:29",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-25T11:42:00",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-25T18:00:41",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-26T05:59:38",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-26T11:41:47",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-26T17:56:50",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-27T05:54:49",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-27T11:35:04",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-27T17:38:39",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-28T05:35:02",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-28T11:22:51",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-28T17:23:50",
+          "score": 30
+        }
+      ],
+      "2026-03-01": [
+        {
+          "run_date": "2026-02-24T11:42:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-24T17:57:24",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-25T06:03:29",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-25T11:42:00",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-25T18:00:41",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-26T05:59:38",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-26T11:41:47",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-26T17:56:50",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-27T05:54:49",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-27T11:35:04",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-27T17:38:39",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-28T05:35:02",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-28T11:22:51",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-28T17:23:50",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-01T05:54:14",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-01T11:23:56",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-01T17:25:14",
+          "score": 30
+        }
+      ],
+      "2026-03-02": [
+        {
+          "run_date": "2026-02-24T11:42:43",
+          "score": 29.6
+        },
+        {
+          "run_date": "2026-02-24T17:57:24",
+          "score": 28.5
+        },
+        {
+          "run_date": "2026-02-25T06:03:29",
+          "score": 29.2
+        },
+        {
+          "run_date": "2026-02-25T11:42:00",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-25T18:00:41",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-26T05:59:38",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-26T11:41:47",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-26T17:56:50",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-27T05:54:49",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-27T11:35:04",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-27T17:38:39",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-28T05:35:02",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-28T11:22:51",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-28T17:23:50",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-01T05:54:14",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-01T11:23:56",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-01T17:25:14",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-02T05:54:58",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-02T11:34:00",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-02T17:50:29",
+          "score": 30
+        }
+      ],
+      "2026-03-03": [
+        {
+          "run_date": "2026-02-25T06:03:29",
+          "score": 29.6
+        },
+        {
+          "run_date": "2026-02-25T11:42:00",
+          "score": 27.5
+        },
+        {
+          "run_date": "2026-02-25T18:00:41",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-26T05:59:38",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-26T11:41:47",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-26T17:56:50",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-27T05:54:49",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-27T11:35:04",
+          "score": 29.4
+        },
+        {
+          "run_date": "2026-02-27T17:38:39",
+          "score": 29.7
+        },
+        {
+          "run_date": "2026-02-28T05:35:02",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-28T11:22:51",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-28T17:23:50",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-01T05:54:14",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-01T11:23:56",
+          "score": 29.9
+        },
+        {
+          "run_date": "2026-03-01T17:25:14",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-02T05:54:58",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-02T11:34:00",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-02T17:50:29",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-03T05:52:37",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-03T11:35:42",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-03T17:46:40",
+          "score": 30
+        }
+      ],
+      "2026-03-04": [
+        {
+          "run_date": "2026-02-26T05:59:38",
+          "score": 28.6
+        },
+        {
+          "run_date": "2026-02-26T11:41:47",
+          "score": 28.7
+        },
+        {
+          "run_date": "2026-02-26T17:56:50",
+          "score": 28.6
+        },
+        {
+          "run_date": "2026-02-27T05:54:49",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-27T11:35:04",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-27T17:38:39",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-28T05:35:02",
+          "score": 29.0
+        },
+        {
+          "run_date": "2026-02-28T11:22:51",
+          "score": 29.4
+        },
+        {
+          "run_date": "2026-02-28T17:23:50",
+          "score": 29.4
+        },
+        {
+          "run_date": "2026-03-01T05:54:14",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-01T11:23:56",
+          "score": 28.7
+        },
+        {
+          "run_date": "2026-03-01T17:25:14",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-02T05:54:58",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-02T11:34:00",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-02T17:50:29",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-03T05:52:37",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-03T11:35:42",
+          "score": 29.4
+        },
+        {
+          "run_date": "2026-03-03T17:46:40",
+          "score": 28.3
+        },
+        {
+          "run_date": "2026-03-04T05:47:23",
+          "score": 26.3
+        },
+        {
+          "run_date": "2026-03-04T11:33:35",
+          "score": 27.2
+        },
+        {
+          "run_date": "2026-03-04T17:41:40",
+          "score": 23.6
+        }
+      ],
+      "2026-03-05": [
+        {
+          "run_date": "2026-02-27T05:54:49",
+          "score": 25.3
+        },
+        {
+          "run_date": "2026-02-27T11:35:04",
+          "score": 27.8
+        },
+        {
+          "run_date": "2026-02-27T17:38:39",
+          "score": 26.9
+        },
+        {
+          "run_date": "2026-02-28T05:35:02",
+          "score": 19.0
+        },
+        {
+          "run_date": "2026-02-28T11:22:51",
+          "score": 20.7
+        },
+        {
+          "run_date": "2026-02-28T17:23:50",
+          "score": 29.1
+        },
+        {
+          "run_date": "2026-03-01T05:54:14",
+          "score": 24.7
+        },
+        {
+          "run_date": "2026-03-01T11:23:56",
+          "score": 20.5
+        },
+        {
+          "run_date": "2026-03-01T17:25:14",
+          "score": 27.4
+        },
+        {
+          "run_date": "2026-03-02T05:54:58",
+          "score": 29.2
+        },
+        {
+          "run_date": "2026-03-02T11:34:00",
+          "score": 25.5
+        },
+        {
+          "run_date": "2026-03-02T17:50:29",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-03T05:52:37",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-03T11:35:42",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-03T17:46:40",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-04T05:47:23",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-04T11:33:35",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-04T17:41:40",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-05T05:51:33",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-05T11:36:35",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-05T18:48:04",
+          "score": 30
+        }
+      ],
+      "2026-03-06": [
+        {
+          "run_date": "2026-02-28T05:35:02",
+          "score": 30
+        },
+        {
+          "run_date": "2026-02-28T11:22:51",
+          "score": 25.0
+        },
+        {
+          "run_date": "2026-02-28T17:23:50",
+          "score": 28.1
+        },
+        {
+          "run_date": "2026-03-01T05:54:14",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-01T11:23:56",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-01T17:25:14",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-02T05:54:58",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-02T11:34:00",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-02T17:50:29",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-03T05:52:37",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-03T11:35:42",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-03T17:46:40",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-04T05:47:23",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-04T11:33:35",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-04T17:41:40",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-05T05:51:33",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-05T11:36:35",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-05T18:48:04",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-06T05:48:45",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-06T11:32:33",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-06T17:37:48",
+          "score": 30
+        }
+      ],
+      "2026-03-07": [
+        {
+          "run_date": "2026-03-01T05:54:14",
+          "score": 23.3
+        },
+        {
+          "run_date": "2026-03-01T11:23:56",
+          "score": 24.5
+        },
+        {
+          "run_date": "2026-03-01T17:25:14",
+          "score": 27.5
+        },
+        {
+          "run_date": "2026-03-02T05:54:58",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-02T11:34:00",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-02T17:50:29",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-03T05:52:37",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-03T11:35:42",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-03T17:46:40",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-04T05:47:23",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-04T11:33:35",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-04T17:41:40",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-05T05:51:33",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-05T11:36:35",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-05T18:48:04",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-06T05:48:45",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-06T11:32:33",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-06T17:37:48",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-07T05:39:18",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-07T11:23:06",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-07T17:24:46",
+          "score": 30
+        }
+      ],
+      "2026-03-08": [
+        {
+          "run_date": "2026-03-02T05:54:58",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-02T11:34:00",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-02T17:50:29",
+          "score": 29.9
+        },
+        {
+          "run_date": "2026-03-03T05:52:37",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-03T11:35:42",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-03T17:46:40",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-04T05:47:23",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-04T11:33:35",
+          "score": 27.1
+        },
+        {
+          "run_date": "2026-03-04T17:41:40",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-05T05:51:33",
+          "score": 30.0
+        },
+        {
+          "run_date": "2026-03-05T11:36:35",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-05T18:48:04",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-06T05:48:45",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-06T11:32:33",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-06T17:37:48",
+          "score": 27.2
+        },
+        {
+          "run_date": "2026-03-07T05:39:18",
+          "score": 25.6
+        },
+        {
+          "run_date": "2026-03-07T11:23:06",
+          "score": 26.7
+        },
+        {
+          "run_date": "2026-03-07T17:24:46",
+          "score": 28.2
+        },
+        {
+          "run_date": "2026-03-08T05:45:55",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-08T11:24:36",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-08T17:26:05",
+          "score": 30
+        }
+      ],
+      "2026-03-09": [
+        {
+          "run_date": "2026-03-03T05:52:37",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-03T11:35:42",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-03T17:46:40",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-04T05:47:23",
+          "score": 27.2
+        },
+        {
+          "run_date": "2026-03-04T11:33:35",
+          "score": 29.2
+        },
+        {
+          "run_date": "2026-03-04T17:41:40",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-05T05:51:33",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-05T11:36:35",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-05T18:48:04",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-06T05:48:45",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-06T11:32:33",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-06T17:37:48",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-07T05:39:18",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-07T11:23:06",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-07T17:24:46",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-08T05:45:55",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-08T11:24:36",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-08T17:26:05",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-09T06:00:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-09T11:36:29",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-09T17:48:38",
+          "score": 30
+        }
+      ],
+      "2026-03-10": [
+        {
+          "run_date": "2026-03-04T05:47:23",
+          "score": 21.0
+        },
+        {
+          "run_date": "2026-03-04T11:33:35",
+          "score": 20.8
+        },
+        {
+          "run_date": "2026-03-04T17:41:40",
+          "score": 28.0
+        },
+        {
+          "run_date": "2026-03-05T05:51:33",
+          "score": 29.9
+        },
+        {
+          "run_date": "2026-03-05T11:36:35",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-05T18:48:04",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-06T05:48:45",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-06T11:32:33",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-06T17:37:48",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-07T05:39:18",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-07T11:23:06",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-07T17:24:46",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-08T05:45:55",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-08T11:24:36",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-08T17:26:05",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-09T06:00:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-09T11:36:29",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-09T17:48:38",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-10T05:49:30",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-10T11:35:37",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-10T17:49:05",
+          "score": 30
+        }
+      ],
+      "2026-03-11": [
+        {
+          "run_date": "2026-03-05T05:51:33",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-05T11:36:35",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-05T18:48:04",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-06T05:48:45",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-06T11:32:33",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-06T17:37:48",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-07T05:39:18",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-07T11:23:06",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-07T17:24:46",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-08T05:45:55",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-08T11:24:36",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-08T17:26:05",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-09T06:00:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-09T11:36:29",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-09T17:48:38",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-10T05:49:30",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-10T11:35:37",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-10T17:49:05",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-11T05:51:59",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-11T11:35:44",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-11T17:51:44",
+          "score": 30
+        }
+      ],
+      "2026-03-12": [
+        {
+          "run_date": "2026-03-06T05:48:45",
+          "score": 28.5
+        },
+        {
+          "run_date": "2026-03-06T11:32:33",
+          "score": 28.8
+        },
+        {
+          "run_date": "2026-03-06T17:37:48",
+          "score": 29.9
+        },
+        {
+          "run_date": "2026-03-07T05:39:18",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-07T11:23:06",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-07T17:24:46",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-08T05:45:55",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-08T11:24:36",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-08T17:26:05",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-09T06:00:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-09T11:36:29",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-09T17:48:38",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-10T05:49:30",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-10T11:35:37",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-10T17:49:05",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-11T05:51:59",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-11T11:35:44",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-11T17:51:44",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-12T05:53:47",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-12T11:34:06",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-12T17:51:23",
+          "score": 30
+        }
+      ],
+      "2026-03-13": [
+        {
+          "run_date": "2026-03-07T05:39:18",
+          "score": 29.0
+        },
+        {
+          "run_date": "2026-03-07T11:23:06",
+          "score": 28.5
+        },
+        {
+          "run_date": "2026-03-07T17:24:46",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-08T05:45:55",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-08T11:24:36",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-08T17:26:05",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-09T06:00:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-09T11:36:29",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-09T17:48:38",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-10T05:49:30",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-10T11:35:37",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-10T17:49:05",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-11T05:51:59",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-11T11:35:44",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-11T17:51:44",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-12T05:53:47",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-12T11:34:06",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-12T17:51:23",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-13T05:52:28",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-13T11:34:16",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-13T17:37:45",
+          "score": 30
+        }
+      ],
+      "2026-03-14": [
+        {
+          "run_date": "2026-03-08T05:45:55",
+          "score": 22.6
+        },
+        {
+          "run_date": "2026-03-08T11:24:36",
+          "score": 27.4
+        },
+        {
+          "run_date": "2026-03-08T17:26:05",
+          "score": 24.7
+        },
+        {
+          "run_date": "2026-03-09T06:00:43",
+          "score": 27.9
+        },
+        {
+          "run_date": "2026-03-09T11:36:29",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-09T17:48:38",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-10T05:49:30",
+          "score": 27.6
+        },
+        {
+          "run_date": "2026-03-10T11:35:37",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-10T17:49:05",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-11T05:51:59",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-11T11:35:44",
+          "score": 28.5
+        },
+        {
+          "run_date": "2026-03-11T17:51:44",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-12T05:53:47",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-12T11:34:06",
+          "score": 28.8
+        },
+        {
+          "run_date": "2026-03-12T17:51:23",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-13T05:52:28",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-13T11:34:16",
+          "score": 26.9
+        },
+        {
+          "run_date": "2026-03-13T17:37:45",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-14T05:49:30",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-14T11:27:00",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-14T17:30:00",
+          "score": 30
+        }
+      ],
+      "2026-03-15": [
+        {
+          "run_date": "2026-03-09T06:00:43",
+          "score": 25.9
+        },
+        {
+          "run_date": "2026-03-09T11:36:29",
+          "score": 23.3
+        },
+        {
+          "run_date": "2026-03-09T17:48:38",
+          "score": 24.6
+        },
+        {
+          "run_date": "2026-03-10T05:49:30",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-10T11:35:37",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-10T17:49:05",
+          "score": 29.1
+        },
+        {
+          "run_date": "2026-03-11T05:51:59",
+          "score": 29.9
+        },
+        {
+          "run_date": "2026-03-11T11:35:44",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-11T17:51:44",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-12T05:53:47",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-12T11:34:06",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-12T17:51:23",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-13T05:52:28",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-13T11:34:16",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-13T17:37:45",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-14T05:49:30",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-14T11:27:00",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-14T17:30:00",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-15T06:05:56",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-15T11:29:42",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-15T17:31:30",
+          "score": 30
+        }
+      ],
+      "2026-03-16": [
+        {
+          "run_date": "2026-03-10T05:49:30",
+          "score": 28.6
+        },
+        {
+          "run_date": "2026-03-10T11:35:37",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-10T17:49:05",
+          "score": 26.7
+        },
+        {
+          "run_date": "2026-03-11T05:51:59",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-11T11:35:44",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-11T17:51:44",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-12T05:53:47",
+          "score": 29.0
+        },
+        {
+          "run_date": "2026-03-12T11:34:06",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-12T17:51:23",
+          "score": 28.1
+        },
+        {
+          "run_date": "2026-03-13T05:52:28",
+          "score": 29.7
+        },
+        {
+          "run_date": "2026-03-13T11:34:16",
+          "score": 27.9
+        },
+        {
+          "run_date": "2026-03-13T17:37:45",
+          "score": 26.1
+        },
+        {
+          "run_date": "2026-03-14T05:49:30",
+          "score": 27.2
+        },
+        {
+          "run_date": "2026-03-14T11:27:00",
+          "score": 27.5
+        },
+        {
+          "run_date": "2026-03-14T17:30:00",
+          "score": 27.4
+        },
+        {
+          "run_date": "2026-03-15T06:05:56",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-15T11:29:42",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-15T17:31:30",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-16T06:20:53",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-16T11:50:57",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-16T18:01:35",
+          "score": 30
+        }
+      ],
+      "2026-03-17": [
+        {
+          "run_date": "2026-03-11T05:51:59",
+          "score": 28.8
+        },
+        {
+          "run_date": "2026-03-11T11:35:44",
+          "score": 27.1
+        },
+        {
+          "run_date": "2026-03-11T17:51:44",
+          "score": 26.0
+        },
+        {
+          "run_date": "2026-03-12T05:53:47",
+          "score": 24.8
+        },
+        {
+          "run_date": "2026-03-12T11:34:06",
+          "score": 28.6
+        },
+        {
+          "run_date": "2026-03-12T17:51:23",
+          "score": 24.1
+        },
+        {
+          "run_date": "2026-03-13T05:52:28",
+          "score": 19.9
+        },
+        {
+          "run_date": "2026-03-13T11:34:16",
+          "score": 28.8
+        },
+        {
+          "run_date": "2026-03-13T17:37:45",
+          "score": 16.5
+        },
+        {
+          "run_date": "2026-03-14T05:49:30",
+          "score": 27.0
+        },
+        {
+          "run_date": "2026-03-14T11:27:00",
+          "score": 30.3
+        },
+        {
+          "run_date": "2026-03-14T17:30:00",
+          "score": 31.5
+        },
+        {
+          "run_date": "2026-03-15T06:05:56",
+          "score": 33.0
+        },
+        {
+          "run_date": "2026-03-15T11:29:42",
+          "score": 44.6
+        },
+        {
+          "run_date": "2026-03-15T17:31:30",
+          "score": 44.7
+        },
+        {
+          "run_date": "2026-03-16T06:20:53",
+          "score": 31.1
+        },
+        {
+          "run_date": "2026-03-16T11:50:57",
+          "score": 32.0
+        },
+        {
+          "run_date": "2026-03-16T18:01:35",
+          "score": 31.1
+        },
+        {
+          "run_date": "2026-03-17T06:01:13",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-17T11:44:34",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-17T18:03:26",
+          "score": 30
+        }
+      ],
+      "2026-03-18": [
+        {
+          "run_date": "2026-03-12T05:53:47",
+          "score": 20.5
+        },
+        {
+          "run_date": "2026-03-12T11:34:06",
+          "score": 24.6
+        },
+        {
+          "run_date": "2026-03-12T17:51:23",
+          "score": 21.1
+        },
+        {
+          "run_date": "2026-03-13T05:52:28",
+          "score": 18.3
+        },
+        {
+          "run_date": "2026-03-13T11:34:16",
+          "score": 40.6
+        },
+        {
+          "run_date": "2026-03-13T17:37:45",
+          "score": 26.4
+        },
+        {
+          "run_date": "2026-03-14T05:49:30",
+          "score": 30.1
+        },
+        {
+          "run_date": "2026-03-14T11:27:00",
+          "score": 30.4
+        },
+        {
+          "run_date": "2026-03-14T17:30:00",
+          "score": 31.2
+        },
+        {
+          "run_date": "2026-03-15T06:05:56",
+          "score": 49.7
+        },
+        {
+          "run_date": "2026-03-15T11:29:42",
+          "score": 52.3
+        },
+        {
+          "run_date": "2026-03-15T17:31:30",
+          "score": 51.4
+        },
+        {
+          "run_date": "2026-03-16T06:20:53",
+          "score": 33.9
+        },
+        {
+          "run_date": "2026-03-16T11:50:57",
+          "score": 33.4
+        },
+        {
+          "run_date": "2026-03-16T18:01:35",
+          "score": 33.2
+        },
+        {
+          "run_date": "2026-03-17T06:01:13",
+          "score": 38.9
+        },
+        {
+          "run_date": "2026-03-17T11:44:34",
+          "score": 33.9
+        },
+        {
+          "run_date": "2026-03-17T18:03:26",
+          "score": 35.7
+        },
+        {
+          "run_date": "2026-03-18T06:04:43",
+          "score": 32.9
+        },
+        {
+          "run_date": "2026-03-18T11:48:22",
+          "score": 31.9
+        },
+        {
+          "run_date": "2026-03-18T18:01:34",
+          "score": 31.6
+        }
+      ],
+      "2026-03-19": [
+        {
+          "run_date": "2026-03-13T05:52:28",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-13T11:34:16",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-13T17:37:45",
+          "score": 23.5
+        },
+        {
+          "run_date": "2026-03-14T05:49:30",
+          "score": 45.8
+        },
+        {
+          "run_date": "2026-03-14T11:27:00",
+          "score": 35.2
+        },
+        {
+          "run_date": "2026-03-14T17:30:00",
+          "score": 40.0
+        },
+        {
+          "run_date": "2026-03-15T06:05:56",
+          "score": 36.2
+        },
+        {
+          "run_date": "2026-03-15T11:29:42",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-15T17:31:30",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-16T06:20:53",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-16T11:50:57",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-16T18:01:35",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-17T06:01:13",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-17T11:44:34",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-17T18:03:26",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-18T06:04:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-18T11:48:22",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-18T18:01:34",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-19T05:59:57",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-19T11:38:17",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-19T17:54:09",
+          "score": 30
+        }
+      ],
+      "2026-03-20": [
+        {
+          "run_date": "2026-03-14T05:49:30",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-14T11:27:00",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-14T17:30:00",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-15T06:05:56",
+          "score": 35.6
+        },
+        {
+          "run_date": "2026-03-15T11:29:42",
+          "score": 36.6
+        },
+        {
+          "run_date": "2026-03-15T17:31:30",
+          "score": 36.7
+        },
+        {
+          "run_date": "2026-03-16T06:20:53",
+          "score": 44.8
+        },
+        {
+          "run_date": "2026-03-16T11:50:57",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-16T18:01:35",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-17T06:01:13",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-17T11:44:34",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-17T18:03:26",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-18T06:04:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-18T11:48:22",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-18T18:01:34",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-19T05:59:57",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-19T11:38:17",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-19T17:54:09",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-20T05:54:38",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-20T11:34:49",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-20T17:37:40",
+          "score": 30
+        }
+      ],
+      "2026-03-21": [
+        {
+          "run_date": "2026-03-15T06:05:56",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-15T11:29:42",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-15T17:31:30",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-16T06:20:53",
+          "score": 39.0
+        },
+        {
+          "run_date": "2026-03-16T11:50:57",
+          "score": 41.2
+        },
+        {
+          "run_date": "2026-03-16T18:01:35",
+          "score": 46.0
+        },
+        {
+          "run_date": "2026-03-17T06:01:13",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-17T11:44:34",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-17T18:03:26",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-18T06:04:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-18T11:48:22",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-18T18:01:34",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-19T05:59:57",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-19T11:38:17",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-19T17:54:09",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-20T05:54:38",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-20T11:34:49",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-20T17:37:40",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-21T05:43:02",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-21T11:26:25",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-21T17:28:25",
+          "score": 30
+        }
+      ],
+      "2026-03-22": [
+        {
+          "run_date": "2026-03-16T06:20:53",
+          "score": 28.5
+        },
+        {
+          "run_date": "2026-03-16T11:50:57",
+          "score": 28.6
+        },
+        {
+          "run_date": "2026-03-16T18:01:35",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-17T06:01:13",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-17T11:44:34",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-17T18:03:26",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-18T06:04:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-18T11:48:22",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-18T18:01:34",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-19T05:59:57",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-19T11:38:17",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-19T17:54:09",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-20T05:54:38",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-20T11:34:49",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-20T17:37:40",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-21T05:43:02",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-21T11:26:25",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-21T17:28:25",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-22T05:56:06",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-22T11:27:04",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-22T17:28:19",
+          "score": 30
+        }
+      ],
+      "2026-03-23": [
+        {
+          "run_date": "2026-03-17T06:01:13",
+          "score": 28.4
+        },
+        {
+          "run_date": "2026-03-17T11:44:34",
+          "score": 27.0
+        },
+        {
+          "run_date": "2026-03-17T18:03:26",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-18T06:04:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-18T11:48:22",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-18T18:01:34",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-19T05:59:57",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-19T11:38:17",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-19T17:54:09",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-20T05:54:38",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-20T11:34:49",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-20T17:37:40",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-21T05:43:02",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-21T11:26:25",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-21T17:28:25",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-22T05:56:06",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-22T11:27:04",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-22T17:28:19",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-23T06:11:36",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-23T11:47:02",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-23T17:53:18",
+          "score": 30
+        }
+      ],
+      "2026-03-24": [
+        {
+          "run_date": "2026-03-18T06:04:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-18T11:48:22",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-18T18:01:34",
+          "score": 26.9
+        },
+        {
+          "run_date": "2026-03-19T05:59:57",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-19T11:38:17",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-19T17:54:09",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-20T05:54:38",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-20T11:34:49",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-20T17:37:40",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-21T05:43:02",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-21T11:26:25",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-21T17:28:25",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-22T05:56:06",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-22T11:27:04",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-22T17:28:19",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-23T06:11:36",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-23T11:47:02",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-23T17:53:18",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-24T06:02:13",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-24T11:47:28",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-24T17:58:17",
+          "score": 30
+        }
+      ],
+      "2026-03-25": [
+        {
+          "run_date": "2026-03-19T05:59:57",
+          "score": 20.1
+        },
+        {
+          "run_date": "2026-03-19T11:38:17",
+          "score": 21.3
+        },
+        {
+          "run_date": "2026-03-19T17:54:09",
+          "score": 21.2
+        },
+        {
+          "run_date": "2026-03-20T05:54:38",
+          "score": 19.1
+        },
+        {
+          "run_date": "2026-03-20T11:34:49",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-20T17:37:40",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-21T05:43:02",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-21T11:26:25",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-21T17:28:25",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-22T05:56:06",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-22T11:27:04",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-22T17:28:19",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-23T06:11:36",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-23T11:47:02",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-23T17:53:18",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-24T06:02:13",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-24T11:47:28",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-24T17:58:17",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-25T06:03:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-25T11:43:58",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-25T18:00:51",
+          "score": 30
+        }
+      ],
+      "2026-03-26": [
+        {
+          "run_date": "2026-03-20T05:54:38",
+          "score": 27.2
+        },
+        {
+          "run_date": "2026-03-20T11:34:49",
+          "score": 26.6
+        },
+        {
+          "run_date": "2026-03-20T17:37:40",
+          "score": 21.2
+        },
+        {
+          "run_date": "2026-03-21T05:43:02",
+          "score": 24.1
+        },
+        {
+          "run_date": "2026-03-21T11:26:25",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-21T17:28:25",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-22T05:56:06",
+          "score": 14.3
+        },
+        {
+          "run_date": "2026-03-22T11:27:04",
+          "score": 20.9
+        },
+        {
+          "run_date": "2026-03-22T17:28:19",
+          "score": 24.1
+        },
+        {
+          "run_date": "2026-03-23T06:11:36",
+          "score": 24.6
+        },
+        {
+          "run_date": "2026-03-23T11:47:02",
+          "score": 23.3
+        },
+        {
+          "run_date": "2026-03-23T17:53:18",
+          "score": 26.4
+        },
+        {
+          "run_date": "2026-03-24T06:02:13",
+          "score": 18.9
+        },
+        {
+          "run_date": "2026-03-24T11:47:28",
+          "score": 21.0
+        },
+        {
+          "run_date": "2026-03-24T17:58:17",
+          "score": 22.2
+        },
+        {
+          "run_date": "2026-03-25T06:03:43",
+          "score": 16.3
+        },
+        {
+          "run_date": "2026-03-25T11:43:58",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-25T18:00:51",
+          "score": 22.8
+        },
+        {
+          "run_date": "2026-03-26T06:13:39",
+          "score": 34.3
+        }
+      ],
+      "2026-03-27": [
+        {
+          "run_date": "2026-03-21T05:43:02",
+          "score": 25.5
+        },
+        {
+          "run_date": "2026-03-21T11:26:25",
+          "score": 26.6
+        },
+        {
+          "run_date": "2026-03-21T17:28:25",
+          "score": 39.0
+        },
+        {
+          "run_date": "2026-03-22T05:56:06",
+          "score": 46.3
+        },
+        {
+          "run_date": "2026-03-22T11:27:04",
+          "score": 46.0
+        },
+        {
+          "run_date": "2026-03-22T17:28:19",
+          "score": 50.8
+        },
+        {
+          "run_date": "2026-03-23T06:11:36",
+          "score": 53.9
+        },
+        {
+          "run_date": "2026-03-23T11:47:02",
+          "score": 38.5
+        },
+        {
+          "run_date": "2026-03-23T17:53:18",
+          "score": 41.8
+        },
+        {
+          "run_date": "2026-03-24T06:02:13",
+          "score": 51.4
+        },
+        {
+          "run_date": "2026-03-24T11:47:28",
+          "score": 44.9
+        },
+        {
+          "run_date": "2026-03-24T17:58:17",
+          "score": 49.3
+        },
+        {
+          "run_date": "2026-03-25T06:03:43",
+          "score": 41.4
+        },
+        {
+          "run_date": "2026-03-25T11:43:58",
+          "score": 48.6
+        },
+        {
+          "run_date": "2026-03-25T18:00:51",
+          "score": 45.3
+        },
+        {
+          "run_date": "2026-03-26T06:13:39",
+          "score": 48.7
+        }
+      ],
+      "2026-03-28": [
+        {
+          "run_date": "2026-03-22T05:56:06",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-22T11:27:04",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-22T17:28:19",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-23T06:11:36",
+          "score": 55.4
+        },
+        {
+          "run_date": "2026-03-23T11:47:02",
+          "score": 44.0
+        },
+        {
+          "run_date": "2026-03-23T17:53:18",
+          "score": 50.1
+        },
+        {
+          "run_date": "2026-03-24T06:02:13",
+          "score": 34.6
+        },
+        {
+          "run_date": "2026-03-24T11:47:28",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-24T17:58:17",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-25T06:03:43",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-25T11:43:58",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-25T18:00:51",
+          "score": 30
+        },
+        {
+          "run_date": "2026-03-26T06:13:39",
+          "score": 30
+        }
+      ],
+      "2026-03-29": [
+        {
+          "run_date": "2026-03-23T06:11:36",
+          "score": 26.5
+        },
+        {
+          "run_date": "2026-03-23T11:47:02",
+          "score": 28.6
+        },
+        {
+          "run_date": "2026-03-23T17:53:18",
+          "score": 30.7
+        },
+        {
+          "run_date": "2026-03-24T06:02:13",
+          "score": 40.8
+        },
+        {
+          "run_date": "2026-03-24T11:47:28",
+          "score": 46.4
+        },
+        {
+          "run_date": "2026-03-24T17:58:17",
+          "score": 48.6
+        },
+        {
+          "run_date": "2026-03-25T06:03:43",
+          "score": 52.4
+        },
+        {
+          "run_date": "2026-03-25T11:43:58",
+          "score": 34.5
+        },
+        {
+          "run_date": "2026-03-25T18:00:51",
+          "score": 37.6
+        },
+        {
+          "run_date": "2026-03-26T06:13:39",
+          "score": 45.6
+        }
+      ],
+      "2026-03-30": [
+        {
+          "run_date": "2026-03-24T06:02:13",
+          "score": 23.7
+        },
+        {
+          "run_date": "2026-03-24T11:47:28",
+          "score": 18.3
+        },
+        {
+          "run_date": "2026-03-24T17:58:17",
+          "score": 18.2
+        },
+        {
+          "run_date": "2026-03-25T06:03:43",
+          "score": 31.8
+        },
+        {
+          "run_date": "2026-03-25T11:43:58",
+          "score": 25.1
+        },
+        {
+          "run_date": "2026-03-25T18:00:51",
+          "score": 35.5
+        },
+        {
+          "run_date": "2026-03-26T06:13:39",
+          "score": 32.5
+        }
+      ],
+      "2026-03-31": [
+        {
+          "run_date": "2026-03-25T06:03:43",
+          "score": 27.9
+        },
+        {
+          "run_date": "2026-03-25T11:43:58",
+          "score": 27.6
+        },
+        {
+          "run_date": "2026-03-25T18:00:51",
+          "score": 32.1
+        },
+        {
+          "run_date": "2026-03-26T06:13:39",
+          "score": 47.6
+        }
+      ],
+      "2026-04-01": [
+        {
+          "run_date": "2026-03-26T06:13:39",
+          "score": 37.9
+        }
+      ]
+    }
+  },
+  "forecast_diff": {
+    "changes": [
+      {
+        "date": "2026-03-28",
+        "field": "score",
+        "old": 30,
+        "new": 47.7,
+        "detail": "MARGINAL -> FAIR"
+      },
+      {
+        "date": "2026-03-29",
+        "field": "score",
+        "old": 45.6,
+        "new": 30.5,
+        "detail": "FAIR -> MARGINAL"
+      }
+    ],
+    "summary": "Sat 28/03 upgraded: 30 -> 48 (MARGINAL -> FAIR); Sun 29/03 downgraded: 46 -> 30 (FAIR -> MARGINAL)",
+    "should_alert": true,
+    "alert_type": "upgrade"
+  },
+  "score_weights": {
+    "snow": 35,
+    "quality": 10,
+    "temperature": 15,
+    "wind": 10,
+    "freezing_level": 5,
+    "timing": 5,
+    "depth": 5,
+    "models": 15,
+    "loading": 5,
+    "ensemble": 5
+  },
+  "verification_stats": {
+    "updated_at": "2026-03-26T11:52:37.167256Z",
+    "n_verifications": 83,
+    "per_model": {
+      "icon_seamless": {
+        "snowfall": {
+          "bias": 1.2065,
+          "mae": 1.2347,
+          "rmse": 1.8505,
+          "n_samples": 240
+        }
+      },
+      "ecmwf_ifs025": {
+        "snowfall": {
+          "bias": 0.4202,
+          "mae": 0.7524,
+          "rmse": 0.9929,
+          "n_samples": 240
+        }
+      },
+      "gfs_seamless": {
+        "snowfall": {
+          "bias": 0.1764,
+          "mae": 0.8089,
+          "rmse": 1.0794,
+          "n_samples": 240
+        }
+      },
+      "arpege_seamless": {
+        "snowfall": {
+          "bias": 2.5439,
+          "mae": 2.5439,
+          "rmse": 3.1358,
+          "n_samples": 240
+        }
+      },
+      "ukmo_seamless": {
+        "snowfall": {
+          "bias": 0.5332,
+          "mae": 0.8754,
+          "rmse": 1.2018,
+          "n_samples": 240
+        }
+      }
+    },
+    "overall": {
+      "snowfall": {
+        "bias": 1.186,
+        "mae": 1.2282,
+        "rmse": 1.4957,
+        "n_samples": 240
+      },
+      "temperature": {
+        "bias": 1.2143,
+        "mae": 1.227,
+        "rmse": 1.3766,
+        "n_samples": 240
+      },
+      "wind": {
+        "bias": 4.6469,
+        "mae": 4.6742,
+        "rmse": 5.1431,
+        "n_samples": 240
+      }
+    },
+    "powder_accuracy": {
+      "hit_rate": 0.0,
+      "false_alarm_rate": 0.0,
+      "miss_rate": 0.0,
+      "correct_negative_rate": 1.0,
+      "n_days": 240
+    },
+    "last_verified_dates": [
+      "2026-02-24",
+      "2026-02-25",
+      "2026-02-26",
+      "2026-02-27",
+      "2026-02-28",
+      "2026-03-01",
+      "2026-03-02",
+      "2026-03-03",
+      "2026-03-04",
+      "2026-03-05",
+      "2026-03-06",
+      "2026-03-07",
+      "2026-03-08",
+      "2026-03-09",
+      "2026-03-10",
+      "2026-03-11",
+      "2026-03-12",
+      "2026-03-13",
+      "2026-03-14",
+      "2026-03-15",
+      "2026-03-16",
+      "2026-03-17",
+      "2026-03-18",
+      "2026-03-19",
+      "2026-03-20",
+      "2026-03-21",
+      "2026-03-22",
+      "2026-03-23"
+    ]
+  },
+  "model_weights": {
+    "updated_at": "2026-03-26T11:52:37.167862Z",
+    "weights": {
+      "icon_seamless": 0.1869,
+      "ecmwf_ifs025": 0.2657,
+      "gfs_seamless": 0.2406,
+      "arpege_seamless": 0.0994,
+      "ukmo_seamless": 0.2074
+    },
+    "bias_corrections": {
+      "icon_seamless": {
+        "snowfall": 1.2065
+      },
+      "ecmwf_ifs025": {
+        "snowfall": 0.4202
+      },
+      "gfs_seamless": {
+        "snowfall": 0.1764
+      },
+      "arpege_seamless": {
+        "snowfall": 2.5439
+      },
+      "ukmo_seamless": {
+        "snowfall": 0.5332
+      }
+    },
+    "ewma_mae": {
+      "icon_seamless": {
+        "snowfall": 1.2351142773697787,
+        "temperature": null
+      },
+      "ecmwf_ifs025": {
+        "snowfall": 0.8688914181570979,
+        "temperature": null
+      },
+      "gfs_seamless": {
+        "snowfall": 0.9596385023329725,
+        "temperature": null
+      },
+      "arpege_seamless": {
+        "snowfall": 2.4749957762583974,
+        "temperature": null
+      },
+      "ukmo_seamless": {
+        "snowfall": 1.1132435003521015,
+        "temperature": null
+      }
+    }
+  }
+}
