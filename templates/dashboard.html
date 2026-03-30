@@ -16,29 +16,32 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:smooth}
         :root{
             --bg:#0b1016;--bg2:#111922;--card:#151e2b;--border:#1e2d42;
             --text:#e4eaf0;--dim:#7b8fa6;--muted:#4e6074;--accent:#3b9cf5;
             --epic:#4d8df7;--good:#3cc068;--fair:#f0c230;--marginal:#7a8a9a;--skip:#e5453a;
             --yes:#3cc068;--maybe:#f0c230;--wait:#7a8a9a;
+            --radius:12px;--shadow:0 1px 3px rgba(0,0,0,.3);
         }
-        body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+        body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
         .c{max-width:900px;margin:0 auto;padding:0 16px}
-        a{color:var(--accent);text-decoration:none}
+        a{color:var(--accent);text-decoration:none;transition:opacity .15s}
+        a:hover{opacity:.8}
 
         /* === HEADER === */
-        .hdr{padding:12px 0;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--dim);display:flex;justify-content:space-between;align-items:center}
-        .hdr b{color:var(--text);font-size:.95rem}
+        .hdr{padding:14px 0;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--dim);display:flex;justify-content:space-between;align-items:center}
+        .hdr b{color:var(--text);font-size:1rem;letter-spacing:-.3px}
 
         /* === VERDICT === */
-        .verdict{text-align:center;padding:28px 0 20px}
-        .v-badge{display:inline-block;font-size:2.8rem;font-weight:900;letter-spacing:-2px;line-height:1}
+        .verdict{text-align:center;padding:24px 0 16px}
+        .v-badge{display:inline-block;font-size:3.2rem;font-weight:900;letter-spacing:-2px;line-height:1;text-shadow:0 2px 12px rgba(0,0,0,.3)}
         .v-YES{color:var(--yes)}.v-MAYBE{color:var(--maybe)}.v-WAIT{color:var(--wait)}
-        .v-reason{font-size:1rem;color:var(--dim);margin-top:6px}
-        .v-detail{font-size:.8rem;color:var(--muted);margin-top:2px}
+        .v-reason{font-size:1.05rem;color:var(--dim);margin-top:8px;line-height:1.4}
+        .v-detail{font-size:.8rem;color:var(--muted);margin-top:4px}
 
         /* === SECTION TITLES === */
-        .stitle{font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:28px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+        .stitle{font-size:.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
 
         /* === 7-DAY TABLE (main view) === */
         .forecast-table{width:100%;border-collapse:collapse}
@@ -71,35 +74,38 @@
         .conf-dot{display:inline-block;width:5px;height:5px;border-radius:50%;vertical-align:middle;margin-right:2px}
 
         /* === CURRENT CONDITIONS === */
-        .now-strip{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:14px 0 6px}
-        .now-metric{display:flex;flex-direction:column;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 14px;min-width:80px}
-        .now-val{font-size:1.15rem;font-weight:800;line-height:1.2}
-        .now-lbl{font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+        .now-strip{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:16px 0 8px}
+        .now-metric{display:flex;flex-direction:column;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 16px;min-width:80px;box-shadow:var(--shadow);transition:border-color .15s}
+        .now-metric:hover{border-color:var(--dim)}
+        .now-val{font-size:1.2rem;font-weight:800;line-height:1.2;font-variant-numeric:tabular-nums}
+        .now-lbl{font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
 
         /* === SAFETY ALERTS === */
         .safety-alert{background:rgba(229,69,58,.1);border:1px solid rgba(229,69,58,.3);border-radius:8px;padding:8px 14px;margin:6px 0;font-size:.78rem;color:var(--skip);display:flex;align-items:center;gap:8px}
         .safety-alert .alert-icon{font-size:1rem;flex-shrink:0}
 
         /* === INSIGHTS === */
-        .insights{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin:16px 0}
-        .insights h3{font-size:1rem;margin-bottom:6px}
-        .ins-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--dim)}
-        .ins-actions{margin-top:8px;padding:0;list-style:none}
-        .ins-actions li{font-size:.78rem;color:var(--dim);padding:2px 0}
+        .insights{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:16px 0;box-shadow:var(--shadow)}
+        .insights h3{font-size:1.05rem;margin-bottom:8px;letter-spacing:-.2px}
+        .ins-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem;color:var(--dim)}
+        .ins-actions{margin-top:10px;padding:0;list-style:none}
+        .ins-actions li{font-size:.78rem;color:var(--dim);padding:3px 0}
         .ins-actions li::before{content:'→ ';color:var(--accent)}
 
         /* === PATTERNS === */
-        .pattern{background:var(--card);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:8px 12px;margin:4px 0;font-size:.78rem}
-        .pattern.storm_then_clear{border-color:var(--epic)}.pattern.multi_day_storm{border-color:var(--fair)}
+        .pattern{background:var(--card);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin:4px 0;font-size:.78rem;transition:background .15s}
+        .pattern:hover{background:var(--bg2)}
+        .pattern.storm_then_clear,.pattern.legendary_setup{border-color:var(--epic)}.pattern.multi_day_storm{border-color:var(--fair)}
         .pattern.bluebird_day{border-color:var(--good)}.pattern.surface_hoar_risk,.pattern.wind_slab_risk{border-color:var(--skip)}
         .pattern b{color:var(--text)}
 
         /* === CHARTS === */
-        .tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
-        .tab{padding:6px 14px;border-radius:8px;font-size:.75rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg2);color:var(--dim)}
+        .tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
+        .tab{padding:7px 16px;border-radius:8px;font-size:.75rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg2);color:var(--dim);transition:all .15s}
+        .tab:hover{border-color:var(--dim)}
         .tab.active{background:rgba(59,156,245,.12);border-color:var(--accent);color:var(--accent)}
-        .chart-box{background:var(--card);border-radius:10px;padding:14px;position:relative;height:260px}
-        @media(max-width:600px){.chart-box{height:200px}}
+        .chart-box{background:var(--card);border-radius:var(--radius);padding:16px;position:relative;height:280px;box-shadow:var(--shadow)}
+        @media(max-width:600px){.chart-box{height:220px}}
 
         /* === MAP === */
         #map{height:300px;border-radius:10px;border:1px solid var(--border)}
@@ -110,26 +116,28 @@
         .avy-cell{padding:5px 10px;border-radius:6px;font-size:.7rem;font-weight:600;text-align:center;min-width:70px}
 
         /* === COLLAPSIBLE === */
-        .coll-hdr{cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--card);border-radius:8px;font-size:.8rem;font-weight:600;color:var(--dim);border:1px solid var(--border);margin-top:6px}
+        .coll-hdr{cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--card);border-radius:var(--radius);font-size:.8rem;font-weight:600;color:var(--dim);border:1px solid var(--border);margin-top:8px;transition:background .15s}
+        .coll-hdr:hover{background:var(--bg2)}
         .coll-hdr::after{content:'▸';transition:transform .2s}
         .coll-hdr.open::after{transform:rotate(90deg)}
-        .coll-body{padding:12px 14px;font-size:.78rem}
+        .coll-body{padding:14px 16px;font-size:.78rem}
         .coll-body table{width:100%;border-collapse:collapse;font-size:.75rem}
         .coll-body th{text-align:left;padding:5px 4px;color:var(--muted);border-bottom:1px solid var(--border);font-size:.65rem;text-transform:uppercase}
         .coll-body td{padding:5px 4px;border-bottom:1px solid rgba(30,45,66,.3)}
 
         /* === FOOTER === */
-        .footer{text-align:center;padding:20px 0;border-top:1px solid var(--border);margin-top:24px;font-size:.72rem;color:var(--muted)}
+        .footer{text-align:center;padding:24px 0;border-top:1px solid var(--border);margin-top:32px;font-size:.72rem;color:var(--muted)}
         .src-dots{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:6px 0}
         .src-dot{display:flex;align-items:center;gap:3px}
         .dot{width:7px;height:7px;border-radius:50%}
         .dot-ok{background:var(--good)}.dot-err{background:var(--skip)}
 
         /* === MOBILE NAV === */
-        .mnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:1000;background:var(--bg2);border-top:1px solid var(--border);padding:6px 0;padding-bottom:max(6px,env(safe-area-inset-bottom))}
+        .mnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:1000;background:rgba(17,25,34,.95);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--border);padding:6px 0;padding-bottom:max(6px,env(safe-area-inset-bottom))}
         .mnav-inner{display:flex;justify-content:space-around;max-width:500px;margin:0 auto}
-        .mnav a{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--dim);font-size:.55rem;font-weight:600;text-transform:uppercase;padding:4px 8px;min-height:44px;justify-content:center;text-decoration:none}
-        .mnav .ni{font-size:1.1rem}
+        .mnav a{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--dim);font-size:.55rem;font-weight:600;text-transform:uppercase;padding:4px 12px;min-height:48px;justify-content:center;text-decoration:none;transition:color .15s}
+        .mnav a:hover,.mnav a:active{color:var(--accent)}
+        .mnav .ni{font-size:1.2rem}
         @media(max-width:600px){
             .mnav{display:block}
             body{padding-bottom:56px}
