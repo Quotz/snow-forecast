@@ -305,45 +305,55 @@
     {% endfor %}
     </div>
 
-    <!-- EXTENDED OUTLOOK -->
-    {% if data.scores|length > 7 %}
-    <div class="stitle" style="margin-top:16px">Extended Outlook (8-16 days, low confidence)</div>
-    <div style="display:flex;gap:4px;flex-wrap:wrap">
-        {% for s in data.scores[7:16] %}
-        <div style="background:var(--card);border:1px dashed var(--border);border-radius:8px;padding:6px 8px;text-align:center;flex:1;min-width:65px">
-            <div style="font-size:.6rem;color:var(--muted)">{{ s.date|dateshort }}</div>
-            <div style="font-size:1.1rem;font-weight:800;color:var(--{{ s.label|lower }})">{{ s.total|round|int }}</div>
-            <div style="font-size:.6rem;color:var(--dim)">{{ s.conditions.snowfall_24h_cm|round|int }}cm</div>
+    <!-- PATTERNS + AVALANCHE (compact) -->
+    {% if data.patterns or data.avalanche_danger %}
+    <div id="sec-patterns" style="display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 8px">
+        {% if data.avalanche_danger %}
+        {% for a in data.avalanche_danger[:7] %}
+        {% set colors = {1:'#4CAF50',2:'#FFEB3B',3:'#FF9800',4:'#F44336',5:'#212121'} %}
+        <div style="display:inline-flex;align-items:center;gap:4px;font-size:.65rem;color:var(--dim)">
+            <span style="width:8px;height:8px;border-radius:50%;background:{{ colors.get(a.level,'#666') }};flex-shrink:0"></span>
+            {{ a.date|dateshort }} L{{ a.level }}
         </div>
         {% endfor %}
+        <span style="font-size:.55rem;color:var(--muted);align-self:center">Avy est.</span>
+        {% endif %}
     </div>
-    {% endif %}
-
-    <!-- PATTERNS -->
     {% if data.patterns %}
-    <div id="sec-patterns" class="stitle">Patterns</div>
-    {% for p in data.patterns[:6] %}
+    {% for p in data.patterns[:4] %}
     <div class="pattern {{ p.type }}">
         <b>{{ p.type|replace('_',' ')|title }}</b>
         {% if p.quality is defined and p.quality == 'NEAR_MISS' %}<span style="font-size:.6rem;color:var(--fair)">(near miss)</span>{% endif %}
-        <div style="color:var(--dim);margin-top:2px">{{ p.message }}</div>
+        <span style="color:var(--dim)">&mdash; {{ p.message }}</span>
     </div>
     {% endfor %}
     {% endif %}
+    {% endif %}
 
-    <!-- AVALANCHE -->
-    {% if data.avalanche_danger %}
-    <div class="stitle">Avalanche Danger (estimated)</div>
-    <div class="avy-row">
-        {% for a in data.avalanche_danger[:7] %}
-        {% set colors = {1:'#4CAF50',2:'#FFEB3B',3:'#FF9800',4:'#F44336',5:'#212121'} %}
-        {% set names = {1:'LOW',2:'MOD',3:'CONS',4:'HIGH',5:'EXTR'} %}
-        <div class="avy-cell" style="background:{{ colors.get(a.level,'#666') }};color:{% if a.level == 2 %}#333{% else %}#fff{% endif %}">
-            {{ a.date|dateshort }}<br>L{{ a.level }}
+    <!-- EXTENDED OUTLOOK (collapsible) -->
+    {% if data.scores|length > 7 %}
+    <div x-data="{open:false}">
+        <div class="coll-hdr" :class="open&&'open'" @click="open=!open">
+            Extended Outlook (8-16 days)
+            <span style="display:flex;gap:3px;margin-left:auto;margin-right:12px">
+                {% for s in data.scores[7:16] %}
+                <span style="width:6px;height:18px;border-radius:2px;background:var(--{{ s.label|lower }});opacity:.7" title="{{ s.date|dateshort }}: {{ s.total|round|int }}"></span>
+                {% endfor %}
+            </span>
         </div>
-        {% endfor %}
+        <div class="coll-body" x-show="open" x-cloak>
+            <div style="font-size:.65rem;color:var(--muted);margin-bottom:8px">Low confidence &mdash; use for general trend only</div>
+            <div style="display:flex;gap:4px;flex-wrap:wrap">
+                {% for s in data.scores[7:16] %}
+                <div style="background:var(--bg2);border:1px dashed var(--border);border-radius:8px;padding:6px 8px;text-align:center;flex:1;min-width:65px">
+                    <div style="font-size:.6rem;color:var(--muted)">{{ s.date|dateshort }}</div>
+                    <div style="font-size:1rem;font-weight:800;color:var(--{{ s.label|lower }})">{{ s.total|round|int }}</div>
+                    <div style="font-size:.6rem;color:var(--dim)">{{ s.conditions.snowfall_24h_cm|round|int }}cm</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-    <div style="font-size:.6rem;color:var(--muted);margin-top:4px">Automated estimate. Consult local avalanche bulletins.</div>
     {% endif %}
 
     <!-- CHARTS -->
@@ -418,12 +428,19 @@
     <!-- FOOTER -->
     <div class="footer">
         <div><b>{{ data.location }}</b> &mdash; Updated {{ generated_at }}</div>
+        {% if data.season_stats %}
+        <div style="margin:6px 0;font-size:.7rem;color:var(--dim)">
+            Season: {{ data.season_stats.total_snowfall_cm|round|int }}cm total
+            {% if data.season_stats.biggest_day_cm %}&middot; Biggest: {{ data.season_stats.biggest_day_cm|round|int }}cm ({{ data.season_stats.biggest_day_date|dateshort }}){% endif %}
+            {% if data.season_stats.total_powder_days %}&middot; {{ data.season_stats.total_powder_days }} powder days{% endif %}
+        </div>
+        {% endif %}
         <div class="src-dots">
             {% for src in data.source_health %}
             <div class="src-dot"><span class="dot {{ 'dot-ok' if src.status == 'ok' else 'dot-err' }}"></span>{{ src.name }}</div>
             {% endfor %}
         </div>
-        <div>{{ data.models|length }} models {% if data.go_verdict and data.go_verdict.score %}| ML-enhanced{% endif %} | {{ data.sources|length }} sources</div>
+        <div>{{ data.models|length }} models | {{ data.sources|length }} sources | Updated 3x daily</div>
     </div>
 
 </div>
