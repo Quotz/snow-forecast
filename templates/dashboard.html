@@ -51,15 +51,23 @@
         .day-date{font-size:.65rem;color:var(--muted)}
         .score-pill{display:inline-block;padding:2px 10px;border-radius:10px;font-size:.7rem;font-weight:700;color:#fff}
         .pill-EPIC{background:var(--epic)}.pill-GOOD{background:var(--good)}.pill-FAIR{background:var(--fair);color:#1a1a1a}.pill-MARGINAL{background:var(--marginal)}.pill-SKIP{background:var(--skip)}
-        .period-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:4px}
-        .period-cell{text-align:center;background:rgba(0,0,0,.15);border-radius:4px;padding:3px 2px;font-size:.65rem;line-height:1.3}
-        .period-label{font-weight:700;color:var(--muted);font-size:.55rem;letter-spacing:.5px}
-        .period-snow{font-weight:700;color:var(--dim)}
+        .period-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:0}
+        .period-cell{text-align:center;background:rgba(0,0,0,.15);border-radius:6px;padding:8px 4px;font-size:.72rem;line-height:1.3}
+        .period-label{font-weight:700;color:var(--muted);font-size:.6rem;letter-spacing:.5px}
+        .period-snow{font-weight:700;color:var(--dim);font-size:.85rem}
         .has-snow{color:var(--accent)}
-        .period-meta{color:var(--muted);font-size:.6rem}
-        .sky-icon{font-size:.75rem}
+        .period-meta{color:var(--muted);font-size:.65rem;margin-top:2px}
+        .sky-icon{font-size:.85rem}
         .crystal-badge{font-size:.6rem;padding:1px 5px;border-radius:4px;background:rgba(59,156,245,.1);color:var(--accent)}
+        .crystal-powder{color:#6cb4f7}.crystal-light{color:#89c4f4}.crystal-mixed{color:var(--dim)}.crystal-wet{color:var(--fair)}.crystal-ice{color:var(--skip)}
         .dgz-badge{font-size:.55rem;padding:1px 4px;border-radius:3px;background:rgba(77,141,247,.15);color:var(--epic)}
+        .snow-range{font-size:.6rem;color:var(--muted);font-weight:400}
+        .prob-bar{height:3px;border-radius:2px;background:var(--border);margin-top:3px;overflow:hidden}
+        .prob-fill{height:100%;border-radius:2px}
+        .prob-label{font-size:.55rem;color:var(--muted);margin-top:1px}
+        .expand-row{cursor:pointer;transition:background .15s}
+        .expand-row:hover{background:rgba(59,156,245,.05)}
+        .detail-panel{background:var(--bg2);border-radius:0 0 10px 10px;padding:12px 16px;border-top:1px solid var(--border)}
         .conf-dot{display:inline-block;width:5px;height:5px;border-radius:50%;vertical-align:middle;margin-right:2px}
 
         /* === CURRENT CONDITIONS === */
@@ -127,13 +135,16 @@
             body{padding-bottom:56px}
             .verdict{padding:20px 0 14px}
             .v-badge{font-size:2.2rem}
-            .forecast-table{font-size:.72rem}
-            .period-cell{font-size:.6rem}
+            .now-strip{gap:4px}
+            .now-metric{padding:6px 10px;min-width:60px}
+            .now-val{font-size:1rem}
+            .expand-row{grid-template-columns:60px 55px 1fr auto!important;gap:6px!important;padding:8px 10px!important}
+            .period-cell{font-size:.65rem}
             .tab{padding:8px 12px}
         }
         @media(max-width:400px){
-            .forecast-table .hide-sm{display:none}
             .period-row{grid-template-columns:repeat(2,1fr)}
+            .expand-row{grid-template-columns:55px 50px 1fr!important}
         }
         [x-cloak]{display:none!important}
     </style>
@@ -213,73 +224,86 @@
 
     <!-- 7-DAY FORECAST TABLE WITH PERIODS -->
     <div id="sec-forecast" class="stitle">7-Day Forecast</div>
-    <table class="forecast-table">
-        <thead>
-            <tr>
-                <th style="width:80px">Day</th>
-                <th>Score</th>
-                <th>Snow</th>
-                <th class="hide-sm">Temp</th>
-                <th class="hide-sm">Wind</th>
-                <th>NT / AM / PM / EVE</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for s in data.scores[:7] %}
-        {% set i = loop.index0 %}
-        <tr>
-            <td>
+    <div x-data="{ expanded: null }">
+    {% for s in data.scores[:7] %}
+    {% set i = loop.index0 %}
+    {% set spread = data.model_spread[i] if data.model_spread and i < data.model_spread|length else none %}
+    {% set ens_snow = data.ensemble.daily.snowfall if data.ensemble and data.ensemble.daily and data.ensemble.daily.snowfall else none %}
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:6px;overflow:hidden">
+        <!-- Main row (always visible, clickable) -->
+        <div class="expand-row" @click="expanded = expanded === {{ i }} ? null : {{ i }}" style="display:grid;grid-template-columns:70px 65px 1fr auto;align-items:center;padding:10px 12px;gap:8px">
+            <!-- Day -->
+            <div>
                 <div class="day-name">{{ s.date|datecard }}</div>
-                {% if s.crystal_type and s.crystal_type != 'mixed' %}<span class="crystal-badge">{{ s.crystal_type }}</span>{% endif %}
-                {% if s.dgz and s.dgz.active %}<span class="dgz-badge">DGZ</span>{% endif %}
-            </td>
-            <td>
-                <div style="font-size:1.2rem;font-weight:800;color:var(--{{ s.label|lower }})">{{ s.total|round|int }}</div>
-                <span class="score-pill pill-{{ s.label }}">{{ s.label }}</span>
-                <div style="font-size:.6rem;color:var(--muted);margin-top:2px">
-                    <span class="conf-dot" style="background:{{ 'var(--good)' if s.confidence_pct >= 80 else 'var(--fair)' if s.confidence_pct >= 50 else 'var(--muted)' }}"></span>{{ s.confidence_pct|round|int }}%
-                </div>
-            </td>
-            <td>
-                <div style="font-size:1rem;font-weight:700">{{ s.conditions.snowfall_24h_cm|round(1) }}cm</div>
-                {% if s.conditions.rain_mm > 0.5 %}<div style="font-size:.6rem;color:var(--skip)">+{{ s.conditions.rain_mm|round(1) }}mm rain</div>{% endif %}
-            </td>
-            <td class="hide-sm">
-                {{ s.conditions.temperature_min_c|round|int }}° / {{ s.conditions.temperature_max_c|round|int }}°
-                <div style="font-size:.6rem;color:var(--muted)">FL {{ s.conditions.freezing_level_m|round|int }}m</div>
-            </td>
-            <td class="hide-sm">
-                {{ s.conditions.wind_speed_kmh|round|int }} km/h
-                {% if s.conditions.wind_gust_kmh > 40 %}<div style="font-size:.6rem;color:var(--skip)">Gusts {{ s.conditions.wind_gust_kmh|round|int }}</div>{% endif %}
-            </td>
-            <td>
-                {% if s.periods %}
-                <div class="period-row">
-                    {% for p in s.periods %}
-                    <div class="period-cell">
-                        <div class="period-label">{{ p.abbr }}</div>
-                        <div class="period-snow {% if p.snowfall_cm >= 3 %}has-snow{% endif %}">
-                            {% if p.snowfall_cm > 0 %}{{ p.snowfall_cm|round|int }}cm{% elif p.precip_type == 'rain' %}&#127783;{% else %}&mdash;{% endif %}
-                        </div>
-                        <div class="period-meta">{{ p.temp_avg_c|round|int if p.temp_avg_c is not none else '?' }}° {{ p.wind_avg_kmh|round|int if p.wind_avg_kmh is not none else '' }}</div>
-                        <div class="sky-icon">
-                            {% if p.abbr in ('NT', 'EVE') %}
-                                {% if p.cloud_pct is not none %}{% if p.cloud_pct < 30 %}&#9734;{% elif p.cloud_pct < 70 %}&#9789;{% else %}&#9729;{% endif %}{% endif %}
-                            {% elif p.direct_fraction is not none and p.radiation_w is not none and p.radiation_w > 20 %}
-                                {% if p.direct_fraction > 0.7 %}&#9728;{% elif p.direct_fraction > 0.4 %}&#127780;{% elif p.direct_fraction > 0.2 %}&#9925;{% else %}&#9729;{% endif %}
-                            {% elif p.cloud_pct is not none %}
-                                {% if p.cloud_pct < 20 %}&#9728;{% elif p.cloud_pct < 50 %}&#127780;{% elif p.cloud_pct < 80 %}&#9925;{% else %}&#9729;{% endif %}
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
+                {% if s.crystal_type %}
+                <span class="crystal-badge crystal-{{ s.crystal_type }}">{{ CRYSTAL_ICONS.get(s.crystal_type, '') }} {{ s.crystal_type }}</span>
                 {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                {% if s.dgz and s.dgz.active %}<span class="dgz-badge">DGZ</span>{% endif %}
+            </div>
+            <!-- Score -->
+            <div style="text-align:center">
+                <div style="font-size:1.3rem;font-weight:800;color:var(--{{ s.label|lower }})">{{ s.total|round|int }}</div>
+                <span class="score-pill pill-{{ s.label }}">{{ s.label }}</span>
+            </div>
+            <!-- Snow + Conditions -->
+            <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+                <!-- Snowfall with range -->
+                <div>
+                    <span style="font-size:1.05rem;font-weight:700">{{ s.conditions.snowfall_24h_cm|round(1) }}cm</span>
+                    {% if spread and spread.spread_cm > 1 %}
+                    <span class="snow-range">({{ spread.min_cm|round|int }}-{{ spread.max_cm|round|int }})</span>
+                    {% endif %}
+                    {% if s.conditions.rain_mm > 0.5 %}<div style="font-size:.6rem;color:var(--skip)">+{{ s.conditions.rain_mm|round(1) }}mm rain</div>{% endif %}
+                    {% if ens_snow and ens_snow.prob_5cm and i < ens_snow.prob_5cm|length and ens_snow.prob_5cm[i] is not none and ens_snow.prob_5cm[i] > 0.05 %}
+                    <div class="prob-bar" style="width:60px"><div class="prob-fill" style="width:{{ (ens_snow.prob_5cm[i] * 100)|round|int }}%;background:{{ 'var(--good)' if ens_snow.prob_5cm[i] > 0.7 else 'var(--fair)' if ens_snow.prob_5cm[i] > 0.3 else 'var(--muted)' }}"></div></div>
+                    <div class="prob-label">{{ (ens_snow.prob_5cm[i] * 100)|round|int }}% ≥5cm</div>
+                    {% endif %}
+                </div>
+                <!-- Temp -->
+                <div style="font-size:.78rem;color:var(--dim)">
+                    {{ s.conditions.temperature_min_c|round|int }}° / {{ s.conditions.temperature_max_c|round|int }}°
+                    <div style="font-size:.6rem;color:var(--muted)">FL {{ s.conditions.freezing_level_m|round|int }}m</div>
+                </div>
+                <!-- Wind -->
+                <div style="font-size:.78rem;color:var(--dim)">
+                    {{ s.conditions.wind_speed_kmh|round|int }} km/h
+                    {% if s.conditions.wind_gust_kmh > 40 %}<span style="font-size:.6rem;color:var(--skip)">&#9888; {{ s.conditions.wind_gust_kmh|round|int }}G</span>{% endif %}
+                </div>
+            </div>
+            <!-- Confidence + expand hint -->
+            <div style="text-align:right;font-size:.65rem;color:var(--muted)">
+                <span class="conf-dot" style="background:{{ 'var(--good)' if s.confidence_pct >= 80 else 'var(--fair)' if s.confidence_pct >= 50 else 'var(--muted)' }}"></span>{{ s.confidence_pct|round|int }}%
+                <div style="font-size:.7rem;transition:transform .2s" :style="expanded==={{ i }}&&'transform:rotate(90deg)'">&#9654;</div>
+            </div>
+        </div>
+        <!-- Period detail (expandable) -->
+        {% if s.periods %}
+        <div class="detail-panel" x-show="expanded === {{ i }}" x-cloak x-transition.duration.200ms>
+            <div class="period-row">
+                {% for p in s.periods %}
+                <div class="period-cell">
+                    <div class="period-label">{{ p.abbr }}</div>
+                    <div class="sky-icon">
+                        {% if p.abbr in ('NT', 'EVE') %}
+                            {% if p.cloud_pct is not none %}{% if p.cloud_pct < 30 %}&#9734;{% elif p.cloud_pct < 70 %}&#9789;{% else %}&#9729;{% endif %}{% endif %}
+                        {% elif p.direct_fraction is not none and p.radiation_w is not none and p.radiation_w > 20 %}
+                            {% if p.direct_fraction > 0.7 %}&#9728;{% elif p.direct_fraction > 0.4 %}&#127780;{% elif p.direct_fraction > 0.2 %}&#9925;{% else %}&#9729;{% endif %}
+                        {% elif p.cloud_pct is not none %}
+                            {% if p.cloud_pct < 20 %}&#9728;{% elif p.cloud_pct < 50 %}&#127780;{% elif p.cloud_pct < 80 %}&#9925;{% else %}&#9729;{% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="period-snow {% if p.snowfall_cm >= 3 %}has-snow{% endif %}">
+                        {% if p.snowfall_cm > 0 %}{{ p.snowfall_cm|round(1) }}cm{% elif p.precip_type == 'rain' %}&#127783;{% else %}&mdash;{% endif %}
+                    </div>
+                    <div class="period-meta">{{ p.temp_avg_c|round|int if p.temp_avg_c is not none else '?' }}°C &middot; {{ p.wind_avg_kmh|round|int if p.wind_avg_kmh is not none else '?' }} km/h</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    </div>
 
     <!-- EXTENDED OUTLOOK -->
     {% if data.scores|length > 7 %}
