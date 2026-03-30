@@ -74,8 +74,8 @@ def kalman_correct(model_name: str, variable: str, forecast_value: float,
     bias_estimate = model_state.get("x", 0.0)
     corrected = forecast_value - bias_estimate
 
-    # Clamp snowfall to non-negative
-    if variable == "snowfall":
+    # Clamp non-negative variables
+    if variable in ("snowfall", "rain"):
         corrected = max(0.0, corrected)
 
     return corrected

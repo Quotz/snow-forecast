@@ -494,16 +494,25 @@ def run_verification(config, docs_dir="docs"):
     overall_temp_observed = []
     overall_wind_forecast = []
     overall_wind_observed = []
+    overall_rain_forecast = []
+    overall_rain_observed = []
     forecast_scores_for_powder = []
     verified_dates = []
 
     era5_by_date = {}
     for i, d in enumerate(era5["dates"]):
+        precip = _safe_val(era5["precipitation"], i)
+        snow = _safe_val(era5["snowfall"], i)
+        # ERA5 rain = total precipitation minus snowfall
+        rain = round(precip - snow, 2) if precip is not None and snow is not None else None
+        if rain is not None and rain < 0:
+            rain = 0.0  # rounding artefacts
         era5_by_date[d] = {
-            "snowfall": _safe_val(era5["snowfall"], i),
+            "snowfall": snow,
             "temperature_max": _safe_val(era5["temperature_max"], i),
             "temperature_min": _safe_val(era5["temperature_min"], i),
-            "precipitation": _safe_val(era5["precipitation"], i),
+            "precipitation": precip,
+            "rain": rain,
             "wind_max": _safe_val(era5["wind_max"], i),
             "wind_gust_max": _safe_val(era5["wind_gust_max"], i),
         }
@@ -549,6 +558,13 @@ def run_verification(config, docs_dir="docs"):
             overall_wind_forecast.append(fc_wind)
             overall_wind_observed.append(obs_wind)
 
+        # Rain (liquid precipitation)
+        fc_rain = conditions.get("rain_mm")
+        obs_rain = actual.get("rain")
+        if fc_rain is not None and obs_rain is not None:
+            overall_rain_forecast.append(fc_rain)
+            overall_rain_observed.append(obs_rain)
+
         # Per-model snowfall from model_comparison
         mc_entry = hist.get("model_comparison_entry")
         if mc_entry:
@@ -589,6 +605,9 @@ def run_verification(config, docs_dir="docs"):
     wind_m = compute_model_metrics(overall_wind_forecast, overall_wind_observed)
     if wind_m:
         overall_metrics["wind"] = wind_m
+    rain_m = compute_model_metrics(overall_rain_forecast, overall_rain_observed)
+    if rain_m:
+        overall_metrics["rain"] = rain_m
 
     # Powder day accuracy
     powder_acc = compute_powder_day_accuracy(forecast_scores_for_powder, era5)
@@ -609,7 +628,11 @@ def run_verification(config, docs_dir="docs"):
         if hist is None:
             continue
         actual = era5_by_date.get(target_date, {})
+        score_entry = hist["score"]
+        conditions = score_entry.get("conditions", {})
         mc_entry = hist.get("model_comparison_entry")
+
+        # Per-model snowfall Kalman updates
         if mc_entry and actual.get("snowfall") is not None:
             snowfall_values = mc_entry.get("snowfall_values", [])
             hist_models = hist.get("models", [])
@@ -618,6 +641,14 @@ def run_verification(config, docs_dir="docs"):
                     kalman_update(m_name, "snowfall",
                                   snowfall_values[j], actual["snowfall"],
                                   kalman_state_path, Q=Q, R=R)
+
+        # Composite rain Kalman update (tracked as "composite.rain")
+        fc_rain = conditions.get("rain_mm")
+        obs_rain = actual.get("rain")
+        if fc_rain is not None and obs_rain is not None:
+            kalman_update("composite", "rain",
+                          fc_rain, obs_rain,
+                          kalman_state_path, Q=Q, R=R)
 
     # --- Lead-time-specific metrics ---
     lead_time_buckets = kalman_cfg.get("lead_time_buckets",
@@ -703,6 +734,7 @@ def run_verification(config, docs_dir="docs"):
                     "temperature_min": actual.get("temperature_min"),
                     "wind_max": actual.get("wind_max"),
                     "precipitation": actual.get("precipitation"),
+                    "rain": actual.get("rain"),
                 }
                 store_analog(features, observed, analogs_path)
 
@@ -750,8 +782,9 @@ def run_verification(config, docs_dir="docs"):
         "kalman_state_path": kalman_state_path,
     }
 
-    logger.info("Verification complete: %d dates, overall snow MAE=%.2f cm",
+    logger.info("Verification complete: %d dates, snow MAE=%.2fcm, rain MAE=%.2fmm",
                 len(verified_dates),
-                overall_metrics.get("snowfall", {}).get("mae", float("nan")))
+                overall_metrics.get("snowfall", {}).get("mae", float("nan")),
+                overall_metrics.get("rain", {}).get("mae", float("nan")))
 
     return result
