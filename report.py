@@ -49,6 +49,109 @@ CRYSTAL_ICONS = {
 }
 
 
+def build_narrative(report_data: dict) -> str:
+    """Build a weather narrative string from forecast data.
+
+    Returns a short paragraph summarizing the key weather story:
+    when snow arrives, how much, quality, when it clears, hazards.
+    """
+    scores = report_data.get("scores", [])[:7]
+    safety_flags = report_data.get("safety_flags", [])
+    model_spread = report_data.get("model_spread", [])
+    patterns = report_data.get("patterns", [])
+
+    if not scores:
+        return ""
+
+    DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+    def day_name(iso_date):
+        try:
+            from datetime import datetime as dt
+            d = dt.strptime(str(iso_date)[:10], "%Y-%m-%d")
+            return DAY_NAMES[d.weekday()]
+        except (ValueError, TypeError):
+            return str(iso_date)
+
+    # Find snow days and dry days
+    snow_days = []
+    dry_days = []
+    best_day = None
+    best_snow = 0
+    total_snow = 0
+
+    for i, s in enumerate(scores):
+        snow_cm = s.get("conditions", {}).get("snowfall_24h_cm", 0) or 0
+        total_snow += snow_cm
+        if snow_cm >= 1:
+            snow_days.append((i, s, snow_cm))
+        else:
+            dry_days.append((i, s))
+        if snow_cm > best_snow:
+            best_snow = snow_cm
+            best_day = (i, s)
+
+    parts = []
+
+    if not snow_days:
+        parts.append("Dry week ahead with no significant snowfall expected.")
+    elif len(snow_days) == 1:
+        i, s, cm = snow_days[0]
+        name = day_name(s["date"])
+        # Check if there's a spread range
+        spread = model_spread[i] if i < len(model_spread) else None
+        if spread and spread.get("spread_cm", 0) > 2:
+            parts.append(f"Snow on <b>{name}</b> with <b>{spread['min_cm']:.0f}-{spread['max_cm']:.0f}cm</b> expected.")
+        else:
+            parts.append(f"Light snow on <b>{name}</b> with <b>{cm:.0f}cm</b> expected.")
+    else:
+        # Multiple snow days - find the sequence
+        first_i, first_s, _ = snow_days[0]
+        last_i, last_s, _ = snow_days[-1]
+        first_name = day_name(first_s["date"])
+        last_name = day_name(last_s["date"])
+
+        # Check total range from model spread
+        total_min = sum(model_spread[i].get("min_cm", 0) for i, _, _ in snow_days if i < len(model_spread))
+        total_max = sum(model_spread[i].get("max_cm", 0) for i, _, _ in snow_days if i < len(model_spread))
+
+        if first_i == last_i:
+            parts.append(f"Snow on <b>{first_name}</b>.")
+        elif last_i - first_i == len(snow_days) - 1:
+            # Consecutive
+            parts.append(f"Snow from <b>{first_name}</b> through <b>{last_name}</b>.")
+        else:
+            parts.append(f"Snow on multiple days, <b>{first_name}</b> to <b>{last_name}</b>.")
+
+        if total_snow > 0:
+            parts.append(f"Total accumulation around <b>{total_snow:.0f}cm</b>.")
+
+    # Best day
+    if best_day:
+        i, s = best_day
+        name = day_name(s["date"])
+        crystal = s.get("crystal_type", "")
+        quality_str = f" ({crystal})" if crystal and crystal != "mixed" else ""
+        label = s.get("label", "")
+        if label in ("EPIC", "GOOD"):
+            parts.append(f"Best day: <b>{name}</b> with {best_snow:.0f}cm{quality_str} — {label}.")
+
+    # Wind warnings
+    wind_warnings = [f for f in safety_flags if "wind" in f.lower()]
+    if wind_warnings:
+        parts.append(f"<span style='color:var(--skip)'>Strong winds expected — check conditions before heading out.</span>")
+
+    # Pattern highlights
+    for p in patterns[:2]:
+        ptype = p.get("type", "")
+        if ptype == "storm_then_clear":
+            parts.append("Storm-then-clear setup may produce excellent post-storm conditions.")
+        elif ptype == "bluebird_day":
+            parts.append("Bluebird conditions in the outlook.")
+
+    return " ".join(parts)
+
+
 def generate_dashboard(report_data: dict, template_dir: str, output_path: str):
     """Generate the HTML dashboard from forecast data.
 
@@ -104,8 +207,12 @@ def generate_dashboard(report_data: dict, template_dir: str, output_path: str):
 
     template = env.get_template("dashboard.html")
 
+    # Build weather narrative
+    narrative = build_narrative(report_data)
+
     html = template.render(
         data=report_data,
+        narrative=narrative,
         generated_at=datetime.utcnow().strftime("%d/%m/%Y %H:%M UTC"),
         label_colors=LABEL_COLORS,
         sky_labels=SKY_LABELS,
