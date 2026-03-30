@@ -197,7 +197,6 @@
             <td>
                 <div style="font-size:1rem;font-weight:700">{{ s.conditions.snowfall_24h_cm|round(1) }}cm</div>
                 {% if s.conditions.rain_mm > 0.5 %}<div style="font-size:.6rem;color:var(--skip)">+{{ s.conditions.rain_mm|round(1) }}mm rain</div>{% endif %}
-                {% if s.ml_prediction is not none %}<div style="font-size:.55rem;color:var(--muted)">ML: {{ s.ml_prediction }}cm</div>{% endif %}
             </td>
             <td class="hide-sm">
                 {{ s.conditions.temperature_min_c|round|int }}° / {{ s.conditions.temperature_max_c|round|int }}°
@@ -396,8 +395,8 @@ Chart.defaults.borderColor='rgba(30,45,66,.3)';
 // Temperature
 (function(){
     var mc={{ data.multi_charts|tojson }};
-    if(!mc||!mc.temperature)return;
-    var t=mc.temperature;
+    if(!mc||!mc.temperature_chart)return;
+    var t=mc.temperature_chart;
     new Chart(document.getElementById('cTemp'),{
         type:'line',
         data:{labels:t.labels,datasets:(t.datasets||[]).map(function(d){return{label:d.label,data:d.data,borderColor:d.color||'#3b9cf5',backgroundColor:'transparent',borderWidth:2,tension:.3,pointRadius:2}})},
@@ -408,8 +407,8 @@ Chart.defaults.borderColor='rgba(30,45,66,.3)';
 // Wind
 (function(){
     var mc={{ data.multi_charts|tojson }};
-    if(!mc||!mc.wind)return;
-    var w=mc.wind;
+    if(!mc||!mc.wind_chart)return;
+    var w=mc.wind_chart;
     new Chart(document.getElementById('cWind'),{
         type:'line',
         data:{labels:w.labels,datasets:(w.datasets||[]).map(function(d){return{label:d.label,data:d.data,borderColor:d.color||'#f57c3b',backgroundColor:'transparent',borderWidth:2,tension:.3,pointRadius:2}})},
