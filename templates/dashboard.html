@@ -351,11 +351,13 @@
     <div x-data="{ tab: 'snow' }">
         <div class="tabs">
             <div class="tab" :class="tab==='snow'&&'active'" @click="tab='snow'">Snowfall</div>
+            <div class="tab" :class="tab==='range'&&'active'" @click="tab='range'">Range</div>
             <div class="tab" :class="tab==='spaghetti'&&'active'" @click="tab='spaghetti'">Models</div>
             <div class="tab" :class="tab==='temp'&&'active'" @click="tab='temp'">Temp</div>
             <div class="tab" :class="tab==='wind'&&'active'" @click="tab='wind'">Wind</div>
         </div>
         <div class="chart-box" x-show="tab==='snow'"><canvas id="cSnow"></canvas></div>
+        <div class="chart-box" x-show="tab==='range'" x-cloak><canvas id="cRange"></canvas></div>
         <div class="chart-box" x-show="tab==='spaghetti'" x-cloak><canvas id="cSpag"></canvas></div>
         <div class="chart-box" x-show="tab==='temp'" x-cloak><canvas id="cTemp"></canvas></div>
         <div class="chart-box" x-show="tab==='wind'" x-cloak><canvas id="cWind"></canvas></div>
@@ -440,18 +442,49 @@
 Chart.defaults.color='#7b8fa6';
 Chart.defaults.borderColor='rgba(30,45,66,.3)';
 
-// Snowfall bar chart
+// Snowfall bar chart - daily totals (simple, clean)
 (function(){
-    var d={{ data.chart_data|tojson }};
-    if(!d||!d.labels)return;
+    var scores={{ data.scores|tojson }};
+    if(!scores||!scores.length)return;
+    var labels=scores.slice(0,7).map(function(s){
+        var d=new Date(s.date+'T00:00:00');
+        return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]+' '+d.getDate()+'/'+(d.getMonth()+1);
+    });
+    var snow=scores.slice(0,7).map(function(s){return s.conditions.snowfall_24h_cm||0});
     new Chart(document.getElementById('cSnow'),{
         type:'bar',
-        data:{labels:d.labels,datasets:d.datasets.map(function(s){return{label:s.label,data:s.data,backgroundColor:s.color,borderRadius:3}})},
-        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:10,font:{size:10}}}},scales:{y:{beginAtZero:true,title:{display:true,text:'cm'}}}}
+        data:{labels:labels,datasets:[{label:'Snowfall',data:snow,backgroundColor:snow.map(function(v){return v>=15?'#4d8df7':v>=5?'#3b9cf5':'rgba(59,156,245,.4)'}),borderRadius:4}]},
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,title:{display:true,text:'cm'}}}}
     });
 })();
 
-// Spaghetti
+// Probability range fan chart
+(function(){
+    var fan={{ data.probability_fan|tojson }};
+    if(!fan||!fan.labels)return;
+    var datasets=[];
+    // p10-p90 band (lightest)
+    if(fan.p10&&fan.p90){
+        datasets.push({label:'p10-p90 range',data:fan.p90,fill:'+1',backgroundColor:'rgba(59,156,245,.08)',borderColor:'transparent',pointRadius:0,tension:.3});
+        datasets.push({label:'',data:fan.p10,fill:false,borderColor:'transparent',pointRadius:0,tension:.3});
+    }
+    // p25-p75 band
+    if(fan.p25&&fan.p75){
+        datasets.push({label:'p25-p75 range',data:fan.p75,fill:'+1',backgroundColor:'rgba(59,156,245,.18)',borderColor:'transparent',pointRadius:0,tension:.3});
+        datasets.push({label:'',data:fan.p25,fill:false,borderColor:'transparent',pointRadius:0,tension:.3});
+    }
+    // p50 median line
+    if(fan.p50){
+        datasets.push({label:'Median (p50)',data:fan.p50,fill:false,borderColor:'#3b9cf5',borderWidth:2,pointRadius:3,pointBackgroundColor:'#3b9cf5',tension:.3});
+    }
+    new Chart(document.getElementById('cRange'),{
+        type:'line',
+        data:{labels:fan.labels,datasets:datasets},
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:10,font:{size:10},filter:function(item){return item.text!==''}}}},scales:{y:{beginAtZero:true,title:{display:true,text:'cm snowfall'}}}}
+    });
+})();
+
+// Spaghetti (per-model comparison)
 (function(){
     var d={{ data.spaghetti_data|tojson }};
     if(!d||!d.labels)return;
