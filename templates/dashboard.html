@@ -62,6 +62,16 @@
         .dgz-badge{font-size:.55rem;padding:1px 4px;border-radius:3px;background:rgba(77,141,247,.15);color:var(--epic)}
         .conf-dot{display:inline-block;width:5px;height:5px;border-radius:50%;vertical-align:middle;margin-right:2px}
 
+        /* === CURRENT CONDITIONS === */
+        .now-strip{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:14px 0 6px}
+        .now-metric{display:flex;flex-direction:column;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 14px;min-width:80px}
+        .now-val{font-size:1.15rem;font-weight:800;line-height:1.2}
+        .now-lbl{font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+
+        /* === SAFETY ALERTS === */
+        .safety-alert{background:rgba(229,69,58,.1);border:1px solid rgba(229,69,58,.3);border-radius:8px;padding:8px 14px;margin:6px 0;font-size:.78rem;color:var(--skip);display:flex;align-items:center;gap:8px}
+        .safety-alert .alert-icon{font-size:1rem;flex-shrink:0}
+
         /* === INSIGHTS === */
         .insights{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin:16px 0}
         .insights h3{font-size:1rem;margin-bottom:6px}
@@ -139,6 +149,42 @@
             <span id="timeAgo"></span>
         </div>
     </div>
+
+    <!-- CURRENT CONDITIONS -->
+    {% if data.current %}
+    <div class="now-strip">
+        <div class="now-metric">
+            <div class="now-val">{{ data.current.temperature|round|int }}°</div>
+            <div class="now-lbl">Summit</div>
+        </div>
+        <div class="now-metric">
+            <div class="now-val">{{ data.current.wind_speed|round|int }}<span style="font-size:.7rem;font-weight:400"> km/h</span></div>
+            <div class="now-lbl">Wind</div>
+        </div>
+        <div class="now-metric">
+            <div class="now-val">{{ (data.current.snow_depth * 100)|round|int }}<span style="font-size:.7rem;font-weight:400">cm</span></div>
+            <div class="now-lbl">Snow depth</div>
+        </div>
+        <div class="now-metric">
+            <div class="now-val">{{ data.current.freezing_level|round|int }}<span style="font-size:.7rem;font-weight:400">m</span></div>
+            <div class="now-lbl">Freezing</div>
+        </div>
+        <div class="now-metric">
+            <div class="now-val">{% if data.current.cloud_cover < 20 %}&#9728;{% elif data.current.cloud_cover < 50 %}&#127780;{% elif data.current.cloud_cover < 80 %}&#9925;{% else %}&#9729;{% endif %}</div>
+            <div class="now-lbl">{{ data.current.cloud_cover }}% cloud</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- SAFETY ALERTS -->
+    {% if data.safety_flags %}
+    {% for flag in data.safety_flags %}
+    <div class="safety-alert">
+        <span class="alert-icon">&#9888;</span>
+        <span>{{ flag }}</span>
+    </div>
+    {% endfor %}
+    {% endif %}
 
     <!-- VERDICT -->
     {% if data.go_verdict %}
