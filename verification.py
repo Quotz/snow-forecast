@@ -496,6 +496,10 @@ def run_verification(config, docs_dir="docs"):
     overall_wind_observed = []
     overall_rain_forecast = []
     overall_rain_observed = []
+    overall_temp_min_forecast = []
+    overall_temp_min_observed = []
+    overall_wind_gust_forecast = []
+    overall_wind_gust_observed = []
     forecast_scores_for_powder = []
     verified_dates = []
 
@@ -565,6 +569,20 @@ def run_verification(config, docs_dir="docs"):
             overall_rain_forecast.append(fc_rain)
             overall_rain_observed.append(obs_rain)
 
+        # Temperature min
+        fc_temp_min = conditions.get("temperature_min_c")
+        obs_temp_min = actual["temperature_min"]
+        if fc_temp_min is not None and obs_temp_min is not None:
+            overall_temp_min_forecast.append(fc_temp_min)
+            overall_temp_min_observed.append(obs_temp_min)
+
+        # Wind gusts
+        fc_gust = conditions.get("wind_gust_kmh")
+        obs_gust = actual["wind_gust_max"]
+        if fc_gust is not None and obs_gust is not None:
+            overall_wind_gust_forecast.append(fc_gust)
+            overall_wind_gust_observed.append(obs_gust)
+
         # Per-model snowfall from model_comparison
         mc_entry = hist.get("model_comparison_entry")
         if mc_entry:
@@ -608,6 +626,12 @@ def run_verification(config, docs_dir="docs"):
     rain_m = compute_model_metrics(overall_rain_forecast, overall_rain_observed)
     if rain_m:
         overall_metrics["rain"] = rain_m
+    temp_min_m = compute_model_metrics(overall_temp_min_forecast, overall_temp_min_observed)
+    if temp_min_m:
+        overall_metrics["temperature_min"] = temp_min_m
+    gust_m = compute_model_metrics(overall_wind_gust_forecast, overall_wind_gust_observed)
+    if gust_m:
+        overall_metrics["wind_gust"] = gust_m
 
     # Powder day accuracy
     powder_acc = compute_powder_day_accuracy(forecast_scores_for_powder, era5)

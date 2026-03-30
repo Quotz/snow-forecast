@@ -418,10 +418,12 @@
             {% if data.verification_stats.overall %}
             <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;font-size:.75rem">
                 {% set ov = data.verification_stats.overall %}
-                {% if ov.snowfall %}<div style="background:var(--bg);border-radius:6px;padding:6px 10px"><b>Snow MAE:</b> {{ ov.snowfall.mae|round(2) }}cm <span style="color:var(--muted)">(bias {{ ov.snowfall.bias|round(2) }})</span></div>{% endif %}
-                {% if ov.temperature %}<div style="background:var(--bg);border-radius:6px;padding:6px 10px"><b>Temp MAE:</b> {{ ov.temperature.mae|round(2) }}°C <span style="color:var(--muted)">(bias {{ ov.temperature.bias|round(2) }})</span></div>{% endif %}
-                {% if ov.wind %}<div style="background:var(--bg);border-radius:6px;padding:6px 10px"><b>Wind MAE:</b> {{ ov.wind.mae|round(2) }} km/h <span style="color:var(--muted)">(bias {{ ov.wind.bias|round(2) }})</span></div>{% endif %}
-                {% if ov.rain %}<div style="background:var(--bg);border-radius:6px;padding:6px 10px"><b>Rain MAE:</b> {{ ov.rain.mae|round(2) }}mm <span style="color:var(--muted)">(bias {{ ov.rain.bias|round(2) }})</span></div>{% endif %}
+                {% if ov.snowfall %}<div style="background:var(--bg);border-radius:6px;padding:6px 10px"><b>Snow:</b> {{ ov.snowfall.mae|round(2) }}cm MAE <span style="color:var(--muted)">(bias {{ ov.snowfall.bias|round(2) }})</span></div>{% endif %}
+                {% if ov.temperature %}<div style="background:var(--bg);border-radius:6px;padding:6px 10px"><b>Temp max:</b> {{ ov.temperature.mae|round(2) }}°C MAE</div>{% endif %}
+                {% if ov.temperature_min %}<div style="background:var(--bg);border-radius:6px;padding:6px 10px"><b>Temp min:</b> {{ ov.temperature_min.mae|round(2) }}°C MAE</div>{% endif %}
+                {% if ov.wind %}<div style="background:var(--bg);border-radius:6px;padding:6px 10px"><b>Wind:</b> {{ ov.wind.mae|round(2) }} km/h MAE</div>{% endif %}
+                {% if ov.wind_gust %}<div style="background:var(--bg);border-radius:6px;padding:6px 10px"><b>Gusts:</b> {{ ov.wind_gust.mae|round(2) }} km/h MAE</div>{% endif %}
+                {% if ov.rain %}<div style="background:var(--bg);border-radius:6px;padding:6px 10px"><b>Rain:</b> {{ ov.rain.mae|round(2) }}mm MAE</div>{% endif %}
             </div>
             {% endif %}
             {% if data.verification_stats.per_model %}
