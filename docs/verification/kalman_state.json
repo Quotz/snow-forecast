@@ -1,47 +1,47 @@
 {
   "icon_seamless.snowfall": {
-    "x": -0.073196,
+    "x": -0.054231,
     "P": 0.095127,
-    "n_updates": 279,
+    "n_updates": 282,
     "initialized_from": "ewma"
   },
   "ecmwf_ifs025.snowfall": {
-    "x": 0.042826,
+    "x": 0.03173,
     "P": 0.095127,
-    "n_updates": 279,
+    "n_updates": 282,
     "initialized_from": "ewma"
   },
   "gfs_seamless.snowfall": {
-    "x": 0.143163,
+    "x": 0.10607,
     "P": 0.095127,
-    "n_updates": 279,
+    "n_updates": 282,
     "initialized_from": "ewma"
   },
   "arpege_seamless.snowfall": {
-    "x": -0.076036,
+    "x": -0.056336,
     "P": 0.095127,
-    "n_updates": 279,
+    "n_updates": 282,
     "initialized_from": "ewma"
   },
   "ukmo_seamless.snowfall": {
-    "x": -0.184897,
+    "x": -0.136991,
     "P": 0.095127,
-    "n_updates": 279,
+    "n_updates": 282,
     "initialized_from": "ewma"
   },
   "ecmwf_aifs025_single.snowfall": {
-    "x": -0.089814,
+    "x": -0.066543,
     "P": 0.095127,
-    "n_updates": 279
+    "n_updates": 282
   },
   "gfs_graphcast025.snowfall": {
-    "x": 0.858349,
+    "x": 0.635956,
     "P": 0.095127,
-    "n_updates": 279
+    "n_updates": 282
   },
   "composite.rain": {
-    "x": -0.085961,
+    "x": -0.071392,
     "P": 0.095127,
-    "n_updates": 279
+    "n_updates": 282
   }
 }

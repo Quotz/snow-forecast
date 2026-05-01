@@ -18,93 +18,6 @@
    "mean": 0.0,
    "spread": 0.0,
    "lead_time": 2,
-   "day_of_year": 349,
-   "date": "2025-12-15"
-  },
-  "observed": {
-   "snowfall": 0.0,
-   "temperature_max": 2.8,
-   "temperature_min": -5.5,
-   "wind_max": 3.6
-  }
- },
- {
-  "features": {
-   "model_predictions": [
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0
-   ],
-   "model_names": [
-    "icon_seamless",
-    "ecmwf_ifs025",
-    "gfs_seamless",
-    "arpege_seamless",
-    "ukmo_seamless"
-   ],
-   "mean": 0.0,
-   "spread": 0.0,
-   "lead_time": 2,
-   "day_of_year": 350,
-   "date": "2025-12-16"
-  },
-  "observed": {
-   "snowfall": 0.0,
-   "temperature_max": 3.3,
-   "temperature_min": -2.5,
-   "wind_max": 6.7
-  }
- },
- {
-  "features": {
-   "model_predictions": [
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0
-   ],
-   "model_names": [
-    "icon_seamless",
-    "ecmwf_ifs025",
-    "gfs_seamless",
-    "arpege_seamless",
-    "ukmo_seamless"
-   ],
-   "mean": 0.0,
-   "spread": 0.0,
-   "lead_time": 2,
-   "day_of_year": 351,
-   "date": "2025-12-17"
-  },
-  "observed": {
-   "snowfall": 0.0,
-   "temperature_max": 3.4,
-   "temperature_min": -3.0,
-   "wind_max": 4.2
-  }
- },
- {
-  "features": {
-   "model_predictions": [
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0
-   ],
-   "model_names": [
-    "icon_seamless",
-    "ecmwf_ifs025",
-    "gfs_seamless",
-    "arpege_seamless",
-    "ukmo_seamless"
-   ],
-   "mean": 0.0,
-   "spread": 0.0,
-   "lead_time": 2,
    "day_of_year": 352,
    "date": "2025-12-18"
   },
@@ -16013,6 +15926,108 @@
    "wind_max": 4.6,
    "precipitation": 0.2,
    "rain": 0.2
+  }
+ },
+ {
+  "features": {
+   "model_predictions": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "model_names": [
+    "icon_seamless",
+    "ecmwf_ifs025",
+    "gfs_seamless",
+    "arpege_seamless",
+    "ukmo_seamless",
+    "ecmwf_aifs025_single",
+    "gfs_graphcast025"
+   ],
+   "mean": 0.0,
+   "spread": 0.0,
+   "lead_time": 2,
+   "day_of_year": 116
+  },
+  "observed": {
+   "snowfall": 0.0,
+   "temperature_max": 8.6,
+   "temperature_min": -1.2,
+   "wind_max": 7.6,
+   "precipitation": 0.0,
+   "rain": 0.0
+  }
+ },
+ {
+  "features": {
+   "model_predictions": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "model_names": [
+    "icon_seamless",
+    "ecmwf_ifs025",
+    "gfs_seamless",
+    "arpege_seamless",
+    "ukmo_seamless",
+    "ecmwf_aifs025_single",
+    "gfs_graphcast025"
+   ],
+   "mean": 0.0,
+   "spread": 0.0,
+   "lead_time": 2,
+   "day_of_year": 117
+  },
+  "observed": {
+   "snowfall": 0.0,
+   "temperature_max": 7.6,
+   "temperature_min": -2.2,
+   "wind_max": 4.6,
+   "precipitation": 0.2,
+   "rain": 0.2
+  }
+ },
+ {
+  "features": {
+   "model_predictions": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "model_names": [
+    "icon_seamless",
+    "ecmwf_ifs025",
+    "gfs_seamless",
+    "arpege_seamless",
+    "ukmo_seamless",
+    "ecmwf_aifs025_single",
+    "gfs_graphcast025"
+   ],
+   "mean": 0.0,
+   "spread": 0.0,
+   "lead_time": 2,
+   "day_of_year": 118
+  },
+  "observed": {
+   "snowfall": 0.0,
+   "temperature_max": 8.8,
+   "temperature_min": 0.1,
+   "wind_max": 6.2,
+   "precipitation": 0.1,
+   "rain": 0.1
   }
  }
 ]
